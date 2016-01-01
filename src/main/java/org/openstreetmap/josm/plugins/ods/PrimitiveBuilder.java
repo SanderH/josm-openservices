@@ -9,7 +9,6 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -19,7 +18,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public interface PrimitiveBuilder<T extends Entity> {
     public LayerManager getLayerManager();
 
-    public OsmPrimitive build(Geometry geometry, Map<String, String> tags);
+    public OsmPrimitive build(T entity, Map<String, String> tags);
 
     public OsmPrimitive build(Polygon polygon, Map<String, String> tags);
 

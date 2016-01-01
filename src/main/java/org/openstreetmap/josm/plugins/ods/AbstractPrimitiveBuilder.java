@@ -12,6 +12,7 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -47,8 +48,13 @@ public abstract class AbstractPrimitiveBuilder<T extends Entity> implements Prim
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Geometry)
      */
     @Override
-    public OsmPrimitive build(Geometry geometry, Map<String, String> tags) {
+    public OsmPrimitive build(T entity, Map<String, String> tags) {
         tags.put(ODS.KEY.BASE, "true");
+        EntityStatus status = entity.getStatus();
+        if (status != null && status != EntityStatus.UNKNOWN && status != EntityStatus.IN_USE) {
+            tags.put(ODS.KEY.STATUS, entity.getStatus().toString());
+        }
+        Geometry geometry = entity.getGeometry();
         switch (geometry.getGeometryType()) {
         case "Polygon":
             return build((Polygon)geometry, tags);
