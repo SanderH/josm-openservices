@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
 
 /**
  * NodeDWithin implementation that uses LatLon coordinates to calculate the
@@ -16,6 +17,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
 
     private final double maxDy; // Maximum delta y in degrees
     private final double maxDxFixed; // Fixed maximum delta x in degrees
+    private final double limitDx; 
     private final boolean fixedLatitude; // The latitude and thus maxDx are fixed
     
     /**
@@ -30,6 +32,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
     public NodeDWithinLatLon(double tolerance) {
         maxDy = 360 * tolerance / EARTH_CIRCUMFERENCE;
         maxDxFixed = 0; // The value is never used.
+        limitDx = getMaxDx(85.06);
         fixedLatitude = false;
     }
 
@@ -45,7 +48,14 @@ public class NodeDWithinLatLon implements NodeDWithin {
     public NodeDWithinLatLon(double tolerance, double latitude) {
         maxDy = 360 * tolerance / EARTH_CIRCUMFERENCE;
         maxDxFixed = getMaxDx(latitude);
+        limitDx = 0;
         fixedLatitude = true;
+    }
+
+    
+    @Override
+    public boolean check(OdsNode node1, OdsNode node2) {
+        return check(node1.getPrimitive(), node2.getPrimitive());
     }
 
     @Override
@@ -70,6 +80,11 @@ public class NodeDWithinLatLon implements NodeDWithin {
 
     
     @Override
+    public boolean check(OdsNode n, OdsNode node1, OdsNode node2) {
+        return check(n.getPrimitive(), node1.getPrimitive(), node2.getPrimitive());
+    }
+
+    @Override
     public boolean check(Node n, Node node1, Node node2) {
         
         if (check(n, node1) || check(n, node2)) return true;
@@ -80,6 +95,10 @@ public class NodeDWithinLatLon implements NodeDWithin {
 
         if (Math.max(ll1.lat(), ll2.lat()) + maxDy < ll.lat()) return false;
         if (Math.min(ll1.lat(), ll2.lat()) - maxDy > ll.lat()) return false;
+        if (!fixedLatitude) {
+            if (Math.max(ll1.lon(), ll2.lon()) + limitDx < ll.lon()) return false;
+            if (Math.min(ll1.lon(), ll2.lon()) - limitDx > ll.lon()) return false;
+        }
         double maxDx = getMaxDx(ll.lat());
         if (Math.max(ll1.lon(), ll2.lon()) + maxDx < ll.lon()) return false;
         if (Math.min(ll1.lon(), ll2.lon()) - maxDx > ll.lon()) return false;
@@ -114,6 +133,6 @@ public class NodeDWithinLatLon implements NodeDWithin {
      * @return
      */
     private double getMaxDx(double lat) {
-        return maxDy / Math.sin(Math.toRadians(lat));
+        return maxDy / Math.cos(Math.toRadians(lat));
     }
 }

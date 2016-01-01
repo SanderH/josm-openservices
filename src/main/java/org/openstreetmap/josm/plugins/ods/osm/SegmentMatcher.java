@@ -15,7 +15,7 @@ public class SegmentMatcher {
     }
 
     /**
-     * Check if the first segments of the provided iterator are overlap with respect
+     * Check if the first segments of the provided iterator are overlapping with respect
      * to the tolerance of this Segment matcher.
      * The algorithm is optimized for the cases where there is no match as this will
      * be the majority of the cases; 

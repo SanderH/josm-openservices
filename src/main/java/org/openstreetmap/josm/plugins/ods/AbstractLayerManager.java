@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opengis.geometry.primitive.Primitive;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -10,6 +11,7 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.primitives.OdsPrimitive;
 
 /**
  * 
@@ -19,6 +21,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 public abstract class AbstractLayerManager implements LayerManager {
     private String name;
     private OsmDataLayer osmDataLayer;
+    private Map<Primitive, OdsPrimitive<?>> primitiveMap = new HashMap<>();
     private Map<Long, Entity> nodeEntities = new HashMap<>();
     private Map<Long, Entity> wayEntities = new HashMap<>();
     private Map<Long, Entity> relationEntities = new HashMap<>();
@@ -111,6 +114,11 @@ public abstract class AbstractLayerManager implements LayerManager {
         }
     }
 
+    @Override
+    public OdsPrimitive<?> getOdsPrimitive(OsmPrimitive primitive) {
+        return primitiveMap.get(primitive);
+    }
+    
     @Override
     public Entity getEntity(OsmPrimitive primitive) {
         switch (primitive.getType()) {
