@@ -1,26 +1,32 @@
 package org.openstreetmap.josm.plugins.ods.osm.update;
 
-import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
 
+/**
+ * Keep track of a match between a Node in the Open data layer and an other node in the Osm Layer.
+ * 
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
 public class NodeMatch {
-    private final Node odNode;
-    private final Node osmNode;
+    private final OdsNode odNode;
+    private final OdsNode osmNode;
 //    private final Envelope envelope;
     private final boolean hasTags;
-    private boolean matched = false;
-    private final SpecialReferrers referrers;
     
-    public NodeMatch(Node odNode, Node osmNode, SpecialReferrers referrers) {
+    public NodeMatch(OdsNode odNode, OdsNode osmNode) {
         super();
         this.odNode = odNode;
         this.osmNode = osmNode;
-        this.referrers = referrers;
 //        this.envelope = envelope;
-        this.hasTags = osmNode.getInterestingTags().size() > 0;
+        this.hasTags = osmNode.getPrimitive().getInterestingTags().size() > 0;
     }
 
+    public OdsNode getOdNode() {
+        return odNode;
+    }
 
-    public Node getNode() {
+    public OdsNode getOsmNode() {
         return osmNode;
     }
     
@@ -32,18 +38,6 @@ public class NodeMatch {
         return hasTags;
     }
     
-    public boolean isMatched() {
-        return matched;
-    }
-
-    public void setMatched(boolean matched) {
-        this.matched = matched;
-    }
-
-    public double distanceTo(Node node) {
-        return this.osmNode.getCoor().distance(node.getCoor());
-    }
-    
     @Override
     public int hashCode() {
         return osmNode.hashCode();
@@ -51,7 +45,7 @@ public class NodeMatch {
 
     public boolean equals(NodeMatch other) {
         if (other == this) return true;
-        return other.getNode().equals(getNode());
+        return other.getOsmNode().equals(getOsmNode());
     }
     
     @Override
