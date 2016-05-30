@@ -3,11 +3,9 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.*;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -25,13 +23,6 @@ public class BuildingMatch extends MatchImpl<Building> {
         super(osmBuilding, openDataBuilding);
     }
     
-    
-    @Override
-    public EntityType<Building> getEntityType() {
-        return BuildingEntityType.getInstance();
-    }
-
-
     @Override
     public void analyze() {
         areaMatch = compareAreas();

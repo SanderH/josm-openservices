@@ -2,25 +2,42 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
-public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T>  {
+public class GeoIndexImpl<T extends Entity> implements GeoIndex<T> {
     private Quadtree quadTree = new Quadtree();
-    private Class<V> clazz;
+    private Class<T> clazz;
     private Method getGeometryMethod;
     private String property;
     
-    public GeoIndexImpl(Class<V> clazz, String property) {
+    public GeoIndexImpl(Class<T> clazz, String property) {
         super();
         this.clazz = clazz;
         this.property = property;
         getGeometryMethod = createGetGeometryMethod();
     }
     
+    @Override
+    public Class<T> getType() {
+        return clazz;
+    }
+
+    @Override
+    public List<String> getProperties() {
+        return Collections.singletonList(property);
+    }
+
+    
+    @Override
+    public Object getKey(T entity) {
+        return null;
+    }
+
     @Override
     public boolean isUnique() {
         return false;

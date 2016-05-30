@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -39,7 +38,7 @@ public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T
   }
 
   @Override
-  public List<OsmPrimitive> createPrimitives(Geometry geometry,
+  public List<ManagedPrimitive<?>> createPrimitives(Geometry geometry,
       Map<String, String> tags, DataSet dataSet) {
     if (geometry instanceof GeometryCollection && !targetPrimitive.equals("MULTIPOLYGON")) {
       return createPrimitives((GeometryCollection)geometry, tags, dataSet);
@@ -47,9 +46,9 @@ public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T
     return Collections.singletonList(createPrimitive(geometry, tags, dataSet));
   }
   
-  protected OsmPrimitive createPrimitive(Geometry geometry,
+  protected ManagedPrimitive<?> createPrimitive(Geometry geometry,
       Map<String, String> tags, DataSet dataSet) {
-    OsmPrimitive primitive = null;
+    ManagedPrimitive<?> primitive = null;
     if (targetPrimitive.equals("WAY")) {
       if (geometry instanceof LineString) {
         primitive = primitiveBuilder.buildWay((LineString)geometry, tags);
@@ -75,17 +74,17 @@ public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T
     } else if (targetPrimitive.equals("POLYGON")) {
       primitive = primitiveBuilder.buildArea((MultiPolygon)geometry, tags);
     }
-    if (primitive != null) {
-      for (Entry<String, String> entry : tags.entrySet()) {
-        primitive.put(entry.getKey(), entry.getValue());
-      }
-    }
+//    if (primitive != null) {
+//      for (Entry<String, String> entry : tags.entrySet()) {
+//        primitive.put(entry.getKey(), entry.getValue());
+//      }
+//    }
     return primitive;
   }
 
-  private List<OsmPrimitive> createPrimitives(GeometryCollection gc,
+  private List<ManagedPrimitive<?>> createPrimitives(GeometryCollection gc,
     Map<String, String> tags, DataSet dataSet) {
-    List<OsmPrimitive> primitives = new ArrayList<OsmPrimitive>(gc.getNumGeometries());
+    List<ManagedPrimitive<?>> primitives = new ArrayList<>(gc.getNumGeometries());
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       primitives.add(createPrimitive(gc.getGeometryN(i), tags, dataSet));
     }

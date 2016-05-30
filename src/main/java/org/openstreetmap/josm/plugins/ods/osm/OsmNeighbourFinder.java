@@ -4,16 +4,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.data.osm.BBox;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
+import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
 import org.openstreetmap.josm.tools.Geometry;
 import org.openstreetmap.josm.tools.Geometry.PolygonIntersection;
 import org.openstreetmap.josm.tools.Predicate;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Find neighbours for a Building using the Osm primitive.
@@ -22,31 +30,33 @@ import org.openstreetmap.josm.tools.Predicate;
  *
  */
 public class OsmNeighbourFinder {
-    private OdsModule module;
-    private Predicate<OsmPrimitive> isBuilding = BuildingEntityType.IsBuilding;
+    private final OdsModule module;
+    private final LayerManager layerManager;
+    private Predicate<OsmPrimitive> isBuilding = Building.IsBuilding;
     private List<OsmPrimitive> neighbourBuildings = new LinkedList<>();
     private BuildingAligner buildingAligner;
     
     public OsmNeighbourFinder(OdsModule module) {
         super();
         this.module = module;
-        this.buildingAligner = new BuildingAligner(module, 
-            module.getOsmLayerManager().getEntityStore(Building.class));
+        this.layerManager = module.getOsmLayerManager();
+        this.buildingAligner = new BuildingAligner(module, layerManager);
     }
 
-    
-    public void findNeighbours(OsmPrimitive osm) {
-        if (!isBuilding.evaluate(osm)) {
+    public void findNeighbours(ManagedPrimitive<?> osm) {
+        Entity entity = osm.getEntity();
+        if (entity.getBaseType() != Building.class) {
             return;
         }
-        if (osm.getDisplayType().equals(OsmPrimitiveType.CLOSEDWAY)) {
-            findWayNeighbourBuildings((Way)osm);
+        if (osm instanceof SimpleManagedRing) {
+            findWayNeighbourBuildings((SimpleManagedRing)osm);
         }
     }
     
-    public void findWayNeighbourBuildings(Way way1) {
-        BBox bbox = extend(way1.getBBox(), module.getTolerance());
-        for (Way way2 : way1.getDataSet().searchWays(bbox)) {
+    public void findWayNeighbourBuildings(SimpleManagedRing ring) {
+        DataSet dataSet = layerManager.getOsmDataLayer().data;
+        Envelope envelope = extend(ring.getEnvelope(), module.getTolerance());
+        for (Way way2 : dataSet.searchWays(bbox)) {
             if (way2.equals(way1)) {
                 continue;
             }
@@ -73,4 +83,12 @@ public class OsmNeighbourFinder {
             bbox.getBottomRightLon() + delta,
             bbox.getTopLeftLat() + delta);
     }
+    
+    private Envelope extend(Envelope bbox, Double delta) {
+        return new Envelope(bbox.getMinX() - delta,
+            bbox.getMaxX() + delta,
+            bbox.getMinY() + delta,
+            bbox.getMaxY() + delta);
+    }
+
 }

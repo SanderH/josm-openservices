@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 
 /**
  * Marker interface

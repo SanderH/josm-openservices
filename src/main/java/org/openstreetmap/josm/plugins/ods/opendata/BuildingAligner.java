@@ -20,25 +20,25 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 @Deprecated
 public class BuildingAligner {
-    private final EntityStore<Building> buildingStore;
+//    private final EntityStore<Building> buildingStore;
     private final Double tolerance;
     private final CrossingBuildingFixer fixer;
     
     public BuildingAligner(OdsModule module, EntityStore<Building> buildingStore) {
-        this.buildingStore = buildingStore;
+//        this.buildingStore = buildingStore;
         this.tolerance = module.getTolerance();
         this.fixer = new CrossingBuildingFixer(module.getGeoUtil(), tolerance);
     }
 
     public void align(Building building) {
         try {
-            for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
-                if (candidate == building) continue;
-                if (building.getNeighbours().contains(candidate)) continue;
-                building.getNeighbours().add(candidate);
-                candidate.getNeighbours().add(building);
-                analyzeCrossing(building, candidate);
-            }
+//            for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
+//                if (candidate == building) continue;
+//                if (building.getNeighbours().contains(candidate)) continue;
+//                building.getNeighbours().add(candidate);
+//                candidate.getNeighbours().add(building);
+//                analyzeCrossing(building, candidate);
+//            }
         }
         catch (Exception e) {
             Main.warn(e);

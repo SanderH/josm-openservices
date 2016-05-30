@@ -13,9 +13,12 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.plugins.ods.Matcher;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerDownloader;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.tools.I18n;
-
-import exceptions.OdsException;
 
 /**
  * Main downloader that retrieves data from multiple sources. Currently only a OSM source
@@ -25,21 +28,54 @@ import exceptions.OdsException;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public abstract class MainDownloader {
+public class MainDownloader {
     private static final int NTHREADS = 10;
+    private OdsModule module;
+    private OpenDataLayerDownloader openDataLayerDownloader;
+    private OsmLayerDownloader osmLayerDownloader;
 
     private List<LayerDownloader> enabledDownloaders;
+    
+    private List<Matcher<?>> matchers = new LinkedList<>();
     
     private ExecutorService executorService;
 
     private Status status = new Status();
 
-    public abstract void initialize() throws OdsException;
+    public MainDownloader(OdsModule module) {
+        super();
+        this.module = module;
+    }
+
+    public final void setOpenDataLayerDownloader(
+            OpenDataLayerDownloader openDataLayerDownloader) {
+        this.openDataLayerDownloader = openDataLayerDownloader;
+    }
+
+    public final void setOsmLayerDownloader(OsmLayerDownloader osmLayerDownloader) {
+        this.osmLayerDownloader = osmLayerDownloader;
+    }
+
+    public void addMatcher(Matcher<?> matcher) {
+        matchers.add(matcher);
+    }
     
-    protected abstract LayerDownloader getOsmLayerDownloader();
+    public OdsModule getModule() {
+        return module;
+    }
 
-    protected abstract LayerDownloader getOpenDataLayerDownloader();
-
+    public void initialize() throws OdsException {
+        if (osmLayerDownloader != null) {
+            osmLayerDownloader.initialize();
+        }
+        if (openDataLayerDownloader != null) {
+            openDataLayerDownloader.initialize();
+        }
+        for (Matcher<?> matcher : matchers) {
+            matcher.initialize();
+        }
+    }
+    
     public void run(ProgressMonitor pm, DownloadRequest request) throws ExecutionException, InterruptedException {
         status.clear();
         pm.indeterminateSubTask(I18n.tr("Setup"));
@@ -86,10 +122,10 @@ public abstract class MainDownloader {
         status.clear();
         enabledDownloaders = new LinkedList<LayerDownloader>();
         if (request.isGetOsm()) {
-            enabledDownloaders.add(getOsmLayerDownloader());
+            enabledDownloaders.add(osmLayerDownloader);
         }
         if (request.isGetOds()) {
-            enabledDownloaders.add(getOpenDataLayerDownloader());
+            enabledDownloaders.add(openDataLayerDownloader);
         }
         for (LayerDownloader downloader : enabledDownloaders) {
             downloader.setup(request);
@@ -199,6 +235,11 @@ public abstract class MainDownloader {
             Status status = downloader.getStatus();
             if (!status.isSucces()) {
                 this.status = status;
+            }
+        }
+        if (status.isSucces()) {
+            for (Matcher<?> matcher : matchers) {
+                matcher.run();
             }
         }
     }

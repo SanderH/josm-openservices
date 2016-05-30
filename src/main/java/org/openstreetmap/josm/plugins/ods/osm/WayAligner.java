@@ -4,6 +4,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 /**
  * The WayAligner aligns two ways according to a given tolerance.
@@ -17,47 +18,47 @@ import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
  *
  */
 public class WayAligner {
-    private Way way1;
-    private Way way2;
+    private ManagedRing<?> ring1;
+    private ManagedRing<?> ring2;
     private NodeDWithin dWithin;
     private boolean undoable;
     private NodeIterator it1;
     private NodeIterator it2;
     private SegmentMatcher matcher;
 
-    public WayAligner(Way way1, Way way2,
+    public WayAligner(ManagedRing<?> ring1, ManagedRing<?> ring2,
             NodeDWithin dWithin, boolean undoable) {
-        this.way1 = way1;
-        this.way2 = way2;
+        this.ring1 = ring1;
+        this.ring2 = ring2;
         this.dWithin = dWithin;
         this.undoable = undoable;
         this.matcher = new SegmentMatcher(dWithin);
     }
     
     public void run() {
-        it1 = new NodeIterator(way1, 0, false);
-        it2 = new NodeIterator(way2, 0, false);
-        while (it1.hasNextNode()) {
-            it2.reset();
-            boolean match = false;
-            while (! match && it2.hasNextNode()) {
-                match = matcher.match(it1, it2);
-                if (!match) it2.next();
-            }
-            if (match) {
-                if (matcher.isreversed()) {
-                    it2.next();
-                    it2.setReversed(true);
-                }
-                alignEdge(matcher.getStartMatch(), matcher.getEndMatch());
-            }
-            it1.next();
-        }
-        it1.close(undoable);
-        it2.close(undoable);
-        if (Main.map != null) {
-            Main.map.mapView.repaint();
-        }
+//        it1 = new NodeIterator(way1, 0, false);
+//        it2 = new NodeIterator(way2, 0, false);
+//        while (it1.hasNextNode()) {
+//            it2.reset();
+//            boolean match = false;
+//            while (! match && it2.hasNextNode()) {
+//                match = matcher.match(it1, it2);
+//                if (!match) it2.next();
+//            }
+//            if (match) {
+//                if (matcher.isreversed()) {
+//                    it2.next();
+//                    it2.setReversed(true);
+//                }
+//                alignEdge(matcher.getStartMatch(), matcher.getEndMatch());
+//            }
+//            it1.next();
+//        }
+//        it1.close(undoable);
+//        it2.close(undoable);
+//        if (Main.map != null) {
+//            Main.map.mapView.repaint();
+//        }
     }
 
     private void alignEdge(MatchType matchStart, MatchType matchEnd) {

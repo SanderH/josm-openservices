@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
@@ -60,6 +61,15 @@ public class GeoUtil {
     
     public static Coordinate toCoordinate(LatLon latLon) {
         return new Coordinate(latLon.getX(), latLon.getY());
+    }
+    
+    public static Envelope toEnvelope(LatLon ll) {
+        return new Envelope(ll.lon(), ll.lon(), ll.lat(), ll.lat());
+    }
+    
+    public static Envelope toEnvelope(BBox bbox) {
+        return new Envelope(bbox.getTopLeftLon(), bbox.getBottomRightLon(),
+                bbox.getBottomRightLat(), bbox.getTopLeftLat());
     }
     
     public Point toPoint(Node node) {

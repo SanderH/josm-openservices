@@ -1,28 +1,31 @@
 package org.openstreetmap.josm.plugins.ods.matching.osm;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.osm.NodeDWithin;
-import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
-import org.openstreetmap.josm.plugins.ods.primitives.OdsWay;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 public class OdsNodeIterator {
-    private OdsWay way;
-    private List<OdsNode> nodes;
+    private ManagedRing<?> ring;
+    private List<ManagedNode> nodes;
     private int index;
 //    private boolean closed;
     private boolean reversed;
 //    private boolean modified = false;
 //    private List<Command> movedNodes = new LinkedList<>();
     
-    public OdsNodeIterator(OdsWay way, int startIndex) {
+    public OdsNodeIterator(ManagedRing<?> ring, int startIndex) {
 //        this.way = way;
         this.index = startIndex;
-        this.reversed = !way.isClockWise();
-        this.nodes = new ArrayList<OdsNode>(way.getNodesCount());
-        this.nodes.addAll(way.getNodes());
-//        this.closed = way.isClosed();
+        this.reversed = !ring.isClockWise();
+        this.nodes = new ArrayList<ManagedNode>(ring.getNodesCount());
+        Iterator<? extends ManagedNode> it = ring.getNodeIterator();
+        while (it.hasNext() ) {
+            nodes.add(it.next());
+        }
     }
 
     public void reset() {
@@ -33,7 +36,7 @@ public class OdsNodeIterator {
      * @return true if the iterator runs in clockwise direction
      */
     public boolean isClockWise() throws UnsupportedOperationException {
-        return (way.isClockWise() != reversed);
+        return (ring.isClockWise() != reversed);
     }
     
     /**
@@ -78,7 +81,7 @@ public class OdsNodeIterator {
         return index > n - 1;
     }
     
-    public OdsNode next() {
+    public ManagedNode next() {
         if(hasNextNode()) {
             index = (reversed ? index - 1 : index + 1);
             return nodes.get(index);
@@ -86,7 +89,7 @@ public class OdsNodeIterator {
         return null;
     }
     
-    public OdsNode previous() {
+    public ManagedNode previous() {
         if(hasPreviousNode()) {
             index = (reversed ? index + 1 : index - 1);
             return nodes.get(index);
@@ -94,18 +97,18 @@ public class OdsNodeIterator {
         return null;
     }
     
-    public OdsNode peek() {
+    public ManagedNode peek() {
         return nodes.get(index);
     }
     
-    public OdsNode peekNext() {
+    public ManagedNode peekNext() {
         if (hasNextNode()) {
             return (reversed ? nodes.get(index - 1) : nodes.get(index + 1));
         }
         return null;
     }
     
-    public OdsNode peekPrevious() {
+    public ManagedNode peekPrevious() {
         if (hasPreviousNode()) {
             return (reversed ? nodes.get(index + 1) : nodes.get(index - 1));
         }
@@ -180,15 +183,15 @@ public class OdsNodeIterator {
         return null;
     }
 
-    protected OdsNode getNode(int index) {
+    protected ManagedNode getNode(int index) {
         return nodes.get(index);
     }
 
-    public boolean dWithin(NodeDWithin dWithin, OdsNode n) {
+    public boolean dWithin(NodeDWithin dWithin, ManagedNode n) {
         return dWithin.check(peek(), n);
     }
 
-    public boolean dSegmentWithin(NodeDWithin dWithin, OdsNode n) {
+    public boolean dSegmentWithin(NodeDWithin dWithin, ManagedNode n) {
         return dWithin.check(n, peek(), peekNext());
     }
 

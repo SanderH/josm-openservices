@@ -6,11 +6,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.geotools.data.DataStore;
+import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.exceptions.UnavailableHostException;
 import org.openstreetmap.josm.plugins.ods.io.AbstractHost;
-
-import exceptions.OdsException;
-import exceptions.UnavailableHostException;
 
 /**
  * Class to represent a Geotools host.
@@ -62,6 +65,12 @@ public abstract class GtHost extends AbstractHost {
     @Override
     public OdsFeatureSource getOdsFeatureSource(String feature) {
         return new GtFeatureSource(this, feature, null);
+    }
+
+    @Override
+    public <T extends Entity> FeatureDownloader createDownloader(
+            OdsModule module, OdsDataSource dataSource, Class<T> clazz) throws OdsException {
+        return new GtDownloader<>(module, dataSource, clazz);
     }
 
     public abstract DataStore getDataStore(Integer timeout) throws OdsException;

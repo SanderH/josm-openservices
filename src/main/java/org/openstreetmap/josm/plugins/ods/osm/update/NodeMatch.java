@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.osm.update;
 
-import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 /**
  * Keep track of a match between a Node in the Open data layer and an other node in the Osm Layer.
@@ -9,12 +9,12 @@ import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
  *
  */
 public class NodeMatch {
-    private final OdsNode odNode;
-    private final OdsNode osmNode;
+    private final ManagedNode odNode;
+    private final ManagedNode osmNode;
 //    private final Envelope envelope;
     private final boolean hasTags;
     
-    public NodeMatch(OdsNode odNode, OdsNode osmNode) {
+    public NodeMatch(ManagedNode odNode, ManagedNode osmNode) {
         super();
         this.odNode = odNode;
         this.osmNode = osmNode;
@@ -22,11 +22,11 @@ public class NodeMatch {
         this.hasTags = osmNode.getPrimitive().getInterestingTags().size() > 0;
     }
 
-    public OdsNode getOdNode() {
+    public ManagedNode getOdNode() {
         return odNode;
     }
 
-    public OdsNode getOsmNode() {
+    public ManagedNode getOsmNode() {
         return osmNode;
     }
     

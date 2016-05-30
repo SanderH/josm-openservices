@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 
 public interface Match<E extends Entity> {
     final static AtomicLong idCounter = new AtomicLong(0);
@@ -20,7 +19,7 @@ public interface Match<E extends Entity> {
     
     boolean isSingleSided();
     
-    public EntityType<E> getEntityType();
+    public Class<E> getBaseType();
     
     public E getOsmEntity();
     

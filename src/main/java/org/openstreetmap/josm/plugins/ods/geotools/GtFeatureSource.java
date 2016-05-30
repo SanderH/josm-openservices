@@ -9,9 +9,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-
-import exceptions.OdsException;
 
 public class GtFeatureSource implements OdsFeatureSource {
     private boolean initialized = false;

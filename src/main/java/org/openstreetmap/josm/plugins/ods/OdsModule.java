@@ -16,17 +16,15 @@ import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-
-import exceptions.OdsException;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers 
@@ -42,7 +40,6 @@ public abstract class OdsModule implements LayerChangeListener {
     private OdsModulePlugin plugin;
     
     private final List<OdsAction> actions = new LinkedList<>();
-    private final List<EntityType<?>> entityTypes = new LinkedList<>();
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
@@ -66,6 +63,7 @@ public abstract class OdsModule implements LayerChangeListener {
             OdsModuleConfiguration configuration = getConfiguration();
             initializeHosts(configuration);
             initializeFeatureSources(configuration);
+            initializeDataSources(configuration);
             this.osmLayerManager = createOsmLayerManager();
             this.openDataLayerManager = createOpenDataLayerManager();
             MapView.addLayerChangeListener(this);
@@ -125,14 +123,6 @@ public abstract class OdsModule implements LayerChangeListener {
         if (sb.length() > 0) {
             throw new OdsException(sb.toString());
         }
-    }
-
-    protected void addEntityType(EntityType<?> entityType) {
-        entityTypes.add(entityType);
-    }
-    
-    public List<EntityType<?>> getEntityTypes() {
-        return entityTypes;
     }
 
     protected void addOsmEntityBuilder(OsmEntityBuilder<?> entityBuilder) {

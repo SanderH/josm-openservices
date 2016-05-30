@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm-tested.jar" sourcepath="/home/gertjan/projects/josm/src"/>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/matching/OdsImporter.java|org/openstreetmap/josm/plugins/ods/Context.java|org/openstreetmap/josm/plugins/ods/entities/MergeTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/CreatePrimitivesTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/AlignBuildingsTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingSimplifier.java|org/openstreetmap/josm/plugins/ods/tasks/Task.java|org/openstreetmap/josm/plugins/ods/geotools/LimitableSimpleFeatureIterator.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/entities/EntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/AddressNodeEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/BuildingEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/HousingUnitEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/CityEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/MutableAddressNode.java|org/openstreetmap/josm/plugins/ods/entities/actual/MutableAddress.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

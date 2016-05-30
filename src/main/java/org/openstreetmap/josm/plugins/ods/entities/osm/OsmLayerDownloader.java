@@ -10,6 +10,7 @@ import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
@@ -17,8 +18,6 @@ import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
-
-import exceptions.OdsException;
 
 public class OsmLayerDownloader implements LayerDownloader {
     private DownloadRequest request;
@@ -127,8 +126,8 @@ public class OsmLayerDownloader implements LayerDownloader {
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "OSM");
         layerManager.getOsmDataLayer().data.dataSources.add(ds);
-
     }
+    
     private DataSet parseDataSet() throws OsmTransferException {
         return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
     }

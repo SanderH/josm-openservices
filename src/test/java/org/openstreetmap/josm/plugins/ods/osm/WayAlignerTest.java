@@ -11,8 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.io.IllegalDataException;
-import org.openstreetmap.josm.plugins.ods.test.util.JOSMFixture;
-import org.openstreetmap.josm.plugins.ods.test.util.TestData;
+import org.openstreetmap.josm.plugins.ods.test.JOSMFixture;
+import org.openstreetmap.josm.plugins.ods.test.TestData;
 
 public class WayAlignerTest {
     private TestData testData;

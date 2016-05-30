@@ -1,0 +1,74 @@
+package org.openstreetmap.josm.plugins.ods.primitives;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.data.osm.RelationMember;
+
+import com.vividsolutions.jts.geom.Envelope;
+
+/**
+ * TODO the relation between this class an managedRelationImpl is crappy.
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
+public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements ManagedOgcMultiPolygon {
+    private Collection<ManagedPolygon> managedPolygons;
+    private Envelope envelope;
+    
+    public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon> managedPolygons,
+            Map<String, String> keys) {
+        super(createRelationMembers(managedPolygons), keys);
+        this.managedPolygons = managedPolygons;
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        if (envelope == null) {
+            envelope = new Envelope();
+            for (ManagedPolygon pg : managedPolygons) {
+                envelope = envelope.intersection(pg.getEnvelope());
+            }
+        }
+        return envelope;
+    }
+
+    @Override
+    public Collection<ManagedPolygon> getPolygons() {
+        return managedPolygons;
+    }
+
+    @Override
+    public Relation create(DataSet dataSet) {
+        Relation relation = getPrimitive();
+        if (relation == null) {
+            List<RelationMember> members = new LinkedList<>();
+            for (ManagedPolygon mPolygon : managedPolygons) {
+                ManagedRing<?> outer  = mPolygon.getExteriorRing();
+                members.add(new RelationMember("outer", outer.create(dataSet)));
+                for (ManagedRing<?> inner : mPolygon.getInteriorRings()) {
+                    members.add(new RelationMember("inner", inner.create(dataSet)));
+                }
+            }
+            relation = new Relation();
+            relation.setKeys(getKeys());
+            relation.setMembers(members);
+            setPrimitive(relation);
+            dataSet.addPrimitive(relation);
+        }
+        return relation;
+    }
+    
+    private static List<ManagedRelationMember> createRelationMembers(Collection<ManagedPolygon> managedPolygons) {
+        List<ManagedRelationMember> members = new ArrayList<>(managedPolygons.size());
+        for (ManagedPolygon polygon : managedPolygons) {
+            members.add(new ManagedRelationMemberImpl("", polygon));
+        }
+        return members;
+    }
+}

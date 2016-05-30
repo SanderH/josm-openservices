@@ -23,6 +23,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * The importer imports objects from the OpenData layer to the Osm layer.
@@ -44,43 +45,46 @@ public class OdsImporter {
         super();
         this.module = module;
         this.buildingAligner=new BuildingAligner(module, 
-                module.getOsmLayerManager().getEntityStore(Building.class));
+                module.getOsmLayerManager());
     }
 
     public void doImport(Collection<OsmPrimitive> primitives) {
         LayerManager layerManager = module.getOpenDataLayerManager();
         Set<Entity> entitiesToImport = new HashSet<>();
         for (OsmPrimitive primitive : primitives) {
-            Entity entity = layerManager.getEntity(primitive);
-            if (entity != null && entity.getMatch() == null 
-                  && importFilter.test(entity)) {
-                entitiesToImport.add(entity);
-            }
-            for (OsmPrimitive referrer : primitive.getReferrers()) {
-                if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
-                    Entity referrerEntity = layerManager.getEntity(referrer);
-                    if (referrerEntity != null && referrerEntity.getMatch() == null 
-                          && importFilter.test(referrerEntity)) {
-                        entitiesToImport.add(referrerEntity);
-                    }
+            ManagedPrimitive<?> managedPrimitive = layerManager.getManagedPrimitive(primitive);
+            if (managedPrimitive != null) {
+                Entity entity = managedPrimitive.getEntity();
+                if (entity != null && entity.getMatch() == null 
+                        && importFilter.test(entity)) {
+                    entitiesToImport.add(entity);
                 }
             }
+//            for (OsmPrimitive referrer : primitive.getReferrers()) {
+//                if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
+//                    Entity referrerEntity = layerManager.getEntity(referrer);
+//                    if (referrerEntity != null && referrerEntity.getMatch() == null 
+//                          && importFilter.test(referrerEntity)) {
+//                        entitiesToImport.add(referrerEntity);
+//                    }
+//                }
+//            }
         }
         importEntities(entitiesToImport);
     }
     
     private void importEntities(Set<Entity> entitiesToImport) {
-        Set<OsmPrimitive> primitivesToImport = new HashSet<>();
+        Set<ManagedPrimitive<?>> primitivesToImport = new HashSet<>();
         PrimitiveDataBuilder builder = new PrimitiveDataBuilder();
         for (Entity entity : entitiesToImport) {
-            OsmPrimitive primitive = entity.getPrimitive();
-            if (primitive.getType().equals(OsmPrimitiveType.RELATION)) {
-                Relation relation = (Relation) primitive;
-                for (OsmPrimitive member : relation.getMemberPrimitives()) {
-                    primitivesToImport.add(member);
-                    builder.addPrimitive(member);
-                }
-            }
+            ManagedPrimitive<?> primitive = entity.getPrimitive();
+//            if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
+//                Relation relation = (Relation) primitive;
+//                for (OsmPrimitive member : relation.getMemberPrimitives()) {
+//                    primitivesToImport.add(member);
+//                    builder.addPrimitive(member);
+//                }
+//            }
             if (primitive != null) {
                 primitivesToImport.add(primitive);
                 builder.addPrimitive(primitive);
@@ -93,9 +97,9 @@ public class OdsImporter {
         removeOdsTags(importedPrimitives);
         buildImportedEntities(importedPrimitives);
         OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
-        for (OsmPrimitive osm : importedPrimitives) {
-            neighbourFinder.findNeighbours(osm);
-        }
+//        for (OsmPrimitive osm : importedPrimitives) {
+//            neighbourFinder.findNeighbours(osm);
+//        }
         updateMatching();
     }
     
@@ -137,6 +141,21 @@ public class OdsImporter {
     
     private class PrimitiveDataBuilder {
         private List<PrimitiveData> primitiveData = new LinkedList<>();
+        
+        public void addPrimitive(ManagedPrimitive<? extends OsmPrimitive> managedPrimitive) {
+            OsmPrimitive primitive = managedPrimitive.getPrimitive();
+            primitiveData.add(primitive.save());
+            if (primitive.getType() == OsmPrimitiveType.WAY) {
+                for (Node node :((Way)primitive).getNodes()) {
+                    addPrimitive(node);
+                }
+            }
+            else if (primitive.getType() == OsmPrimitiveType.RELATION) {
+                for (OsmPrimitive osm : ((Relation)primitive).getMemberPrimitives()) {
+                    addPrimitive(osm);
+                }
+            }
+        }
         
         public void addPrimitive(OsmPrimitive primitive) {
             primitiveData.add(primitive.save());

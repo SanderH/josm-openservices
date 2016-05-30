@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 /**
  * NodeDWithin implementation that uses LatLon coordinates to calculate the
@@ -54,7 +54,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
 
     
     @Override
-    public boolean check(OdsNode node1, OdsNode node2) {
+    public boolean check(ManagedNode node1, ManagedNode node2) {
         return check(node1.getPrimitive(), node2.getPrimitive());
     }
 
@@ -80,7 +80,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
 
     
     @Override
-    public boolean check(OdsNode n, OdsNode node1, OdsNode node2) {
+    public boolean check(ManagedNode n, ManagedNode node1, ManagedNode node2) {
         return check(n.getPrimitive(), node1.getPrimitive(), node2.getPrimitive());
     }
 

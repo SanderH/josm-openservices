@@ -7,7 +7,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmAddressNodeStore;
 
 /**
  * <p>Try to find a matching address nodes for every Building. 
@@ -40,18 +39,19 @@ public class OsmBuildingToAddressNodesMatcher {
      * @param building
      */
     public void match(Building building) {
-        OsmAddressNodeStore addressNodeStore = (OsmAddressNodeStore)module
-                .getOsmLayerManager().getEntityStore(AddressNode.class);
-        GeoIndex<AddressNode> geoIndex = addressNodeStore.getGeoIndex();
-        if (building.getAddressNodes().size() == 0) {
-            List<AddressNode> addressNodes = geoIndex.intersection(building.getGeometry());
-            if (addressNodes.size() > 0) {
-                for (AddressNode node : addressNodes) {
-                    building.getAddressNodes().add(node);
-                    node.setBuilding(building);
-                }
-            }
-        }
+        // TODO Reimplement this functionality
+//        OsmAddressNodeStore addressNodeStore = (OsmAddressNodeStore)module
+//                .getOsmLayerManager().getEntityStore(AddressNode.class);
+//        GeoIndex<AddressNode> geoIndex = addressNodeStore.getGeoIndex();
+//        if (building.getAddressNodes().size() == 0) {
+//            List<AddressNode> addressNodes = geoIndex.intersection(building.getGeometry());
+//            if (addressNodes.size() > 0) {
+//                for (AddressNode node : addressNodes) {
+//                    building.getAddressNodes().add(node);
+//                    node.setBuilding(building);
+//                }
+//            }
+//        }
     }
     
 //    /**

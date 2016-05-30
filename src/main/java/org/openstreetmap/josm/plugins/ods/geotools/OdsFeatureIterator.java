@@ -37,6 +37,7 @@ public class OdsFeatureIterator implements SimpleFeatureIterator {
 
     @Override
     public SimpleFeature next() throws NoSuchElementException, DataCutOffException {
+        // TODO: Handle NoSuchElementException(FileNotFoundException)
         SimpleFeature next = wrapped.next();
         featureCount++;
         if (limit != -1 && featureCount >= limit) {

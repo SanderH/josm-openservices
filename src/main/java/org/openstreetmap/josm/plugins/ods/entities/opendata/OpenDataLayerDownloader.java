@@ -17,6 +17,7 @@ import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.osm.LayerUpdater;
 
 // TODO decide upon and document Class lifecycle
 public abstract class OpenDataLayerDownloader implements LayerDownloader {
@@ -33,6 +34,10 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
     public OpenDataLayerDownloader(OdsModule module) {
         this.module = module;
         this.downloaders = new LinkedList<>();
+    }
+
+    public OdsModule getModule() {
+        return module;
     }
 
     @Override
@@ -52,7 +57,10 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         }
     }
     
-    protected abstract Collection<? extends Host> getHosts();
+    protected Collection<? extends Host> getHosts() {
+        return module.getConfiguration().getHosts();
+    }
+
 
     @Override
     public Status getStatus() {
@@ -136,6 +144,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         }
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
+        module.getOpenDataLayerManager().extendBoundary(request.getBoundary().getMultiPolygon());
         OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
         osmDataLayer.data.dataSources.add(ds);
     }
@@ -151,5 +160,10 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
             downloader.cancel();
         }
         executor.shutdownNow();
+    }
+    
+    protected void updateLayer() {
+        LayerUpdater updater = new LayerUpdater(this.module);
+        updater.run();
     }
 }

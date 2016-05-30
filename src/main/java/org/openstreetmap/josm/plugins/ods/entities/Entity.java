@@ -1,10 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
+import java.time.LocalDate;
 import java.util.Map;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -23,9 +24,10 @@ public interface Entity {
     public DownloadResponse getDownloadResponse();
     public void setSource(String source);
     public String getSource();
-    public void setSourceDate(String sourceDate);
-    public String getSourceDate();
-    boolean isIncomplete();
+    public void setSourceDate(LocalDate date);
+    public LocalDate getSourceDate();
+    public void setIncomplete(boolean incomplete);
+    public boolean isIncomplete();
     public void setStatus(EntityStatus status);
     public EntityStatus getStatus();
     public void setPrimaryId(Object id);
@@ -35,23 +37,22 @@ public interface Entity {
     public Long getPrimitiveId();
     public Geometry getGeometry();
     public void setGeometry(Geometry geometry);
-    public EntityType<?> getEntityType();
+    public Class<? extends Entity> getBaseType();
     
     public Match<? extends Entity> getMatch();
     
     public <E extends Entity> void setMatch(Match<E> match);
     /**
-    * Get the OSM primitive(s) from which this entity was constructed,
+    * Get the OSM primitive from which this entity was constructed,
     * or that was/were constructed from this entity.
-    * In most cases the list contains 1 item.
     *
     */
-    public OsmPrimitive getPrimitive();
+    public ManagedPrimitive<?> getPrimitive();
     
     /**
      * Get the tags that are not associated with any of the entity's properties.
      */
     public Map<String, String> getOtherTags();
     
-    public void setPrimitive(OsmPrimitive primitive);
+    public void setPrimitive(ManagedPrimitive<?> primitive);
 }

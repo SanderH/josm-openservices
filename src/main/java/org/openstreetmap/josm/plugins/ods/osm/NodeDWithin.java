@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.plugins.ods.primitives.OdsNode;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 /**
  * Node distance within.
@@ -38,7 +38,7 @@ public interface NodeDWithin {
      */
     public boolean check(Node n, Node node1, Node node2);
 
-    public boolean check(OdsNode node, OdsNode node2);
+    public boolean check(ManagedNode node, ManagedNode node2);
 
-    public boolean check(OdsNode n, OdsNode node1, OdsNode node2);
+    public boolean check(ManagedNode n, ManagedNode node1, ManagedNode node2);
 }

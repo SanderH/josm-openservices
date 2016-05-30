@@ -13,7 +13,7 @@ import org.opengis.feature.simple.SimpleFeature;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class _LimitableSimpleFeatureIterator implements SimpleFeatureIterator {
+public class LimitableSimpleFeatureIterator implements SimpleFeatureIterator {
     private SimpleFeatureIterator wrapped;
     private long maxFeatures = -1;
     private long retreivedFeatures = 0;

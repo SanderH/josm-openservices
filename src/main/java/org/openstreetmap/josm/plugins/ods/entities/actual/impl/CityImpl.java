@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -47,7 +46,7 @@ public class CityImpl extends AbstractEntity implements City {
     }
 
     @Override
-    public EntityType<City> getEntityType() {
-        return CityEntityType.getInstance();
+    public Class<City> getBaseType() {
+        return City.class;
     }
 }

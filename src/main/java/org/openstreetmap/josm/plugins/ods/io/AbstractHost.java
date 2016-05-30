@@ -8,11 +8,10 @@ import java.util.List;
 import org.openstreetmap.josm.plugins.ods.OdsConfigurationException;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
-
-import exceptions.OdsException;
 
 public abstract class AbstractHost implements Host {
     private boolean initialized = false;
@@ -24,6 +23,10 @@ public abstract class AbstractHost implements Host {
     private Integer maxFeatures;
     private MetaData metaData;
     private final List<MetaDataLoader> metaDataLoaders = new LinkedList<MetaDataLoader>();
+
+    public AbstractHost(String name, String url) {
+        this(name, url, -1);
+    }
 
     public AbstractHost(String name, String url, Integer maxFeatures) {
         super();

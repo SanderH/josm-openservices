@@ -1,25 +1,30 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import org.geotools.data.Query;
+import org.openstreetmap.josm.plugins.ods.entities.EntityMapperFactory;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-
-import exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
 
 /**
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class DefaultOdsDataSource implements OdsDataSource {
-    protected OdsFeatureSource odsFeatureSource;
+    private final OdsFeatureSource odsFeatureSource;
+    private final EntityMapperFactory entityMapperFactory;
+    private SimpleEntityMapper<?, ?> entityMapper;
+    private boolean required = false;
     private Query query;
     private IdFactory idFactory;
     private boolean initialized;
-    private boolean required;
 
-    public DefaultOdsDataSource(OdsFeatureSource odsFeatureSource, Query query) {
+    public <T extends OdsFeatureSource> DefaultOdsDataSource(T odsFeatureSource, Query query, 
+            EntityMapperFactory entityMapperFactory) {
         super();
         this.odsFeatureSource = odsFeatureSource;
         this.query = query;
+        this.entityMapperFactory = entityMapperFactory;
     }
 
     @Override
@@ -28,21 +33,25 @@ public class DefaultOdsDataSource implements OdsDataSource {
     }
     
     @Override
-    public void initialize() throws OdsException {
-        if (!initialized) {
-            odsFeatureSource.initialize();
-            initialized = true;
-        }
+    public final SimpleEntityMapper<?, ?> getEntityMapper() {
+        return entityMapper;
     }
 
-    @Override
+    public boolean isRequired() {
+        return required;
+    }
+
     public void setRequired(boolean required) {
         this.required = required;
     }
 
     @Override
-    public boolean isRequired() {
-        return required;
+    public void initialize() throws OdsException {
+        if (!initialized) {
+            odsFeatureSource.initialize();
+            entityMapper = entityMapperFactory.create(odsFeatureSource);
+            initialized = true;
+        }
     }
 
     @Override

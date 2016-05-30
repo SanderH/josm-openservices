@@ -1,13 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
-import java.util.Objects;
-
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
-import org.openstreetmap.josm.plugins.ods.entities.actual.MutableAddress;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Street;
 
-public class AddressImpl implements MutableAddress {
+public class AddressImpl implements Address {
     private Integer houseNumber;
     private Character houseLetter;
     private String houseNumberExtra;
@@ -128,21 +125,6 @@ public class AddressImpl implements MutableAddress {
             sb.append("-").append(getHouseNumberExtra());
         }
         return sb.toString();
-    }
-
-    @Override
-    public int compareTo(Address a) {
-        int result = Objects.compare(getCityName(), a.getCityName(), String.CASE_INSENSITIVE_ORDER);
-        if (result == 0) {
-            result = Objects.compare(getPostcode(), a.getPostcode(), String.CASE_INSENSITIVE_ORDER);
-        };
-        if (result == 0) {
-            result = Objects.compare(getStreetName(), a.getStreetName(), String.CASE_INSENSITIVE_ORDER);
-        };
-        if (result == 0) {
-            result = Objects.compare(getHouseName(), a.getFullHouseNumber(), String.CASE_INSENSITIVE_ORDER);
-        };
-        return result;
     }
 
     protected void parseHouseNumberParts() {

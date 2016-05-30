@@ -1,13 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmBuildingStore;
 
 /**
  * <p>Try to find a matching building for every AddressNode passed to the AddressNode
@@ -41,19 +37,20 @@ public class OsmAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     public void match(AddressNode addressNode) {
-        OsmBuildingStore buildingStore = (OsmBuildingStore)module
-                .getOsmLayerManager().getEntityStore(Building.class);
-        GeoIndex<Building> geoIndex = buildingStore.getGeoIndex();
-        if (addressNode.getBuilding() == null) {
-            List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
-            if (buildings.size() != 1) {
-                reportUnmatched(addressNode);
-                return;
-            }
-            Building building = buildings.get(0);
-            addressNode.setBuilding(building);
-            building.getAddressNodes().add(addressNode);
-        }
+        // TODO reimplement this functionality
+//        OsmBuildingStore buildingStore = (OsmBuildingStore)module
+//                .getOsmLayerManager().getEntityStore(Building.class);
+//        GeoIndex<Building> geoIndex = buildingStore.getGeoIndex();
+//        if (addressNode.getBuilding() == null) {
+//            List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
+//            if (buildings.size() != 1) {
+//                reportUnmatched(addressNode);
+//                return;
+//            }
+//            Building building = buildings.get(0);
+//            addressNode.setBuilding(building);
+//            building.getAddressNodes().add(addressNode);
+//        }
     }
     
 //    /**

@@ -1,31 +1,30 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
-import org.openstreetmap.josm.data.osm.Relation;
-import org.openstreetmap.josm.data.osm.RelationMember;
-import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.GeoEntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedJosmMultiPolygon;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 public class BuildingAligner {
     private NodeDWithin dWithin;
     private boolean undoable;
-    private EntityStore<Building> buildingStore;
+    private GeoEntityRepository repository;
     
-    public BuildingAligner(OdsModule module, EntityStore<Building> buildingStore) {
-        this.buildingStore = buildingStore;
+    public BuildingAligner(OdsModule module, LayerManager layerManager) {
+        this.repository = layerManager.getRepository();
 //        this.tolerance = module.getTolerance();
 //        this.tolerance = 0.1; // Tolerance in meters
         this.dWithin = new NodeDWithinLatLon(0.1);
     }
 
     public void align(Building building) {
-        for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
+        GeoIndex<Building> index = repository.getGeoIndex(Building.class, "geometry");
+        for (Building candidate : index.intersection(building.getGeometry())) {
             if (candidate == building) {
                 continue;
             }
@@ -40,35 +39,27 @@ public class BuildingAligner {
         align(b1.getPrimitive(), b2.getPrimitive());
     }
     
-    public void align(OsmPrimitive osm1, OsmPrimitive osm2) {
+    public void align(ManagedPrimitive<?> osm1, ManagedPrimitive<?> osm2) {
         if (osm1 == null || osm2 == null) return;
-        Way outerWay1 = getOuterWay(osm1);
-        Way outerWay2 = getOuterWay(osm2);
-        if (outerWay1 != null && outerWay2 != null) {
-            WayAligner wayAligner = new WayAligner(outerWay1, outerWay2, dWithin, undoable);
-            wayAligner.run();            
+        ManagedRing<?> ring1 = getOuterWay(osm1);
+        ManagedRing<?> ring2 = getOuterWay(osm2);
+        if (ring1 != null && ring2 != null) {
+            WayAligner wayAligner = new WayAligner(ring1, ring2, dWithin, undoable);
+            wayAligner.run();
         }
     }
     
-    private Way getOuterWay(OsmPrimitive osm) {
-        if (osm.getType() == OsmPrimitiveType.WAY) {
-            Way way = (Way)osm;
-            if (way.isClosed()) return way;
-            return null;
+    private ManagedRing<?> getOuterWay(ManagedPrimitive<?> primitive) {
+        if (primitive instanceof ManagedRing) {
+            return (ManagedRing<?>) primitive;
         }
-        if (osm.getType() == OsmPrimitiveType.RELATION) {
-            List<Way> outerWays = new LinkedList<>();
-            for (RelationMember member : ((Relation)osm).getMembers()) {
-                if ("outer".equals(member.getRole()) && member.getDisplayType() == OsmPrimitiveType.CLOSEDWAY) {
-                    outerWays.add(member.getWay());
-                }
+        if (primitive instanceof ManagedJosmMultiPolygon) {
+            ManagedJosmMultiPolygon mpg = (ManagedJosmMultiPolygon) primitive;
+            if (mpg.outerRings().size() == 1) {
+                return mpg.outerRings().iterator().next();
             }
-            if (outerWays.size() == 1) {
-                Way outerWay = outerWays.get(0);
-                if (outerWay.isClosed()) {
-                    return outerWay;
-                }
-            }
+            Main.warn("Aligning of multipolygon is not supported yet");
+            return null;
         }
         return null;
     }

@@ -1,9 +1,9 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import org.geotools.data.Query;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-
-import exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
 
 /**
  * <p>An OdsDataSource is the interface between the OdsModule and the
@@ -37,7 +37,7 @@ public interface OdsDataSource {
 
     public MetaData getMetaData();
 
-    public void setRequired(boolean required);
+    public SimpleEntityMapper<?, ?> getEntityMapper();
 
     public boolean isRequired();
 }

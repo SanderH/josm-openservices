@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.osm;
 
 import org.openstreetmap.josm.plugins.ods.AbstractLayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 
 /**
  * The OsmLayerManager manager the layer containing the data that has been
@@ -25,5 +26,11 @@ public class OsmLayerManager extends AbstractLayerManager {
     
     public OsmEntitiesBuilder getEntitiesBuilder() {
         return entitiesBuilder;
+    }
+
+    @Override
+    public ManagedNodeSet getManagedNodes() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

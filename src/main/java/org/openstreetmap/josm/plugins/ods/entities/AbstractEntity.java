@@ -1,11 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -13,13 +14,13 @@ public abstract class AbstractEntity implements Entity {
     private Object primaryId;
     private Object referenceId;
     private DownloadResponse response;
-    private String sourceDate;
+    private LocalDate sourceDate;
     private String source;
     private Geometry geometry;
     private EntityStatus status = EntityStatus.UNKNOWN;
     private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
-    private OsmPrimitive primitive;
+    private ManagedPrimitive<?> primitive;
     private Match<? extends Entity> match;
 
     public void setPrimaryId(Object primaryId) {
@@ -47,11 +48,11 @@ public abstract class AbstractEntity implements Entity {
         return response;
     }
 
-    public void setSourceDate(String string) {
-        this.sourceDate = string;
+    public void setSourceDate(LocalDate date) {
+        this.sourceDate = date;
     }
 
-    public String getSourceDate() {
+    public LocalDate getSourceDate() {
         return sourceDate;
     }
 
@@ -77,6 +78,7 @@ public abstract class AbstractEntity implements Entity {
         return incomplete;
     }
 
+    @Override
     public void setIncomplete(boolean incomplete) {
         this.incomplete = incomplete;
     }
@@ -90,7 +92,7 @@ public abstract class AbstractEntity implements Entity {
         this.otherTags = otherTags;
     }
 
-    public void setPrimitive(OsmPrimitive primitive) {
+    public void setPrimitive(ManagedPrimitive<?> primitive) {
         this.primitive = primitive;
     }
 
@@ -110,7 +112,7 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public OsmPrimitive getPrimitive() {
+    public ManagedPrimitive<?> getPrimitive() {
         return primitive;
     }
 
@@ -122,11 +124,5 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public <E extends Entity> void setMatch(Match<E> match) {
         this.match = match;
-    }
-
-    @Override
-    public EntityType<?> getEntityType() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

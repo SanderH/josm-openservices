@@ -7,6 +7,6 @@ import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 public class GtDataSource extends DefaultOdsDataSource {
 
     public GtDataSource(OdsFeatureSource odsFeatureSource, Query query) {
-        super(odsFeatureSource, query);
+        super(odsFeatureSource, query, null);
     }
 }

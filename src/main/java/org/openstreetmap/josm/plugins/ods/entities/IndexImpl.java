@@ -2,25 +2,68 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class IndexImpl<T extends Entity> implements Index<T>  {
+public class IndexImpl<T> implements Index<T> {
     private Map<Object, List<T>> map = new HashMap<>();
-    private Class<T> clazz;
-    private Method[] getters;
-    private String[] properties; 
+    private final Class<T> clazz;
+    private final List<String> properties;
+    private final Method[] getters;
+//    private final Function<T, ?>[] getters;
     
-    public IndexImpl(Class<T> clazz, String... properties) {
+    @SafeVarargs
+    public IndexImpl(Class<T> clazz, String ... properties) {
         super();
         this.clazz = clazz;
-        this.properties = properties;
-        getters = createGetters();
+        this.properties = Arrays.asList(properties);
+        this.getters = createGetters();
     }
     
+    @Override
+    public List<String> getProperties() {
+        return properties;
+    }
+
+    private Method[] createGetters() {
+        Method[] theGetters = new Method[properties.size()];
+        for (int i=0; i<properties.size(); i++) {
+            theGetters[i] = createGetter(properties.get(i));
+        }
+        return theGetters;
+    }
+
+    private Method createGetter(String property) {
+        for (Method method : clazz.getMethods()) {
+            if (method.getParameterCount() > 0) {
+                continue;
+            }
+            Class<?> returnType = method.getReturnType();
+            if (returnType == Void.class) {
+                continue;
+            }
+            String name = method.getName();
+            if (name.startsWith("get") && name.substring(3).equalsIgnoreCase(property)) {
+                return method;
+            }
+            if (name.startsWith("is") && name.substring(2).equalsIgnoreCase(property)) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Class<T> getType() {
+        return clazz;
+    }
+
+
     @Override
     public boolean isUnique() {
         return false;
@@ -42,19 +85,6 @@ public class IndexImpl<T extends Entity> implements Index<T>  {
         }
     }
     
-    private Method[] createGetters() {
-        Method[] getters = new Method[properties.length];
-        try {
-            for (int i=0; i< properties.length; i++) {
-                getters[i] = clazz.getMethod(getGetterName(i));
-            }
-            return getters;
-        } catch (NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-    }
-    
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.Index#get(U)
      */
@@ -71,20 +101,20 @@ public class IndexImpl<T extends Entity> implements Index<T>  {
         map.remove(getKey(entity));
     }
 
-    private Object getKey(T entity) {
+    @Override
+    public Object getKey(T entity) {
         try {
-            if (properties.length == 1) {
+            if (getters.length == 1) {
                 return getters[0].invoke(entity);
             }
             else {
-                Object[] key = new Object[properties.length];
-                for (int i=0; i<properties.length; i++) {
-                    key[i] = getters[i].invoke(entity);
+                List<Object> key = new ArrayList<>(getters.length);
+                for (int i=0; i<getters.length; i++) {
+                    key.add(getters[i].invoke(entity));
                 }
                 return key;
             }
-        } catch (IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return null;
         }
@@ -93,11 +123,5 @@ public class IndexImpl<T extends Entity> implements Index<T>  {
     @Override
     public void clear() {
         map.clear();
-    }
-
-    private String getGetterName(int i) {
-        String property = properties[i];
-        return "get" + property.substring(0, 1).toUpperCase() +
-                    property.substring(1);
     }
 }

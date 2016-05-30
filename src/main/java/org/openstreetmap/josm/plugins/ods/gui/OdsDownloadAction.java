@@ -16,7 +16,6 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -94,17 +93,17 @@ public class OdsDownloadAction extends OdsAction {
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
         }
+        // Make sure the active layer is not a managed ODS layer
+        if (getModule().getLayerManager(activeLayer) != null) {
+            return null;
+        }
         // Make sure only one object was selected
         OsmDataLayer layer = (OsmDataLayer) activeLayer;
         if (layer.data.getAllSelected().size() != 1) {
             return null;
         }
-        // If the selected object is a closed way an it is not a building
-        // than we can assume is was intended to be used as a polygon for
-        // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
-        if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-            && !BuildingEntityType.IsBuilding.evaluate(primitive)) {
+        if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY) {
             return new Boundary((Way)primitive);
         }
         return null;

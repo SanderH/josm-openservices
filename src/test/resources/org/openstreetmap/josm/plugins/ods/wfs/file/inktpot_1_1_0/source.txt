@@ -1,0 +1,2 @@
+http://geodata.nationaalgeoregister.nl/bag/wfs?service=WFS&VERSION=1.1.0&REQUEST=GetFeature&typeName=verblijfsobject&bbox=136150,455300,136500,455600
+http://geodata.nationaalgeoregister.nl/bag/wfs?service=WFS&VERSION=1.1.0&REQUEST=GetFeature&typeName=pand&bbox=136150,455300,136500,455600

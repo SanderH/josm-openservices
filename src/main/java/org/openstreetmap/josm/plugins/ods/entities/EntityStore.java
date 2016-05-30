@@ -16,11 +16,41 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  *
  */
 public abstract class EntityStore<T extends Entity> implements Iterable<T> {
-    private List<Index<T>> indexes = new LinkedList<>();
+    private final Class<T> type;
+    private UniqueIndex<T> primaryIndex;
+    private final List<Index<T>> indexes = new LinkedList<>();
     private Geometry boundary;
 
+    public EntityStore(Class<T> type) {
+        super();
+        this.type = type;
+    }
+
+    public Class<T> getType() {
+        return type;
+    }
+    
     protected void addIndex(Index<T> index) {
         indexes.add(index);// TODO Auto-generated method stub
+    }
+    
+    public final UniqueIndex<T> createPrimaryIndex(String ... properties) {
+        UniqueIndex<T> index = createUniqueIndex(properties);
+        primaryIndex = index;
+        return index;
+    }
+
+    public final UniqueIndex<T> createUniqueIndex(String ... properties) {
+        UniqueIndex<T> index = new UniqueIndexImpl<>(type, properties);
+        addIndex(index);
+        return index;
+    }
+
+    @SafeVarargs
+    public final Index<T> createIndex(String ... properties) {
+        Index<T> index = new IndexImpl<>(type, properties);
+        addIndex(index);
+        return index;
     }
 
     public void add(T entity) {
@@ -46,7 +76,9 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
         }
     }
 
-    public abstract UniqueIndexImpl<T> getPrimaryIndex();
+    public UniqueIndex<T> getPrimaryIndex() {
+        return primaryIndex;
+    };
 
     public abstract Index<T> getIdIndex();
 

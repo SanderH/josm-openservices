@@ -7,7 +7,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
 
@@ -40,15 +39,18 @@ public class OsmEntitiesBuilder {
      */
     public void build(Collection<? extends OsmPrimitive> osmPrimitives) {
         List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
+        for (OsmEntityBuilder<?> builder : entityBuilders) {
+            builder.initialize();
+        }
         for (OsmPrimitive primitive : osmPrimitives) {
-            for (OsmEntityBuilder<?> builder : entityBuilders) {
-                builder.buildOsmEntity(primitive);
+            if (!primitive.isIncomplete() && primitive.isTagged()) {
+                for (OsmEntityBuilder<?> builder : entityBuilders) {
+                    builder.buildOsmEntity(primitive);
+                }
             }
         }
         OsmLayerManager layerManager = module.getOsmLayerManager();
-        EntityStore<AddressNode> addressNodeStore = layerManager.getEntityStore(AddressNode.class);
-        if (addressNodeStore != null) {
-            addressNodeStore.forEach(nodeToBuildingMatcher::match);
-        }
+        Iterable<AddressNode> iterable = layerManager.getRepository().getAll(AddressNode.class);
+        iterable.forEach(nodeToBuildingMatcher::match);
     }
 }

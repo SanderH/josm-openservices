@@ -6,23 +6,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.EntityRepository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-
-import exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class AddressNodeMatcher implements Matcher<AddressNode> {
     private OdsModule module;
     
     private Map<Object, Match<AddressNode>> addressNodeMatches = new HashMap<>();
-    private EntityStore<AddressNode> odAddressNodeStore;
-    private EntityStore<AddressNode> osmAddressNodeStore;
+//    private EntityStore<AddressNode> odAddressNodeStore;
+//    private EntityStore<AddressNode> osmAddressNodeStore;
+    private EntityRepository odRepository;
+    private EntityRepository osmRepository;
     private List<AddressNode> unidentifiedOsmAddressNodes = new LinkedList<>();
     private List<AddressNode> unmatchedOpenDataAddressNodes = new LinkedList<>();
     private List<AddressNode> unmatchedOsmAddressNodes = new LinkedList<>();
@@ -34,8 +35,10 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
     
     @Override
     public void initialize() throws OdsException {
-        odAddressNodeStore = module.getOpenDataLayerManager().getEntityStore(AddressNode.class);
-        osmAddressNodeStore = module.getOsmLayerManager().getEntityStore(AddressNode.class);
+        odRepository = module.getOpenDataLayerManager().getRepository();
+        osmRepository = module.getOsmLayerManager().getRepository();
+//        odAddressNodeStore = module.getOpenDataLayerManager().getEntityStore(AddressNode.class);
+//        osmAddressNodeStore = module.getOsmLayerManager().getEntityStore(AddressNode.class);
     }
 
     public void run() {
@@ -47,8 +50,8 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
      * Try to match address nodes for matching buildings
      */
     private void matchBuildingAddressNodes() {
-        EntityStore<Building> buildingStore = module.getOpenDataLayerManager().getEntityStore(Building.class);
-        for (Building building : buildingStore) {
+        EntityRepository repository = module.getOpenDataLayerManager().getRepository();
+        for (Building building : repository.getAll(Building.class)) {
             if (building.getMatch() != null && building.getMatch().isSimple()) {
                 matchAddresses(building.getMatch());
             }
@@ -60,10 +63,10 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
         Building osmBuilding = match.getOsmEntity();
         Map<AddressKey, AddressNode> nodes1 = new HashMap<>();
         for (AddressNode n1 : odBuilding.getAddressNodes()) {
-            nodes1.put(new AddressKey(n1), n1);
+            nodes1.put(new AddressKey(n1.getAddress()), n1);
         }
         for (AddressNode n2 : osmBuilding.getAddressNodes()) {
-            AddressKey k2 = new AddressKey(n2);
+            AddressKey k2 = new AddressKey(n2.getAddress());
             AddressNode n1 = nodes1.get(k2);
             if (n1 != null) {
                 matchAddressNodes(n2, n1);
@@ -73,9 +76,10 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
 
     private void matchAddressNodes(AddressNode an1,
             AddressNode an2) {
-        
-        if (Objects.equals(an1.getHouseNumber(), an2.getHouseNumber())
-                && Objects.equals(an1.getPostcode(), an2.getPostcode())) {
+        Address a1 = an1.getAddress();
+        Address a2 = an2.getAddress();
+        if (Objects.equals(a1.getHouseNumber(), a2.getHouseNumber())
+                && Objects.equals(a1.getPostcode(), a2.getPostcode())) {
             AddressNodeMatch match = new AddressNodeMatch(an1, an2);
             match.analyze();
             match.updateMatchTags();
@@ -85,13 +89,13 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
 
     private void matchOtherAddressNodes() {
         unmatchedOpenDataAddressNodes.clear();
-        for (AddressNode addressNode : odAddressNodeStore) {
+        for (AddressNode addressNode : odRepository.getAll(AddressNode.class)) {
             if (addressNode.getMatch() == null) {
                 unmatchedOpenDataAddressNodes.add(addressNode);
             }
         }
         unmatchedOsmAddressNodes.clear();
-        for (AddressNode addressNode : osmAddressNodeStore) {
+        for (AddressNode addressNode : osmRepository.getAll(AddressNode.class)) {
             if (addressNode.getMatch() == null) {
                 unmatchedOsmAddressNodes.add(addressNode);
             };
@@ -155,7 +159,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
             }
         }
         for (AddressNode addressNode: unmatchedOpenDataAddressNodes) {
-            OsmPrimitive osm = addressNode.getPrimitive();
+            ManagedPrimitive<?> osm = addressNode.getPrimitive();
             if (osm != null) {
                 osm.put(ODS.KEY.IDMATCH, "false");
                 osm.put(ODS.KEY.STATUS, addressNode.getStatus().toString());

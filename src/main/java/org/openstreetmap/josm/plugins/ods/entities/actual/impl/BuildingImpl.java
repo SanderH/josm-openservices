@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
+import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
-public abstract class BuildingImpl extends AbstractEntity implements Building {
+public class BuildingImpl extends AbstractEntity implements Building {
     private Address address;
+    private List<HousingUnit> housingUnits = new LinkedList<>();
     private List<AddressNode> addressNodes = new LinkedList<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
@@ -34,8 +35,8 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
     }
 
     @Override
-    public EntityType<Building> getEntityType() {
-        return BuildingEntityType.getInstance();
+    public Class<Building> getBaseType() {
+        return Building.class;
     }
 
     @Override
@@ -62,10 +63,20 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
     }
 
     @Override
+    public void addHousingUnit(HousingUnit housingUnit) {
+        housingUnits.add(housingUnit);
+        addressNodes.addAll(housingUnit.getAddressNodes());
+    }
+
+    @Override
+    public List<HousingUnit> getHousingUnits() {
+        return housingUnits;
+    }
+
     public List<AddressNode> getAddressNodes() {
         return addressNodes;
     }
-
+    
     @Override
     public Set<Building> getNeighbours() {
         return neighbours;
@@ -80,7 +91,10 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Building ").append(getReferenceId());
-        for (AddressNode a :addressNodes) {
+        if (address != null) {
+            sb.append("\n").append(address.getFullHouseNumber());
+        }
+        for (AddressNode a : getAddressNodes()) {
             sb.append("\n").append(a.toString());
         }
         return sb.toString();

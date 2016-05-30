@@ -3,9 +3,8 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.Collection;
 import java.util.List;
 
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.Host;
-
-import exceptions.OdsException;
 
 /**
  * Provide the configuration for an Ods Module.
@@ -34,5 +33,4 @@ public interface OdsModuleConfiguration {
     Collection<OdsDataSource> getDataSources();
 
     OdsDataSource getDataSource(String name) throws OdsException;
-
 }

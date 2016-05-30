@@ -3,11 +3,14 @@ package org.openstreetmap.josm.plugins.ods.io;
 import java.net.URL;
 
 import org.openstreetmap.josm.plugins.ods.OdsConfigurationException;
+import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-
-import exceptions.OdsException;
 
 /**
  * Host for 1 or more data services
@@ -62,5 +65,6 @@ public interface Host {
      */
     OdsFeatureSource getOdsFeatureSource(String feature)
             throws ServiceException;
-
+    
+    <T extends Entity> FeatureDownloader createDownloader(OdsModule module, OdsDataSource dataSource, Class<T> clazz) throws OdsException;
 }

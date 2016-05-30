@@ -1,8 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeEntityType;
 
 public class AddressNodeMatch extends MatchImpl<AddressNode> {
     Object id;
@@ -18,11 +17,6 @@ public class AddressNodeMatch extends MatchImpl<AddressNode> {
         if (an1.getReferenceId() == null) {
             an1.setReferenceId(id);
         }
-    }
-
-    @Override
-    public EntityType<AddressNode> getEntityType() {
-        return AddressNodeEntityType.getInstance();
     }
 
     public Object getId() {
@@ -50,12 +44,12 @@ public class AddressNodeMatch extends MatchImpl<AddressNode> {
 
     @Override
     public void analyze() {
-        AddressNode an1 = getOsmEntity();
-        AddressNode an2 = getOpenDataEntity();
-        houseNumberMatch = MatchStatus.match(an1.getHouseNumber(), an2.getHouseNumber());
-        fullHouseNumberMatch = MatchStatus.match(an1.getFullHouseNumber(), an2.getFullHouseNumber());
-        postcodeMatch = MatchStatus.match(an1.getPostcode(), an2.getPostcode());
-        streetMatch = MatchStatus.match(an1.getStreet(), an2.getStreet());
-        cityMatch = MatchStatus.match(an1.getCityName(), an2.getCityName());
+        Address a1 = getOsmEntity().getAddress();
+        Address a2 = getOpenDataEntity().getAddress();
+        houseNumberMatch = MatchStatus.match(a1.getHouseNumber(), a2.getHouseNumber());
+        fullHouseNumberMatch = MatchStatus.match(a1.getFullHouseNumber(), a2.getFullHouseNumber());
+        postcodeMatch = MatchStatus.match(a1.getPostcode(), a2.getPostcode());
+        streetMatch = MatchStatus.match(a1.getStreet(), a2.getStreet());
+        cityMatch = MatchStatus.match(a1.getCityName(), a2.getCityName());
     }
 }
