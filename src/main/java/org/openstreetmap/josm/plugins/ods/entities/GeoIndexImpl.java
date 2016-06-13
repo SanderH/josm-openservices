@@ -9,7 +9,7 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
-public class GeoIndexImpl<T extends Entity> implements GeoIndex<T> {
+public class GeoIndexImpl<T> implements GeoIndex<T> {
     private Quadtree quadTree = new Quadtree();
     private Class<T> clazz;
     private Method getGeometryMethod;

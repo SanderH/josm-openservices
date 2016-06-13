@@ -7,11 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.NodeData;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedNodeImpl;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedOgcMultiPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedOgcMultiPolygonImpl;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPolygon;
@@ -60,9 +58,9 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
         tags.put(ODS.KEY.BASE, "true");
         switch (geometry.getGeometryType()) {
         case "Polygon":
-            return create((Polygon)geometry, tags);
+            return buildArea((Polygon)geometry, tags);
         case "MultiPolygon":
-            return build((MultiPolygon)geometry, tags);
+            return buildArea((MultiPolygon)geometry, tags);
         case "Point":
             return build((Point)geometry, tags);
         case "MultiPoint":
@@ -169,7 +167,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      */
     @Override
     public ManagedOgcMultiPolygon buildMultiPolygon(MultiPolygon mpg, Map<String, String> tags) {
-        List<ManagedPolygon> managedPolygons = new ArrayList<>(mpg.getNumGeometries());
+        List<ManagedPolygon<?>> managedPolygons = new ArrayList<>(mpg.getNumGeometries());
         for (int i = 0; i < mpg.getNumGeometries(); i++) {
             Polygon polygon = (Polygon) mpg.getGeometryN(i);
             ManagedWay way = buildWay(polygon.getExteriorRing(), Collections.emptyMap());
@@ -180,7 +178,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
                 ManagedRing<?> interiorRing = new SimpleManagedRing(way);
                 interiorRings.add(interiorRing);
             }
-            ManagedPolygon managedPolygon = new ManagedPolygonImpl(
+            ManagedPolygon<?> managedPolygon = new ManagedPolygonImpl(
                     exteriorRing, interiorRings, null);
             managedPolygons.add(managedPolygon);
         }
@@ -226,7 +224,8 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
             Map<String, String> tags) {
         List<ManagedNode> managedNodes = new ArrayList<>(to - from + 1);
         for (int i = from; i <= to; i++) {
-            managedNodes.add(buildNode(coordinates[i], null, true));
+            ManagedNode node = buildNode(coordinates[i], null, true);
+            managedNodes.add(node);
         }
         return new ManagedWayImpl(managedNodes, tags);
     }
@@ -237,7 +236,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
     @Override
     public ManagedNode buildNode(Coordinate coordinate, Map<String, String> tags, boolean merge) {
         LatLon latLon = new LatLon(coordinate.y, coordinate.x);
-        return nodeSet.add(latLon, tags);
+        return nodeSet.add(latLon, tags, merge);
     }
 
     /* (non-Javadoc)

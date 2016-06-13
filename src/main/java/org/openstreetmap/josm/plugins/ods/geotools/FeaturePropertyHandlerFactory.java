@@ -1,8 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
@@ -27,11 +24,11 @@ public class FeaturePropertyHandlerFactory {
     
     public static class FeaturePropertyHandler<T2> implements PropertyHandler<SimpleFeature, T2> {
         private final Class<T2> clazz;
-        private int index;
-//        private Name name;
-//        private String s;
-        private BiConsumer<SimpleFeature, T2> setter;
-        private Function<SimpleFeature, T2> getter;
+        private int index = -1;
+//        private Name sName;
+        private String sName;
+//        private BiConsumer<SimpleFeature, T2> setter;
+//        private Function<SimpleFeature, T2> getter;
         
         public FeaturePropertyHandler(SimpleFeatureType featureType, Class<T2> clazz, Integer index) {
             super();
@@ -47,7 +44,8 @@ public class FeaturePropertyHandlerFactory {
         }
 
         public FeaturePropertyHandler(SimpleFeatureType featureType, Class<T2> clazz, String name) {
-            this(featureType, clazz, featureType.indexOf(name));
+            this.clazz = clazz;
+            this.sName = name;
         }
 
         @Override
@@ -57,19 +55,23 @@ public class FeaturePropertyHandlerFactory {
 
         @Override
         public void set(SimpleFeature feature, T2 value) {
-            if (setter != null) {
-                setter.accept(feature, value);
+            if (index >= 0) {
+                feature.setAttribute(index, value);
             }
-            feature.setAttribute(index, value);
+            else {
+                feature.setAttribute(sName, value);
+            }
         }
 
         @Override
         public T2 get(SimpleFeature feature) {
-            if (getter != null) {
-                return getter.apply(feature);
+            if (index >= 0) {
+                @SuppressWarnings("unchecked")
+                T2 value = (T2) feature.getAttribute(index);
+                return value;
             }
             @SuppressWarnings("unchecked")
-            T2 value = (T2) feature.getAttribute(index);
+            T2 value = (T2) feature.getAttribute(sName);
             return value;
         }
     }

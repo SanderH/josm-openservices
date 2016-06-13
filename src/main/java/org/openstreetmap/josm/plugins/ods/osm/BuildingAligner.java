@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.osm;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.GeoEntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedJosmMultiPolygon;
@@ -13,7 +13,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 public class BuildingAligner {
     private NodeDWithin dWithin;
     private boolean undoable;
-    private GeoEntityRepository repository;
+    private GeoRepository repository;
     
     public BuildingAligner(OdsModule module, LayerManager layerManager) {
         this.repository = layerManager.getRepository();

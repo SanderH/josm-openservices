@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 
@@ -48,6 +49,10 @@ public class ComplexManagedRing extends AbstractManagedPrimitive<Relation> imple
         return envelope;
     }
 
+    @Override
+    public BBox getBBox() {
+        return getPrimitive().getBBox();
+    }
 
     @Override
     public boolean isClockWise() {

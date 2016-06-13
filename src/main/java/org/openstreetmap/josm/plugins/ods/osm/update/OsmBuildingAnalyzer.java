@@ -94,7 +94,7 @@ public class OsmBuildingAnalyzer {
         boolean other = false;
         for (OsmPrimitive referrer : node.getReferrers()) {
             if (!includedPrimitives.contains(referrer)) {
-                if (BuildingEntityType.isBuilding(referrer)) {
+                if (Building.isBuilding(referrer)) {
                     isBuilding = true;
                 }
                 else {

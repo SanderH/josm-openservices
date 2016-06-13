@@ -22,7 +22,6 @@ public class OdsUpdateAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO retrieve updater and importer from module context
         OdsImporter importer = new OdsImporter(getModule());
         OdsUpdater updater = new OdsUpdater(getModule());
 

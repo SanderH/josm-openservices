@@ -26,7 +26,7 @@ public class PrimitiveBuilder {
     }
 
     private <E extends Entity> void buildPrimitives(EntityPrimitiveBuilder<E> entityBuilder) {
-        EntityRepository repository = module.getOpenDataLayerManager().getRepository();
+        Repository repository = module.getOpenDataLayerManager().getRepository();
 //        EntityStore<E> store = module.getOpenDataLayerManager()
 //                .getEntityStore(entityBuilder.getEntityClass());
 //        for (E entity : store) {

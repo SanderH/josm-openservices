@@ -6,8 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opengis.filter.expression.ExpressionVisitor;
+import org.opengis.filter.expression.PropertyName;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.Host;
+import org.xml.sax.helpers.NamespaceSupport;
 
 public class AbstractModuleConfiguration implements OdsModuleConfiguration {
 

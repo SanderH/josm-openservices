@@ -60,7 +60,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         return GeoUtil.toEnvelope(getBBox());
     }
 
-//    @Override
+    @Override
     public BBox getBBox() {
         if (getPrimitive() != null) {
             return getPrimitive().getBBox();

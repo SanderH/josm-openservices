@@ -23,10 +23,15 @@ import org.geotools.xml.Configuration;
 import org.geotools.xml.DOMParser;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.AbstractHost;
 import org.w3c.dom.Document;
 
@@ -150,5 +155,12 @@ public class FileWFSHost extends AbstractHost {
     public OdsFeatureSource getOdsFeatureSource(String feature)
             throws ServiceException {
         return new FileWFSFeatureSource(this, feature);
+    }
+
+    @Override
+    public <T extends Entity> FeatureDownloader createDownloader(
+            OdsModule module, OdsDataSource dataSource, Class<T> clazz)
+                    throws OdsException {
+        throw new UnsupportedOperationException();
     }
 }

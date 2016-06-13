@@ -16,7 +16,7 @@ public class OsmLayerManager extends AbstractLayerManager {
 
     public OsmLayerManager(OdsModule module, String name) {
         super(name);
-        this.entitiesBuilder = new OsmEntitiesBuilder(module);
+        this.entitiesBuilder = new OsmEntitiesBuilder(module, this);
     }
 
     @Override

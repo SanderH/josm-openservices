@@ -18,6 +18,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     private final GtHost host;
     private final String featureName;
     private final String idAttribute;
+    private final String[] attributes;
     private final long maxFeatures;
     private final int timeout = 60000;
     private CoordinateReferenceSystem crs;
@@ -26,11 +27,16 @@ public class GtFeatureSource implements OdsFeatureSource {
     private FeatureType featureType;
 
     public GtFeatureSource(GtHost host, String featureName, String idAttribute) {
+        this(host, featureName, idAttribute, null);
+    }
+
+    public GtFeatureSource(GtHost host, String featureName, String idAttribute, String[] attributes) {
         super();
         this.host = host;
         this.maxFeatures = host.getMaxFeatures();
         this.featureName = featureName;
         this.idAttribute = idAttribute;
+        this.attributes = attributes;
     }
 
     @Override
@@ -90,6 +96,7 @@ public class GtFeatureSource implements OdsFeatureSource {
                 getHost().getName());
             throw new OdsException(msg);
         }
+        // TODO Check is all selected attributes exist;
         /*
          * Now we know the service is available, we can set the required timeout
          */
@@ -99,7 +106,7 @@ public class GtFeatureSource implements OdsFeatureSource {
         }
         catch (@SuppressWarnings("unused") IOException e) {
             String msg = String.format("The feature named '%s' is not accessable, " +
-                "because of a network timeout on host host %s",
+                "because of a network timeout on host %s",
             getFeatureName(),
             getHost().getName());
             throw new OdsException(msg);

@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -13,6 +14,7 @@ public interface ManagedPrimitive<T extends OsmPrimitive> {
     public T getPrimitive();
     public <E extends Entity> void setEntity(E entity);
     public Envelope getEnvelope();
+    public BBox getBBox();
     public boolean isIncomplete();
 
     public Entity getEntity();

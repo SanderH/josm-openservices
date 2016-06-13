@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.NodeData;
@@ -64,6 +65,11 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements M
             envelope = GeoUtil.toEnvelope(getCoor());
         }
         return envelope;
+    }
+
+    @Override
+    public BBox getBBox() {
+        return new BBox(getCoor().getX(), getCoor().getY());
     }
 
     @Override

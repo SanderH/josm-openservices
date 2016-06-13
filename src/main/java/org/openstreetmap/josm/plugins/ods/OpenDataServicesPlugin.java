@@ -7,6 +7,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -15,6 +17,7 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.stream.JsonParsingException;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
@@ -123,28 +126,20 @@ public class OpenDataServicesPlugin extends Plugin {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        InputStream is = null;
-        JsonReader reader = null;
-        try {
-            is = url.openStream();
-            reader = Json.createReader(is);
+        try (
+             InputStream is = url.openStream();
+             Reader inputStreamReader = new InputStreamReader(is);
+             JsonReader reader = Json.createReader(inputStreamReader);
+        )  {
             metaInfo = reader.readObject().getJsonObject("ods");
             if (metaInfo == null) {
                 JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
                         "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             }
-        } catch (@SuppressWarnings("unused") IOException e) {
+        } catch (IOException | JsonParsingException e) {
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
-                "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
-            
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (@SuppressWarnings("unused") IOException e) {
-                    // Ignore
-                }
-            if (reader != null) reader.close();
+                "Cause: {0}\n" + 
+                "Your ODS version may be out of date", e.getMessage()), "No version info", JOptionPane.WARNING_MESSAGE);
         }
     }
     

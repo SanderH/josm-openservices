@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 import java.util.List;
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
@@ -17,6 +18,7 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
     private long uniqueId = (new RelationData()).getUniqueId();
     private Map<String, String> keys;
     private Envelope envelope = new Envelope();
+    private BBox bbox = null;
     
     public ManagedRelationImpl(List<ManagedRelationMember> members, Map<String, String> keys) {
         super();
@@ -32,6 +34,11 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
     @Override
     public Envelope getEnvelope() {
         return envelope;
+    }
+
+    @Override
+    public BBox getBBox() {
+        return bbox;
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * The updater updates objects in the Osm layer with new data from the OpenData layer.
@@ -31,10 +32,12 @@ public class OdsUpdater {
         LayerManager layerManager = module.getOpenDataLayerManager();
         List<Match<?>> updateableMatches = new LinkedList<>();
         for (OsmPrimitive primitive : primitives) {
-            Entity entity = layerManager.getEntity(primitive);
-            if (entity != null && entity.getMatch() != null 
-                    && entity.getMatch().isSimple()) {
-                updateableMatches.add(entity.getMatch());
+            ManagedPrimitive<?> mPrimitive = layerManager.getManagedPrimitive(primitive);
+            if (mPrimitive != null) {
+                Entity entity = mPrimitive.getEntity();
+                if (entity != null && entity.getMatch() != null && entity.getMatch().isSimple()) {
+                    updateableMatches.add(entity.getMatch());
+                }
             }
         }
         for (EntityUpdater updater : entityUpdaters) {

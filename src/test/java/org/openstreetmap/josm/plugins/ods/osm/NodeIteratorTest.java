@@ -7,22 +7,15 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.io.IllegalDataException;
-import org.openstreetmap.josm.plugins.ods.test.JOSMFixture;
 import org.openstreetmap.josm.plugins.ods.test.TestData;
 
 public class NodeIteratorTest {
     private TestData testData;
     private Way building1;
     
-    @BeforeClass
-    public static void setUpBeforeClass() {
-        JOSMFixture.createUnitTestFixture().init();
-    }
-
     @Before
     public void init() throws IOException, IllegalDataException {
         try {

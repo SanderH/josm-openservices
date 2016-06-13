@@ -6,14 +6,14 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.GeoEntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder<T> {
     private LayerManager layerManager;
     private Class<T> baseType;
-    private GeoEntityRepository repository;
+    private Repository repository;
 //    private EntityStore<T> entityStore;
     private GeoUtil geoUtil;
     

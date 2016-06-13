@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
@@ -13,7 +14,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> implements ManagedPolygon {
+public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> implements ManagedPolygon<Relation> {
     private Relation relation;
     private Entity entity;
     private ManagedRing<?> exteriorRing;
@@ -34,6 +35,10 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
        return exteriorRing.getEnvelope();
     }
 
+    @Override
+    public BBox getBBox() {
+        return exteriorRing.getBBox();
+    }
 
     @Override
     public ManagedRing<?> getExteriorRing() {

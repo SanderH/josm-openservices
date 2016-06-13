@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.Collection;
 
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 
@@ -54,6 +55,12 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
             }
         }
         return envelope;
+    }
+
+    
+    @Override
+    public BBox getBBox() {
+        return getPrimitive().getBBox();
     }
 
     @Override

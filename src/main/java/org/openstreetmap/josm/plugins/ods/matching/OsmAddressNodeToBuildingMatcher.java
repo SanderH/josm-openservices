@@ -1,9 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
+import java.util.List;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
+import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 
 /**
  * <p>Try to find a matching building for every AddressNode passed to the AddressNode
@@ -17,12 +21,12 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
  *
  */
 public class OsmAddressNodeToBuildingMatcher {
-    private OdsModule module;
+    private final GeoRepository repository;
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
-    public OsmAddressNodeToBuildingMatcher(OdsModule module) {
+    public OsmAddressNodeToBuildingMatcher(OsmLayerManager layerManager) {
         super();
-        this.module = module;
+        this.repository = layerManager.getRepository();
     }
 
     public void setUnmatchedAddressNodeHandler(
@@ -37,20 +41,17 @@ public class OsmAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     public void match(AddressNode addressNode) {
-        // TODO reimplement this functionality
-//        OsmBuildingStore buildingStore = (OsmBuildingStore)module
-//                .getOsmLayerManager().getEntityStore(Building.class);
-//        GeoIndex<Building> geoIndex = buildingStore.getGeoIndex();
-//        if (addressNode.getBuilding() == null) {
-//            List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
-//            if (buildings.size() != 1) {
-//                reportUnmatched(addressNode);
-//                return;
-//            }
-//            Building building = buildings.get(0);
-//            addressNode.setBuilding(building);
-//            building.getAddressNodes().add(addressNode);
-//        }
+        GeoIndex<Building> geoIndex = repository.getGeoIndex(Building.class, "geometry");
+        if (addressNode.getBuilding() == null) {
+            List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
+            if (buildings.size() != 1) {
+                reportUnmatched(addressNode);
+                return;
+            }
+            Building building = buildings.get(0);
+            addressNode.setBuilding(building);
+            building.getAddressNodes().add(addressNode);
+        }
     }
     
 //    /**

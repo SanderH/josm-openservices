@@ -14,7 +14,6 @@ import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -22,6 +21,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class BuildingGeometryUpdaterNg {
     private final BuildingAligner buildingAligner;
@@ -31,46 +31,45 @@ public class BuildingGeometryUpdaterNg {
     public BuildingGeometryUpdaterNg(OdsModule module) {
         super();
         this.osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        this.buildingAligner = new BuildingAligner(module, 
-            module.getOsmLayerManager().getEntityStore(Building.class));
+        this.buildingAligner = new BuildingAligner(module, module.getOsmLayerManager());
     }
 
     public void updateGeometries(List<Match<Building>> matches) {
         Set<Match<Building>> updateableMatches = new HashSet<>();
         updateableMatches.addAll(matches);
-        OsmBuildingAnalyzer osmAnalyzer = new OsmBuildingAnalyzer(matches);
-        osmAnalyzer.analyze();
-        updateableMatches.removeAll(osmAnalyzer.getExcludedMatches());
-        OdBuildingAnalyzer odAnalyzer = new OdBuildingAnalyzer(updateableMatches);
-        odAnalyzer.analyze();
-        NodePool nodePool = osmAnalyzer.getNodePool();
-        // First find
-        for (Node node : odAnalyzer.getNodes()) {
-            PoolNode matchingNode = nodePool.getMatchingNode(node);
-            if (matchingNode != null) {
-                nodeMapping.put(node, matchingNode);
-            }
-        }
-        // Update the geometries for the selected buildings
-        for (Match<Building> match : matches) {
-            updateGeometry(match.getOsmEntity(), match.getOpenDataEntity());
-        }
-        // Realign the updated buildings to the neighbour buildings
-        for (Match<Building> match : matches) {
-            buildingAligner.align(match.getOsmEntity());
-        }
+//        OsmBuildingAnalyzer osmAnalyzer = new OsmBuildingAnalyzer(matches);
+//        osmAnalyzer.analyze();
+//        updateableMatches.removeAll(osmAnalyzer.getExcludedMatches());
+//        OdBuildingAnalyzer odAnalyzer = new OdBuildingAnalyzer(updateableMatches);
+//        odAnalyzer.analyze();
+//        NodePool nodePool = osmAnalyzer.getNodePool();
+//        // First find
+//        for (Node node : odAnalyzer.getNodes()) {
+//            PoolNode matchingNode = nodePool.getMatchingNode(node);
+//            if (matchingNode != null) {
+//                nodeMapping.put(node, matchingNode);
+//            }
+//        }
+//        // Update the geometries for the selected buildings
+//        for (Match<Building> match : matches) {
+//            updateGeometry(match.getOsmEntity(), match.getOpenDataEntity());
+//        }
+//        // Realign the updated buildings to the neighbour buildings
+//        for (Match<Building> match : matches) {
+//            buildingAligner.align(match.getOsmEntity());
+//        }
     }
     
     private void updateGeometry(Building osmBuilding, Building odBuilding) {
-        OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
-        OsmPrimitive odPrimitive = odBuilding.getPrimitive();
+        ManagedPrimitive<?> osmPrimitive = osmBuilding.getPrimitive();
+        ManagedPrimitive<?> odPrimitive = odBuilding.getPrimitive();
         // Only update osm ways to start with
-        if (osmPrimitive.getDisplayType() != OsmPrimitiveType.CLOSEDWAY ||
-                odPrimitive.getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
+        if (osmPrimitive.getPrimitive().getDisplayType() != OsmPrimitiveType.CLOSEDWAY ||
+                odPrimitive.getPrimitive().getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
             return;
         }
-        Way osmWay = (Way) osmPrimitive;
-        Way odWay = (Way) odPrimitive;
+        Way osmWay = (Way) osmPrimitive.getPrimitive();
+        Way odWay = (Way) odPrimitive.getPrimitive();
         DataSet dataSet = osmDataLayer.data;
         List<Node> osmNodes = osmWay.getNodes();
         List<Node> odNodes = odWay.getNodes();

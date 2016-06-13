@@ -5,6 +5,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -28,7 +29,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
     }
 
     public SimpleManagedRing(ManagedWay managedWay, Boolean isClockWise) {
-        super(managedWay.getKeys());
+        super();
         this.managedWay = managedWay;
         this.isClockWise = isClockWise;
         if (!managedWay.isClosed()) {
@@ -41,12 +42,11 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
         return managedWay.getEnvelope();
     }
 
-//    @Override
-//    public BBox getBBox() {
-//        return managedWay.getBBox();
-//    }
-    
-    
+    @Override
+    public BBox getBBox() {
+        return managedWay.getBBox();
+    }
+
     @Override
     public Way getPrimitive() {
         return managedWay.getPrimitive();

@@ -18,9 +18,9 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedNodeImpl;
 public class ManagedNodeSet {
     private Map<LatLon, ManagedNode> nodes = new HashMap<>();
     
-    public ManagedNode add(LatLon latLon, Map<String, String> tags) {
+    public ManagedNode add(LatLon latLon, Map<String, String> tags, boolean merge) {
         LatLon ll = latLon.getRoundedToOsmPrecision();
-        ManagedNode node = nodes.get(ll);
+        ManagedNode node = (merge ? nodes.get(ll) : null);
         if (node == null) {
             NodeData nodeData = new NodeData();
             nodeData.setCoor(ll);

@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -11,6 +12,7 @@ import org.geotools.feature.NameImpl;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
@@ -19,7 +21,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
@@ -33,13 +35,14 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private final OdsDataSource dataSource;
+    private List<PropertyName> properties;
     private final CRSUtil crsUtil;
     private DownloadRequest request;
     private DownloadResponse response;
     private SimpleFeatureSource featureSource;
     private Query query;
     private DefaultFeatureCollection downloadedFeatures;
-    private final EntityRepository repository;
+    private final Repository repository;
 //    private EntityStore<T> entityStore;
     private final Status status = new Status();
 //    private final GeotoolsEntityBuilder<T> entityBuilder;
@@ -111,6 +114,9 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                  filter = ff.and(filter, dataFilter);
             }
             query.setFilter(filter);
+            if (properties != null) {
+                query.setProperties(properties);
+            }
         } catch (Exception e) {
             Main.warn(e.getMessage());
             e.printStackTrace();
@@ -189,9 +195,6 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         for (SimpleFeature feature : downloadedFeatures) {
             entityMapper.mapAndConsume(feature, repository::add);
 //            entity.setSourceDate(request.getDownloadTime().toLocalDate());
-//            if (!entityStore.contains(entity.getPrimaryId())) {
-//                entityStore.add(entity);
-//            }
         }
     }
 

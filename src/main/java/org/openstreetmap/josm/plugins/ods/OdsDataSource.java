@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import java.util.List;
+
 import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
@@ -34,6 +36,8 @@ public interface OdsDataSource {
      * @return The IdFactory
      */
     public IdFactory getIdFactory();
+    
+    public List<String> getRequiredAttributes();
 
     public MetaData getMetaData();
 

@@ -11,5 +11,5 @@ import java.util.Collection;
  *
  */
 public interface ManagedOgcMultiPolygon extends ManagedRelation {
-    public Collection<ManagedPolygon> getPolygons();
+    public Collection<ManagedPolygon<?>> getPolygons();
 }

@@ -9,18 +9,17 @@ import java.util.Map;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class BuildingMatcher implements Matcher<Building> {
     private final OdsModule module;
+    Repository odRepository;
+    Repository osmRepository;
+
     private Map<Long, Match<Building>> buildingMatches = new HashMap<>();
-//    private EntityStore<Building> odBuildingStore;
-//    private EntityStore<Building> osmBuildingStore;
-    private EntityRepository odRepository;
-    private EntityRepository osmRepository;
     private List<Building> unidentifiedOsmBuildings = new LinkedList<>();
     private List<Building> unmatchedOpenDataBuildings = new LinkedList<>();
     private List<Building> unmatchedOsmBuildings = new LinkedList<>();
@@ -42,6 +41,8 @@ public class BuildingMatcher implements Matcher<Building> {
     public void run() {
         unmatchedOpenDataBuildings.clear();
         unmatchedOsmBuildings.clear();
+        odRepository = module.getOpenDataLayerManager().getRepository();
+        osmRepository = module.getOsmLayerManager().getRepository();
         for (Building building : odRepository.getAll(Building.class)) {
             processOpenDataBuilding(building);
         }

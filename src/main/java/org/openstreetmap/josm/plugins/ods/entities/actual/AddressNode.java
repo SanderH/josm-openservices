@@ -6,7 +6,6 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Point;
 
-//public interface AddressNode extends Entity, Address {
 public interface AddressNode extends Entity {
 
     public void setAddress(Address address);
@@ -14,6 +13,10 @@ public interface AddressNode extends Entity {
     public Address getAddress();
 
 //	public Object getBuildingRef();
+
+    public void setHousingUnit(HousingUnit housingUnit);
+
+    public HousingUnit getHousingUnit();
 
     public void setBuilding(Building building);
 

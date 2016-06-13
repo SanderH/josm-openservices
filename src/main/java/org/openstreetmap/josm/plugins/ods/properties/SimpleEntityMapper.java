@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
-
 public class SimpleEntityMapper<T1, T2> implements EntityMapper<T1, T2> {
     private EntityFactory<T2> entityFactory;
     private List<EntityAttributeMapper<T1, T2>> attributeMappers;
@@ -36,15 +34,15 @@ public class SimpleEntityMapper<T1, T2> implements EntityMapper<T1, T2> {
     }
 
     @Override
-    public void mapAndConsume(T1 source, Consumer<Entity> consumer) {
+    public void mapAndConsume(T1 source, Consumer<Object> consumer) {
         T2 target = entityFactory.newInstance();
         for (EntityAttributeMapper<T1, T2> mapper : attributeMappers)
             mapper.map(source, target);
         for (ChildMapper<T1, T2> childMapper : childMappers) {
-            Entity child = (Entity) childMapper.map(source, target);
+            Object child = childMapper.map(source, target);
             consumer.accept(child);
         }
-        consumer.accept((Entity) target);
+        consumer.accept(target);
     }
     
     @Override

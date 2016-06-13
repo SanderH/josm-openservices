@@ -2,9 +2,10 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
@@ -15,36 +16,35 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
  *
  */
 public class LayerUpdater {
-    private OdsModule module;
+    private final OdsModule module;
+    private final LayerManager layerManager;
     private DataSet dataSet;
     
     public LayerUpdater(OdsModule module) {
         this.module = module;
-        this.dataSet = module.getOpenDataLayerManager().getOsmDataLayer().data;
+        this.layerManager = module.getOpenDataLayerManager();
+        this.dataSet = layerManager.getOsmDataLayer().data;
     }
 
     public void run() {
         dataSet.beginUpdate();
-        EntityRepository repository = module.getOpenDataLayerManager().getRepository();
-        for (Entity entity : repository.getAll()) {
-            if (entity.getPrimitive() != null) {
-                update(entity.getPrimitive());
+        Repository repository = module.getOpenDataLayerManager().getRepository();
+        for (Object obj : repository.getAll()) {
+            if (obj instanceof Entity) {
+                Entity entity = (Entity) obj;
+                if (entity.getPrimitive() != null) {
+                    update(entity.getPrimitive());
+                }
             }
         }
-//        for (EntityStore<? extends Entity> store : module.getOpenDataLayerManager().getStores()) {
-//            for (Entity entity : store.getPrimaryIndex().getAll()) {
-//                if (entity.getPrimitive() != null) {
-//                    update(entity.getPrimitive());
-//                }
-//            }
-//        };
         dataSet.endUpdate();
     }
 
     private void update(ManagedPrimitive<? extends OsmPrimitive> primitive) {
         Entity entity = primitive.getEntity();
         if (entity != null && !entity.isIncomplete()) {
-            primitive.create(dataSet);
+            OsmPrimitive osmPrimitive = primitive.create(dataSet);
+            layerManager.register(osmPrimitive, primitive);
         }
     }
 

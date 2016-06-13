@@ -38,15 +38,7 @@ public abstract class GtEntityMapperFactory implements EntityMapperFactory {
             SimpleFeatureSource featureSource = getDataStore().getFeatureSource(featureName);
             return featureSource.getSchema();
         } catch (IOException e) {
-            throw new OdsException(String.format("Feature %s doesn't exist."), e);
+            throw new OdsException(String.format("Feature '%s' doesn't exist.", featureName), e);
         }
     }
-//    
-//    @Override
-//    public SimpleEntityMapper<?, ?> create(OdsFeatureSource odsFeatureSource)
-//            throws OdsException {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-//
 }

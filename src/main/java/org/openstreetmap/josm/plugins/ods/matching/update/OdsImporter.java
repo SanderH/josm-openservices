@@ -18,9 +18,8 @@ import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
@@ -104,10 +103,15 @@ public class OdsImporter {
     }
     
     private void updateMatching() {
-        Matcher<?> matcher = module.getMatcherManager().getMatcher(Building.class);
-        matcher.run();
-        matcher = module.getMatcherManager().getMatcher(AddressNode.class);
-        matcher.run();
+        for (Matcher<?> matcher : module.getMatcherManager().getMatchers()) {
+            try {
+                matcher.initialize();
+            } catch (OdsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            matcher.run();
+        }
     }
 
     /**

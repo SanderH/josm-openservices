@@ -6,13 +6,13 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm-tested.jar" sourcepath="/home/gertjan/projects/josm/src"/>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/entities/EntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/AddressNodeEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/BuildingEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/HousingUnitEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/CityEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/MutableAddressNode.java|org/openstreetmap/josm/plugins/ods/entities/actual/MutableAddress.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/entities/EntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/AddressNodeEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/BuildingEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/HousingUnitEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/impl/CityEntityType.java|org/openstreetmap/josm/plugins/ods/entities/actual/MutableAddressNode.java|org/openstreetmap/josm/plugins/ods/entities/actual/MutableAddress.java|org/openstreetmap/josm/plugins/ods/entities/EntityRepository.java|org/openstreetmap/josm/plugins/ods/entities/GeoEntityRepository.java|org/openstreetmap/josm/plugins/ods/geotools/GtDataSource.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java|org/openstreetmap/josm/plugins/ods/tags/GeometryMapper.java|org/openstreetmap/josm/plugins/ods/tags/DefaultGeometryMapper.java|org/openstreetmap/josm/plugins/ods/tags/FeatureMapper.java|org/openstreetmap/josm/plugins/ods/osm/BuildingSegmentSimplifier.java|org/openstreetmap/josm/plugins/ods/osm/update/BuildingGeometryUpdater.java|org/openstreetmap/josm/plugins/ods/osm/update/OdBuildingAnalyzer.java|org/openstreetmap/josm/plugins/ods/osm/update/OsmBuildingAnalyzer.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/WayAligner_OldTest.java" kind="src" path="src/test/java"/>
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/WayAligner_OldTest.java|org/openstreetmap/josm/plugins/ods/osm/SegmentMatcher_OldTest.java|org/openstreetmap/josm/plugins/ods/osm/SegmentMatcherTest.java|org/openstreetmap/josm/plugins/ods/osm/WayAlignerTest.java" kind="src" path="src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

@@ -9,7 +9,7 @@ import java.util.Objects;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
@@ -20,10 +20,8 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
     private OdsModule module;
     
     private Map<Object, Match<AddressNode>> addressNodeMatches = new HashMap<>();
-//    private EntityStore<AddressNode> odAddressNodeStore;
-//    private EntityStore<AddressNode> osmAddressNodeStore;
-    private EntityRepository odRepository;
-    private EntityRepository osmRepository;
+    private Repository odRepository;
+    private Repository osmRepository;
     private List<AddressNode> unidentifiedOsmAddressNodes = new LinkedList<>();
     private List<AddressNode> unmatchedOpenDataAddressNodes = new LinkedList<>();
     private List<AddressNode> unmatchedOsmAddressNodes = new LinkedList<>();
@@ -37,8 +35,6 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
     public void initialize() throws OdsException {
         odRepository = module.getOpenDataLayerManager().getRepository();
         osmRepository = module.getOsmLayerManager().getRepository();
-//        odAddressNodeStore = module.getOpenDataLayerManager().getEntityStore(AddressNode.class);
-//        osmAddressNodeStore = module.getOsmLayerManager().getEntityStore(AddressNode.class);
     }
 
     public void run() {
@@ -50,7 +46,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
      * Try to match address nodes for matching buildings
      */
     private void matchBuildingAddressNodes() {
-        EntityRepository repository = module.getOpenDataLayerManager().getRepository();
+        Repository repository = module.getOpenDataLayerManager().getRepository();
         for (Building building : repository.getAll(Building.class)) {
             if (building.getMatch() != null && building.getMatch().isSimple()) {
                 matchAddresses(building.getMatch());

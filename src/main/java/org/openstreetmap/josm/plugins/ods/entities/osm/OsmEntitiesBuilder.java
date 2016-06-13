@@ -5,19 +5,20 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
 
 public class OsmEntitiesBuilder {
-    private OdsModule module;
-    private OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
+    private final OdsModule module;
+    private final OsmLayerManager layerManager;
+    private final OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
 
-    public OsmEntitiesBuilder(OdsModule module) {
+    public OsmEntitiesBuilder(OdsModule module, OsmLayerManager layerManager) {
         super();
         this.module = module;
-        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(module);
+        this.layerManager = layerManager;
+        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(layerManager);
     }
     
     /**
@@ -26,7 +27,6 @@ public class OsmEntitiesBuilder {
      * 
      */
     public void build() {
-        LayerManager layerManager = module.getOsmLayerManager();
         OsmDataLayer dataLayer = layerManager.getOsmDataLayer();
         if (dataLayer == null) return;
         build(dataLayer.data.allPrimitives());

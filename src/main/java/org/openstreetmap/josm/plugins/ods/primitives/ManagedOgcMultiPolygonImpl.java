@@ -18,10 +18,10 @@ import com.vividsolutions.jts.geom.Envelope;
  *
  */
 public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements ManagedOgcMultiPolygon {
-    private Collection<ManagedPolygon> managedPolygons;
+    private Collection<ManagedPolygon<?>> managedPolygons;
     private Envelope envelope;
     
-    public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon> managedPolygons,
+    public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon<?>> managedPolygons,
             Map<String, String> keys) {
         super(createRelationMembers(managedPolygons), keys);
         this.managedPolygons = managedPolygons;
@@ -31,7 +31,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
     public Envelope getEnvelope() {
         if (envelope == null) {
             envelope = new Envelope();
-            for (ManagedPolygon pg : managedPolygons) {
+            for (ManagedPolygon<?> pg : managedPolygons) {
                 envelope = envelope.intersection(pg.getEnvelope());
             }
         }
@@ -39,7 +39,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
     }
 
     @Override
-    public Collection<ManagedPolygon> getPolygons() {
+    public Collection<ManagedPolygon<?>> getPolygons() {
         return managedPolygons;
     }
 
@@ -48,7 +48,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         Relation relation = getPrimitive();
         if (relation == null) {
             List<RelationMember> members = new LinkedList<>();
-            for (ManagedPolygon mPolygon : managedPolygons) {
+            for (ManagedPolygon<?> mPolygon : managedPolygons) {
                 ManagedRing<?> outer  = mPolygon.getExteriorRing();
                 members.add(new RelationMember("outer", outer.create(dataSet)));
                 for (ManagedRing<?> inner : mPolygon.getInteriorRings()) {
@@ -64,9 +64,9 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         return relation;
     }
     
-    private static List<ManagedRelationMember> createRelationMembers(Collection<ManagedPolygon> managedPolygons) {
+    private static List<ManagedRelationMember> createRelationMembers(Collection<ManagedPolygon<?>> managedPolygons) {
         List<ManagedRelationMember> members = new ArrayList<>(managedPolygons.size());
-        for (ManagedPolygon polygon : managedPolygons) {
+        for (ManagedPolygon<?> polygon : managedPolygons) {
             members.add(new ManagedRelationMemberImpl("", polygon));
         }
         return members;

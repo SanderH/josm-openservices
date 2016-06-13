@@ -6,19 +6,18 @@ import java.util.List;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedOgcMultiPolygon;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
-import org.openstreetmap.josm.tools.Geometry;
-import org.openstreetmap.josm.tools.Geometry.PolygonIntersection;
 import org.openstreetmap.josm.tools.Predicate;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -34,47 +33,76 @@ public class OsmNeighbourFinder {
     private final LayerManager layerManager;
     private Predicate<OsmPrimitive> isBuilding = Building.IsBuilding;
     private List<OsmPrimitive> neighbourBuildings = new LinkedList<>();
-    private BuildingAligner buildingAligner;
+    private NodeDWithin dWithin;
+//    private BuildingAligner buildingAligner;
+//    private WayAligner wayAligner;
     
     public OsmNeighbourFinder(OdsModule module) {
         super();
         this.module = module;
         this.layerManager = module.getOsmLayerManager();
-        this.buildingAligner = new BuildingAligner(module, layerManager);
+        dWithin = new NodeDWithinLatLon(module.getTolerance());
     }
 
-    public void findNeighbours(ManagedPrimitive<?> osm) {
-        Entity entity = osm.getEntity();
+    public void findNeighbours(ManagedPrimitive<?> primitive) {
+        // Look for connected neighbours
+        findConnectedNeighbours(primitive);
+        Entity entity = primitive.getEntity();
         if (entity.getBaseType() != Building.class) {
             return;
         }
-        if (osm instanceof SimpleManagedRing) {
-            findWayNeighbourBuildings((SimpleManagedRing)osm);
+        if (primitive instanceof SimpleManagedRing) {
+            findWayNeighbourBuildings((SimpleManagedRing)primitive);
+        }
+        else if (primitive instanceof ManagedOgcMultiPolygon) {
+            ManagedOgcMultiPolygon mpg = (ManagedOgcMultiPolygon) primitive;
+            ManagedPolygon polygon = mpg.getPolygons().iterator().next();
+            ManagedRing<?> ring = polygon.getExteriorRing();
+            if (ring instanceof SimpleManagedRing) {
+                findWayNeighbourBuildings((SimpleManagedRing)ring);
+            }
         }
     }
     
-    public void findWayNeighbourBuildings(SimpleManagedRing ring) {
+    private void findConnectedNeighbours(ManagedPrimitive<?> primitive) {
+//        primitive.getPrimitive().get;
+        
+    }
+
+    public void findWayNeighbourBuildings(SimpleManagedRing ring1) {
         DataSet dataSet = layerManager.getOsmDataLayer().data;
-        Envelope envelope = extend(ring.getEnvelope(), module.getTolerance());
+        BBox bbox = extend(ring1.getBBox(), module.getTolerance());
         for (Way way2 : dataSet.searchWays(bbox)) {
-            if (way2.equals(way1)) {
+            if (way2.equals(ring1.getPrimitive())) {
                 continue;
             }
-            if (isBuilding.evaluate(way2)) {
-                buildingAligner.align(way1, way2);
-//                PolygonIntersection pi = Geometry.polygonIntersection(way1.getNodes(), way2.getNodes());
-//                if (pi.equals(PolygonIntersection.CROSSING)) {
-//                    neighbourBuildings.add(way2);
-//                }
-            }
-            for (OsmPrimitive osm2 :way2.getReferrers()) {
-                Relation relation = (Relation)osm2;
-                if (isBuilding.evaluate(relation)) {
-                    buildingAligner.align(way1, way1);
-//                    neighbourBuildings.add(relation);
+            if (isBuildingExterior(way2)) {
+                ManagedPrimitive<?> mPrimitive = layerManager.getManagedPrimitive(way2);
+                if (mPrimitive != null && mPrimitive instanceof SimpleManagedRing) {
+                    SimpleManagedRing ring2 = (SimpleManagedRing) mPrimitive;
+                    WayAligner wayAligner = new WayAligner(ring1, ring2, dWithin, true);
+                    wayAligner.run();
                 }
             }
         }
+    }
+
+    private boolean isBuildingExterior(Way way) {
+        if (isBuilding.evaluate(way)) {
+            return true;
+        }
+        for (OsmPrimitive osm :way.getReferrers()) {
+            Relation relation = (Relation)osm;
+            if (isBuilding.evaluate(relation)) {
+                for (RelationMember member : relation.getMembers()) {
+                    if ("outer".equals(member.getRole()) &&
+                            member.getMember() == way) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private BBox extend(BBox bbox, Double delta) {

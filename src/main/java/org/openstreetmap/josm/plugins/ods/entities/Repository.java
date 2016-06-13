@@ -35,21 +35,21 @@ public class Repository {
         return (EntityManager<E>) managers.get(type);
     }
 
-    public <E extends Entity> void addIndex(Class<E> type, String ... properties) {
+    public <E extends Object> void addIndex(Class<E> type, String ... properties) {
         EntityManager<E> manager = getManager(type);
         if (manager != null) {
             manager.createIndex(properties);
         }
     }
     
-    public <E extends Entity> void addIndex(Class<E> type, Index<E> index) {
+    public <E extends Object> void addIndex(Class<E> type, Index<E> index) {
         EntityManager<E> manager = getManager(type);
         if (manager != null) {
             manager.addIndex(index);
         }
     }
     
-    public <E extends Entity> void add(E entity) {
+    public <E extends Object> void add(E entity) {
         @SuppressWarnings("unchecked")
         Class<E> type = (Class<E>) entity.getClass();
         EntityManager<E> manager = getManager(type);
@@ -60,7 +60,7 @@ public class Repository {
         manager.add(entity);
     }
 
-    private <E extends Entity> EntityManager<E> createEntityManager(
+    private <E extends Object> EntityManager<E> createEntityManager(
             Class<E> type) {
         EntityManager<E> manager = new EntityManager<E>(type);
         for (Class<?> superClass : getSuperClasses(type)) {
@@ -77,7 +77,7 @@ public class Repository {
         return managers.get(type);
     }
 
-    public <E extends Entity> Iterable<E> getAll(Class<E> entityClass) {
+    public <E extends Object> Iterable<E> getAll(Class<E> entityClass) {
         EntityManager<E> manager = getManager(entityClass);
         if (manager != null) {
             return manager.getAll();

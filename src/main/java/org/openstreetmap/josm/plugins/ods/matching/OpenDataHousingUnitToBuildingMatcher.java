@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityRepository;
+import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 
@@ -41,26 +41,7 @@ public class OpenDataHousingUnitToBuildingMatcher {
      * @param housingUnit
      */
     public void matchHousingUnitToBuilding(HousingUnit housingUnit) {
-//        OpenDataBuildingStore buildings = (OpenDataBuildingStore) module
-//                .getOpenDataLayerManager().getEntityStore(Building.class);
-//        if (housingUnit.getBuilding() == null) {
-//            Object buildingRef = housingUnit.getBuildingRef();
-//            if (buildingRef != null) {
-//                List<Building> matchedbuildings = buildings.getById(buildingRef);
-//                if (matchedbuildings.size() == 1) {
-//                    Building building = matchedbuildings.get(0);
-//                    housingUnit.setBuilding(building);
-//                    building.addHousingUnit(housingUnit);
-//                }
-//                else {
-//                    reportUnmatched(housingUnit);
-//                }
-//            }
-//            else {
-//                reportUnmatched(housingUnit);
-//            }
-//        }
-        EntityRepository repository = module.getOpenDataLayerManager().getRepository();
+        Repository repository = module.getOpenDataLayerManager().getRepository();
         if (housingUnit.getBuilding() == null) {
             Object buildingRef = housingUnit.getBuildingRef();
             if (buildingRef != null) {

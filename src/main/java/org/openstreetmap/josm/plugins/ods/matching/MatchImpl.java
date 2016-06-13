@@ -30,8 +30,8 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         if (id == null) {
             id = Match.generateUniqueId();
         }
-        osmEntities.add(osmEntity);
-        openDataEntities.add(openDataEntity);
+        addOsmEntity(osmEntity);
+        addOpenDataEntity(openDataEntity);
         osmEntity.setMatch(this);
         openDataEntity.setMatch(this);
     }
@@ -74,14 +74,19 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
 
     @Override
     public <E2 extends E>void addOsmEntity(E2 entity) {
-        osmEntities.add(entity);
-        entity.setMatch(this);
+        // TODO Do we need a thread safe solution here?
+        if (! osmEntities.contains(entity)) {
+            osmEntities.add(entity);
+            entity.setMatch(this);
+        }
     }
 
     @Override
     public <E2 extends E> void addOpenDataEntity(E2 entity) {
-        openDataEntities.add(entity);
-        entity.setMatch(this);
+        if (!openDataEntities.contains(entity)) {
+            openDataEntities.add(entity);
+            entity.setMatch(this);
+        }
     }
 
     @Override

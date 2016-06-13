@@ -45,7 +45,7 @@ public class BuildingUpdater implements EntityUpdater {
     private void updateAttributes(Building odBuilding, Building osmBuilding) {
         ManagedPrimitive<?> osmPrimitive = osmBuilding.getPrimitive();
         osmBuilding.setSourceDate(odBuilding.getSourceDate());
-        osmPrimitive.put("source:date", odBuilding.getSourceDate().format(DateTimeFormatter.ISO_DATE));
+        osmPrimitive.put("source:date", odBuilding.getPrimitive().get("source:date"));
         osmBuilding.setStartDate(odBuilding.getStartDate());
         osmPrimitive.put("start_date", odBuilding.getStartDate());
 //        osmPrimitive.setModified(true);
@@ -53,16 +53,18 @@ public class BuildingUpdater implements EntityUpdater {
 
     private void updateStatus(Building odBuilding, Building osmBuilding) {
         ManagedPrimitive<?> odPrimitive = odBuilding.getPrimitive();
-        ManagedPrimitive<?> osmPrimitive = osmBuilding.getPrimitive();
+        ManagedPrimitive<?> localPrimitive = osmBuilding.getPrimitive();
         if (osmBuilding.getStatus().equals(EntityStatus.CONSTRUCTION)
                 && odBuilding.getStatus().equals(EntityStatus.IN_USE)) {
-            osmBuilding.setSourceDate(odBuilding.getSourceDate());
-            osmPrimitive.put("source:date", odBuilding.getSourceDate().format(DateTimeFormatter.ISO_DATE));
-            osmPrimitive.put("building", odPrimitive.get("building"));
-            osmPrimitive.put("construction", null);
+            if (odBuilding.getSourceDate() != null) {
+                osmBuilding.setSourceDate(odBuilding.getSourceDate());
+                localPrimitive.put("source:date", odBuilding.getSourceDate().format(DateTimeFormatter.ISO_DATE));
+            }
+            localPrimitive.put("building", odPrimitive.get("building"));
+            localPrimitive.put("construction", null);
             osmBuilding.setStatus(odBuilding.getStatus());
             // TODO Do we need this.
-//            osmPrimitive.setModified(true);
+            localPrimitive.getPrimitive().setModified(true);
         }
     }
 }
