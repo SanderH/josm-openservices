@@ -14,6 +14,7 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ComplexManagedRing.RingMember;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode.NodeReferrer;
 import org.openstreetmap.josm.tools.Geometry.MultiPolygonMembers;
 
 public class ManagedPrimitiveFactory {
@@ -85,20 +86,25 @@ public class ManagedPrimitiveFactory {
         return createWay(way, true);
     }
 
-    public ManagedWay createWay(Way way, boolean register) {
-        assert way.getDisplayType() == OsmPrimitiveType.CLOSEDWAY;
-        ManagedWay managedWay = (ManagedWay) layerManager.getManagedPrimitive(way);
-        if (managedWay == null) {
-            List<ManagedNode> managedNodes = new ArrayList<>(way.getNodesCount());
-            for (Node node : way.getNodes()) {
-                managedNodes.add(createNode(node));
+    public ManagedWay createWay(Way osmWay, boolean register) {
+        assert osmWay.getDisplayType() == OsmPrimitiveType.CLOSEDWAY;
+        ManagedWay odsWay = (ManagedWay) layerManager.getManagedPrimitive(osmWay);
+        if (odsWay == null) {
+            List<ManagedNode> odsNodes = new ArrayList<>(osmWay.getNodesCount());
+            for (Node osmNode : osmWay.getNodes()) {
+                ManagedNode odsNode = createNode(osmNode);
+                odsNodes.add(odsNode);
             }
-            managedWay = new ManagedWayImpl(managedNodes, way);
+            int i=0;
+            odsWay = new ManagedWayImpl(odsNodes, osmWay);
+            for (ManagedNode odsNode : odsNodes) {
+                odsNode.addReferrer(new NodeReferrer(odsWay, i++));
+            }
             if (register) {
-                layerManager.register(way, managedWay);
+                layerManager.register(osmWay, odsWay);
             }
         }
-        return managedWay;
+        return odsWay;
     }
     
     public SimpleManagedRing createRing(Way way) {

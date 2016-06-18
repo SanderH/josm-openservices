@@ -1,8 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
@@ -10,11 +12,13 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode.NodeReferrer;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements ManagedWay {
     private List<ManagedNode> nodes;
+    private Set<ManagedWay> adjacentWays = new HashSet<>();
     private BBox bbox;
 
     public ManagedWayImpl(List<ManagedNode> nodes, Way way) {
@@ -24,6 +28,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
             this.nodes.set(0, this.nodes.get(last));
         }
+        findAdjacentWays();
     }
 
     public ManagedWayImpl(List<ManagedNode> nodes, Map<String, String> tags) {
@@ -32,6 +37,17 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         int last = nodes.size() - 1;
         if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
             this.nodes.set(0, this.nodes.get(last));
+        }
+    }
+    
+    private void findAdjacentWays() {
+        for (ManagedNode node : nodes) {
+            for (NodeReferrer referrer : node.getReferrers()) {
+                ManagedWay way = referrer.getWay();
+                if (!way.equals(this)) {
+                    adjacentWays.add(way);
+                }
+            }
         }
     }
 
@@ -123,4 +139,20 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         }
         return way;
     }
+
+    @Override
+    public int hashCode() {
+        return getUniqueId().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof ManagedWay)) {
+            return false;
+        }
+        return getUniqueId().equals(((ManagedWay)obj).getUniqueId());
+    }
+    
+    
 }

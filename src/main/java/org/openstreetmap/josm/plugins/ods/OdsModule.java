@@ -12,9 +12,13 @@ import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.gui.MapView;
-import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
@@ -36,7 +40,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
  * @author Gertjan Idema
  * 
  */
-public abstract class OdsModule implements LayerChangeListener {
+public abstract class OdsModule implements LayerChangeListener, ActiveLayerChangeListener {
     private OdsModulePlugin plugin;
     
     private final List<OdsAction> actions = new LinkedList<>();
@@ -66,7 +70,7 @@ public abstract class OdsModule implements LayerChangeListener {
             initializeDataSources(configuration);
             this.osmLayerManager = createOsmLayerManager();
             this.openDataLayerManager = createOpenDataLayerManager();
-            MapView.addLayerChangeListener(this);
+            Main.getLayerManager().addLayerChangeListener(this, false);
             initialized = true;
         }
     }
@@ -237,47 +241,47 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     void activateOsmLayer() {
-        Main.map.mapView.setActiveLayer(getOsmLayerManager().getOsmDataLayer());
+        Main.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
     }
 
-
-    // Implement LayerChangeListener
-
     @Override
-    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+    public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
         if (!isActive()) return;
         for (OdsAction action : actions) {
-            action.activeLayerChange(oldLayer, newLayer);
+            action.activeLayerChange(e.getPreviousActiveLayer(), Main.getLayerManager().getActiveLayer());
         }
     }
 
     @Override
-    public void layerAdded(Layer newLayer) {
+    public void layerAdded(LayerAddEvent event) {
         if (!isActive()) return;
     }
 
     @Override
-    public void layerRemoved(Layer removedLayer) {
+    public void layerRemoving(LayerRemoveEvent event) {
         // Hack to prevent this method from running when Josm is exiting.
-        if ("exitJosm".equals(Thread.currentThread().getStackTrace()[5].getMethodName())) {
-            return;
-        }
         
-        if (isActive()) {
-            if (this.getLayerManager(removedLayer) != null) {
+        if (isActive() && !isExiting()) {
+            if (this.getLayerManager(event.getRemovedLayer()) != null) {
                 String message = tr("You removed one of the layers that belong to the {0} module." +
                         " For the stability of the {0} module, you have to reset the module.", getName());
-                int result = JOptionPane.showOptionDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                    new String[] {"Reset"}, 0);
-                Main.main.addLayer(removedLayer);
-                if (result == 0) {
-                    reset();
-                }
-                else {
-                    this.deActivate();
-                }
+                JOptionPane.showMessageDialog(null, message, tr("ODS layer removed."), JOptionPane.WARNING_MESSAGE);
             }
         }
+    }
+
+    
+    private boolean isExiting() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if ("exitJosm".equals(element.getMethodName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void layerOrderChanged(LayerOrderChangeEvent e) {
     }
 
     public abstract Bounds getBounds();

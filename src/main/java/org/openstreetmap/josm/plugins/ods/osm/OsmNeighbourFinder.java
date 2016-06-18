@@ -17,6 +17,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedOgcMultiPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedWay;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
 import org.openstreetmap.josm.tools.Predicate;
 
@@ -65,6 +66,9 @@ public class OsmNeighbourFinder {
     }
     
     private void findConnectedNeighbours(ManagedPrimitive<?> primitive) {
+        if (primitive instanceof ManagedWay) {
+            
+        }
 //        primitive.getPrimitive().get;
         
     }
