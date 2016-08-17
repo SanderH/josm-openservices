@@ -10,6 +10,7 @@ import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -21,10 +22,10 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
     private Collection<ManagedRing<?>> interiorRings;
     private Map<String, String> keys;
     
-    public ManagedPolygonImpl(ManagedRing<?> exteriorRing,
+    public ManagedPolygonImpl(LayerManager layerManager, ManagedRing<?> exteriorRing,
             Collection<ManagedRing<?>> interiorRings,
             Map<String, String> keys) {
-        super();
+        super(layerManager);
         this.exteriorRing = exteriorRing;
         this.interiorRings = (interiorRings != null ? interiorRings : new ArrayList<ManagedRing<?>>(0)); 
         this.keys = keys;

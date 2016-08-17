@@ -36,6 +36,7 @@ public interface Entity {
     public Object getReferenceId();
     public Long getPrimitiveId();
     public Geometry getGeometry();
+
     public void setGeometry(Geometry geometry);
     public Class<? extends Entity> getBaseType();
     
@@ -50,8 +51,9 @@ public interface Entity {
     public ManagedPrimitive<?> getPrimitive();
     
     /**
-     * Get the tags that are not associated with any of the entity's properties.
+     * The tags that are not associated with any of the entity's properties.
      */
+    public void setOtherTags(Map<String, String> tags);
     public Map<String, String> getOtherTags();
     
     public void setPrimitive(ManagedPrimitive<?> primitive);

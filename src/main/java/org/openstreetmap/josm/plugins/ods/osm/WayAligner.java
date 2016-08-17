@@ -1,8 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 

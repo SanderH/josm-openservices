@@ -9,6 +9,7 @@ import java.util.Map;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -24,12 +25,12 @@ public class ComplexManagedRing extends AbstractManagedPrimitive<Relation> imple
     private int nodesCount;
     private Envelope envelope;
 
-    public ComplexManagedRing(List<RingMember> members) {
-        this(members, new HashMap<>());
+    public ComplexManagedRing(LayerManager layerManager, List<RingMember> members) {
+        this(layerManager, members, new HashMap<>());
     }
     
-    public ComplexManagedRing(List<RingMember> members, Map<String, String> keys) {
-        super(keys);
+    public ComplexManagedRing(LayerManager layerManager, List<RingMember> members, Map<String, String> keys) {
+        super(layerManager, keys);
         this.members = members;
         nodesCount = 0;
         for (RingMember member : members) {

@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -18,19 +19,18 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
     private Envelope envelope;
     private boolean incomplete = false;
     
-    public ManagedJosmMultiPolygonImpl(Collection<ManagedRing<?>> outerRings,
+    public ManagedJosmMultiPolygonImpl(LayerManager layerManager, Collection<ManagedRing<?>> outerRings,
             Collection<ManagedRing<?>> innerRings, Relation relation) {
-        super(relation);
+        super(layerManager, relation);
         this.outerRings = outerRings;
         this.innerRings = innerRings;
     }
 
-    public ManagedJosmMultiPolygonImpl(Relation multiPolygon, boolean incomplete) {
-        super(multiPolygon);
+    public ManagedJosmMultiPolygonImpl(LayerManager layerManager, Relation multiPolygon, boolean incomplete) {
+        super(layerManager, multiPolygon);
         this.incomplete = incomplete;
     }
 
-    
     @Override
     public boolean isIncomplete() {
         return incomplete;

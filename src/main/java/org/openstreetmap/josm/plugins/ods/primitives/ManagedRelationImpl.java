@@ -9,6 +9,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationData;
 import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -20,8 +21,8 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
     private Envelope envelope = new Envelope();
     private BBox bbox = null;
     
-    public ManagedRelationImpl(List<ManagedRelationMember> members, Map<String, String> keys) {
-        super();
+    public ManagedRelationImpl(LayerManager layerManager, List<ManagedRelationMember> members, Map<String, String> keys) {
+        super(layerManager);
         this.members = members;
         this.keys = keys;
     }

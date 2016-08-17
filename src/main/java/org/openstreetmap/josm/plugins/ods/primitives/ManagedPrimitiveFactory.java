@@ -14,7 +14,6 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ComplexManagedRing.RingMember;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode.NodeReferrer;
 import org.openstreetmap.josm.tools.Geometry.MultiPolygonMembers;
 
 public class ManagedPrimitiveFactory {
@@ -28,7 +27,7 @@ public class ManagedPrimitiveFactory {
     public ManagedPrimitive<?> createArea(OsmPrimitive primitive) {
         switch (primitive.getDisplayType()) {
         case CLOSEDWAY:
-            return createRing((Way)primitive);
+            return createSimplePolygon((Way)primitive);
         case MULTIPOLYGON:
         case RELATION:
             return createArea((Relation)primitive);
@@ -49,7 +48,7 @@ public class ManagedPrimitiveFactory {
             incomplete |= way.isIncomplete();
         }
         if (incomplete) {
-            return new ManagedJosmMultiPolygonImpl(multiPolygon, true);
+            return new ManagedJosmMultiPolygonImpl(layerManager, multiPolygon, true);
         }
         // Construct complete rings for the inner/outer members
         final List<MultipolygonBuilder.JoinedPolygon> outerRings;
@@ -65,8 +64,8 @@ public class ManagedPrimitiveFactory {
             for (JoinedPolygon inner : innerRings) {
                 managedInnerRings.add(createRing(inner.ways, inner.reversed));
             }
-            return new ManagedJosmMultiPolygonImpl(managedOuterRings, managedInnerRings, multiPolygon);
-        } catch (@SuppressWarnings("unused") MultipolygonBuilder.JoinedPolygonCreationException ex) {
+            return new ManagedJosmMultiPolygonImpl(layerManager, managedOuterRings, managedInnerRings, multiPolygon);
+        } catch (MultipolygonBuilder.JoinedPolygonCreationException ex) {
             Main.debug("Invalid multipolygon " + multiPolygon);
             return null;
         }
@@ -76,7 +75,7 @@ public class ManagedPrimitiveFactory {
         // TODO Handle class cast exception
         ManagedNode managedNode = (ManagedNode) layerManager.getManagedPrimitive(node);
         if (managedNode == null) {
-            managedNode = new ManagedNodeImpl(node);
+            managedNode = new ManagedNodeImpl(layerManager, node);
             layerManager.register(node, managedNode);
         }
         return managedNode;
@@ -95,16 +94,34 @@ public class ManagedPrimitiveFactory {
                 ManagedNode odsNode = createNode(osmNode);
                 odsNodes.add(odsNode);
             }
-            int i=0;
-            odsWay = new ManagedWayImpl(odsNodes, osmWay);
-            for (ManagedNode odsNode : odsNodes) {
-                odsNode.addReferrer(new NodeReferrer(odsWay, i++));
-            }
+            odsWay = new ManagedWayImpl(layerManager, osmWay);
+            odsWay.setNodes(odsNodes);
+//            int i=0;
+//            for (ManagedNode odsNode : odsNodes) {
+//                odsNode.addReferrer(odsWay);
+//            }
             if (register) {
                 layerManager.register(osmWay, odsWay);
             }
         }
         return odsWay;
+    }
+    
+    public SimpleManagedPolygon createSimplePolygon(Way way) {
+        return createManagedPolygon(way, true);
+    }
+
+    public SimpleManagedPolygon createManagedPolygon(Way osmWay, boolean register) {
+        assert osmWay.getDisplayType() == OsmPrimitiveType.CLOSEDWAY;
+        SimpleManagedPolygon odsPolygon = (SimpleManagedPolygon) layerManager.getManagedPrimitive(osmWay);
+        if (odsPolygon == null) {
+            ManagedWay odsWay = createWay(osmWay, false);
+            odsPolygon = new SimpleManagedPolygon(odsWay, osmWay.getKeys());
+            if (register) {
+                layerManager.register(osmWay, odsPolygon);
+            }
+        }
+        return odsPolygon;
     }
     
     public SimpleManagedRing createRing(Way way) {
@@ -130,6 +147,27 @@ public class ManagedPrimitiveFactory {
             ManagedWay managedWay = createWay(way, false);
             ringMembers.add(new RingMember(managedWay, isReversed));
         }
-        return new ComplexManagedRing(ringMembers);
+        return new ComplexManagedRing(layerManager, ringMembers);
+    }
+    
+    public void update(ManagedWay odsWay) {
+//        Set<ManagedNode> oldNodes = new HashSet<>(odsWay.getNodes());
+        Way osmWay = odsWay.getPrimitive();
+        setWayNodes(odsWay, osmWay);
+//        oldNodes.removeAll(odsWay.getNodes());
+//        for (ManagedNode odsNode : oldNodes) {
+//            odsNode.removeReferrer(odsWay);
+//        }
+    }
+    
+    public void setWayNodes(ManagedWay odsWay, Way osmWay) {
+        List<ManagedNode> newNodes = new ArrayList<>(osmWay.getNodesCount());
+//        int i = 0;
+        for (Node osmNode : osmWay.getNodes()) {
+            ManagedNode odsNode = createNode(osmNode);
+            newNodes.add(odsNode);
+//            odsNode.addReferrer(new NodeReferrer(odsWay, i++));
+        }
+        odsWay.setNodes(newNodes);
     }
 }

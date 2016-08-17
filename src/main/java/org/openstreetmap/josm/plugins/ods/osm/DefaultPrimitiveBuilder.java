@@ -1,12 +1,15 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
@@ -16,9 +19,12 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPolygonImpl;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRelation;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedRelationImpl;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedRelationMember;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedWay;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedWayImpl;
+import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -147,7 +153,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
             managedPrimitive = buildMultiPolygon(polygon, keys);
         }
         else {
-            managedPrimitive = buildWay(polygon, tags);
+            managedPrimitive = buildSimplePolygon(polygon.getExteriorRing(), tags);
         }
         return managedPrimitive;
     }
@@ -178,13 +184,18 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
                 ManagedRing<?> interiorRing = new SimpleManagedRing(way);
                 interiorRings.add(interiorRing);
             }
-            ManagedPolygon<?> managedPolygon = new ManagedPolygonImpl(
+            ManagedPolygon<?> managedPolygon = new ManagedPolygonImpl(layerManager,
                     exteriorRing, interiorRings, null);
             managedPolygons.add(managedPolygon);
         }
         return new ManagedOgcMultiPolygonImpl(managedPolygons, tags);
     }
 
+    public SimpleManagedPolygon buildSimplePolygon(LineString line, Map<String, String> tags) {
+        ManagedWay way = buildWay(line, tags);
+        return new SimpleManagedPolygon(way, tags);
+    }
+    
     @Override
     public ManagedWay buildWay(Polygon polygon, Map<String, String> tags) {
         return buildWay(polygon.getExteriorRing(), tags);
@@ -199,35 +210,40 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
     }
 
     public ManagedWay buildWay(Coordinate start, Coordinate end, Map<String, String> tags) {
-        List<ManagedNode> managedNodes = new ArrayList<>(2);
-        managedNodes.add(buildNode(start, null, true));
-        managedNodes.add(buildNode(end, null, true));
-        return new ManagedWayImpl(managedNodes, tags);
+        Coordinate[] coordinates = new Coordinate[] {start, end};
+        return buildWay(coordinates, tags);
     }
 
     private ManagedWay buildWay(CoordinateSequence points, Map<String, String> tags) {
+        return buildWay(points.toCoordinateArray(), tags);
+    }
+
+    private ManagedWay buildWay(Coordinate[] points, Map<String, String> tags) {
         LatLon previousCoor = null;
-        List<ManagedNode> managedNodes = new ArrayList<>(points.size());
-        for (int i = 0; i < points.size(); i++) {
-            ManagedNode node = buildNode(points.getCoordinate(i), null, true);
+        List<ManagedNode> managedNodes = new ArrayList<>(points.length);
+        List<Node> osmNodes = new ArrayList<>(points.length);
+        for (int i = 0; i < points.length; i++) {
+            ManagedNode node = buildNode(points[i], Collections.emptyMap(), true);
             // Remove duplicate nodes in ways
             if (!node.getCoor().equals(previousCoor)) {
                 managedNodes.add(node);
+                osmNodes.add(node.getPrimitive());
             }
             previousCoor = node.getCoor();
         }
-        return new ManagedWayImpl(managedNodes, tags);
+        Way way = new Way();
+        way.setNodes(osmNodes);
+        way.setKeys(tags);
+        return new ManagedWayImpl(layerManager, way);
     }
 
     @Override
     public ManagedWay buildWay(Coordinate[] coordinates, int from, int to,
             Map<String, String> tags) {
-        List<ManagedNode> managedNodes = new ArrayList<>(to - from + 1);
-        for (int i = from; i <= to; i++) {
-            ManagedNode node = buildNode(coordinates[i], null, true);
-            managedNodes.add(node);
+        if (to > coordinates.length) {
+            throw new ArrayIndexOutOfBoundsException();
         }
-        return new ManagedWayImpl(managedNodes, tags);
+        return buildWay(Arrays.copyOfRange(coordinates, from, to + 1), tags);
     }
 
     /* (non-Javadoc)
@@ -247,5 +263,10 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
         if (point == null)
             return null;
         return buildNode(point.getCoordinate(), tags, merge);
+    }
+
+    public ManagedRelation buildRelation(List<ManagedRelationMember> members,
+            HashMap<String, String> tags) {
+        return new ManagedRelationImpl(layerManager, members, tags);
     }
 }

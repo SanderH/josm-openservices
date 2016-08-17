@@ -1,55 +1,55 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode.NodeReferrer;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements ManagedWay {
     private List<ManagedNode> nodes;
-    private Set<ManagedWay> adjacentWays = new HashSet<>();
+//    private Set<ManagedWay> adjacentWays = new HashSet<>();
     private BBox bbox;
 
-    public ManagedWayImpl(List<ManagedNode> nodes, Way way) {
-        super(way);
-        this.nodes = new ArrayList<>(nodes);
-        int last = nodes.size() - 1;
-        if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
-            this.nodes.set(0, this.nodes.get(last));
-        }
-        findAdjacentWays();
+    public ManagedWayImpl(LayerManager layerManager, Way way) {
+        super(layerManager, way);
+//        this.nodes = new ArrayList<>(nodes);
+//        int last = nodes.size() - 1;
+//        if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
+//            this.nodes.set(0, this.nodes.get(last));
+//        }
+//        findAdjacentWays();
     }
 
-    public ManagedWayImpl(List<ManagedNode> nodes, Map<String, String> tags) {
-        super(tags);
-        this.nodes = new ArrayList<>(nodes);
-        int last = nodes.size() - 1;
-        if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
-            this.nodes.set(0, this.nodes.get(last));
-        }
+//    public ManagedWayImpl(LayerManager layerManager, List<ManagedNode> nodes, Map<String, String> tags) {
+//        super(layerManager, tags);
+//        this.nodes = new ArrayList<>(nodes);
+//        int last = nodes.size() - 1;
+//        if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
+//            this.nodes.set(0, this.nodes.get(last));
+//        }
+//    }
+    
+    public void setNodes(List<ManagedNode> nodes) {
+        this.nodes = nodes;
     }
     
-    private void findAdjacentWays() {
-        for (ManagedNode node : nodes) {
-            for (NodeReferrer referrer : node.getReferrers()) {
-                ManagedWay way = referrer.getWay();
-                if (!way.equals(this)) {
-                    adjacentWays.add(way);
-                }
-            }
-        }
-    }
+//    private void findAdjacentWays() {
+//        for (ManagedNode node : nodes) {
+//            for (NodeReferrer referrer : node.getReferrers()) {
+//                ManagedWay way = referrer.getWay();
+//                if (!way.equals(this)) {
+//                    adjacentWays.add(way);
+//                }
+//            }
+//        }
+//    }
 
 //    public ManagedWayImpl(Way osmWay, LayerManager layerManager) {
 //        super(osmWay);
@@ -123,18 +123,32 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         return new BBox(minLon, minLat, maxLon, maxLat);
     }
 
+//    @Override
+//    public Way create(DataSet dataSet) {
+//        Way way = getPrimitive();
+//        if (way == null) {
+//            List<Node> nodes = new ArrayList<>(getNodes().size());
+//            for (ManagedNode mNode : getNodes()) {
+//                nodes.add(mNode.create(dataSet));
+//            }
+//            way = new Way();
+//            way.setNodes(nodes);
+//            way.setKeys(getKeys());
+//            setPrimitive(way);
+//            dataSet.addPrimitive(way);
+//        }
+//        return way;
+//    }
+
     @Override
     public Way create(DataSet dataSet) {
         Way way = getPrimitive();
-        if (way == null) {
-            List<Node> nodes = new ArrayList<>(getNodes().size());
-            for (ManagedNode mNode : getNodes()) {
-                nodes.add(mNode.create(dataSet));
+        for (Node node : way.getNodes()) {
+            if (node.getDataSet() == null) {
+                dataSet.addPrimitive(node);
             }
-            way = new Way();
-            way.setNodes(nodes);
-            way.setKeys(getKeys());
-            setPrimitive(way);
+        }
+        if (way.getDataSet() == null) {
             dataSet.addPrimitive(way);
         }
         return way;

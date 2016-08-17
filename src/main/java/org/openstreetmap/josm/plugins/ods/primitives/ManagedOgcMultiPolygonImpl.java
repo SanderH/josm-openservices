@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -23,7 +25,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
     
     public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon<?>> managedPolygons,
             Map<String, String> keys) {
-        super(createRelationMembers(managedPolygons), keys);
+        super(getLayerManager(managedPolygons), createRelationMembers(managedPolygons), keys);
         this.managedPolygons = managedPolygons;
     }
 
@@ -70,5 +72,15 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
             members.add(new ManagedRelationMemberImpl("", polygon));
         }
         return members;
+    }
+    
+    private static LayerManager getLayerManager(Collection<ManagedPolygon<?>> managedPolygons) {
+        assert !managedPolygons.isEmpty();
+        Iterator<ManagedPolygon<?>> it = managedPolygons.iterator();
+        LayerManager layerManager = it.next().getLayerManager();
+        while (it.hasNext()) {
+            assert it.next().getLayerManager() == layerManager;
+        }
+        return layerManager;
     }
 }

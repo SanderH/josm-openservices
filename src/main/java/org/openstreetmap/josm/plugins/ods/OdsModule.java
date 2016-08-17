@@ -259,8 +259,6 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
 
     @Override
     public void layerRemoving(LayerRemoveEvent event) {
-        // Hack to prevent this method from running when Josm is exiting.
-        
         if (isActive() && !isExiting()) {
             if (this.getLayerManager(event.getRemovedLayer()) != null) {
                 String message = tr("You removed one of the layers that belong to the {0} module." +

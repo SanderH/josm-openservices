@@ -18,7 +18,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * 
  */
 public class OpenDataLayerManager extends AbstractLayerManager {
-    private ManagedNodeSet managedNodes = new ManagedNodeSet();
+    private ManagedNodeSet managedNodes = new ManagedNodeSet(this);
     private Geometry boundary;
 
     public OpenDataLayerManager(String name) {

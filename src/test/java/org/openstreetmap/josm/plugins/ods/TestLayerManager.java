@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
-import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
@@ -27,23 +29,19 @@ public class TestLayerManager implements LayerManager, LayerChangeListener {
         return repository;
     }
 
-
     @Override
-    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-        // TODO Auto-generated method stub
-
+    public void layerAdded(LayerAddEvent e) {
+        // No action required
     }
 
     @Override
-    public void layerAdded(Layer newLayer) {
-        // TODO Auto-generated method stub
-
+    public void layerRemoving(LayerRemoveEvent e) {
+        // No action required
     }
 
     @Override
-    public void layerRemoved(Layer oldLayer) {
-        // TODO Auto-generated method stub
-
+    public void layerOrderChanged(LayerOrderChangeEvent e) {
+        // No action required
     }
 
     @Override

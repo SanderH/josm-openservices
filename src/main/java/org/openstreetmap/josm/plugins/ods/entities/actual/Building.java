@@ -2,13 +2,13 @@ package org.openstreetmap.josm.plugins.ods.entities.actual;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 //import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
-import org.openstreetmap.josm.tools.Predicate;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -53,19 +53,15 @@ public interface Building extends Entity {
 
     public void setIncomplete(boolean incomplete);
     
-    public static boolean isBuilding(OsmPrimitive primitive) {
-        return ((primitive.hasKey("building") || primitive.hasKey("building:part")) &&
-                (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-                || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON 
-                || primitive.getDisplayType() == OsmPrimitiveType.RELATION));
-    }
-    
     public final static Predicate<OsmPrimitive> IsBuilding = new Predicate<OsmPrimitive>() {
         @Override
-        public boolean evaluate(OsmPrimitive primitive) {
-            return isBuilding(primitive);
+        public boolean test(OsmPrimitive primitive) {
+            return ((primitive.hasKey("building") || primitive.hasKey("building:part")) &&
+                    (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
+                    || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON 
+                    || primitive.getDisplayType() == OsmPrimitiveType.RELATION));
         }
     };
-
+    
     public void setAddress(Address address);
 }

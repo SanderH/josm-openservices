@@ -8,13 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import nl.gertjanidema.conversion.valuemapper.ValueMapperException;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import nl.gertjanidema.conversion.valuemapper.ValueMapperException;
 
 /**
  * Implementation of MetaDataLoader that

@@ -47,5 +47,4 @@ public class LayerUpdater {
             layerManager.register(osmPrimitive, primitive);
         }
     }
-
 }

@@ -1,11 +1,14 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.CONSTRUCTION;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.PLANNED;
+
 import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-
-import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.*;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.tools.Geometry;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -54,8 +57,10 @@ public class BuildingMatch extends MatchImpl<Building> {
     }
     
     private MatchStatus compareAreas() {
-        double osmArea = getOsmEntity().getGeometry().getArea();
-        double odArea = getOpenDataEntity().getGeometry().getArea();
+//        double osmArea = getOsmEntity().getGeometry().getArea();
+        double osmArea = Geometry.computeArea(getOsmEntity().getPrimitive().getPrimitive());
+//        double odArea = getOpenDataEntity().getGeometry().getArea();
+        double odArea = Geometry.computeArea(getOpenDataEntity().getPrimitive().getPrimitive());
         if (osmArea == 0.0 || odArea == 0.0) {
             areaMatch = MatchStatus.NO_MATCH;
         }

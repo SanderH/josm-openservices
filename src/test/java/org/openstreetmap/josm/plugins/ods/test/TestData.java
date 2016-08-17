@@ -1,9 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.test;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import static org.junit.Assert.*;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;

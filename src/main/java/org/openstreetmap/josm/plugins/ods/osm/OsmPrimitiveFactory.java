@@ -92,7 +92,7 @@ public interface OsmPrimitiveFactory {
      * @param line
      * @return
      */
-    public ManagedWay buildWay(Coordinate start, Coordinate end, Map<String, String> tags);
+//    public ManagedWay buildWay(Coordinate start, Coordinate end, Map<String, String> tags);
 
     /**
      * Create a josm Node from a Coordinate object. Optionally merge with

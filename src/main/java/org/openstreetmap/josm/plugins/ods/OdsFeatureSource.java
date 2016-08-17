@@ -4,7 +4,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.Host;
-import org.openstreetmap.josm.plugins.ods.io.ServiceState;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**

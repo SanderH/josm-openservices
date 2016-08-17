@@ -1,33 +1,57 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.NodeData;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implements ManagedPrimitive<P> {
     private P primitive = null;
+    private LayerManager layerManager;
+//    private Set<ManagedPrimitive<?>> referrers;
     private long uniqueId = (new NodeData()).getUniqueId();
     private Map<String, String> keys;
     private Entity entity = null;
     
-    public AbstractManagedPrimitive() {
-        this(new HashMap<>());
+    public AbstractManagedPrimitive(LayerManager layerManager) {
+        this(layerManager, new HashMap<>());
     }
 
-    public AbstractManagedPrimitive(Map<String, String> keys) {
+    public AbstractManagedPrimitive(LayerManager layerManager, Map<String, String> keys) {
         super();
+        this.layerManager = layerManager;
         this.keys = (keys == null ? new HashMap<>() : keys);
     }
 
-    public AbstractManagedPrimitive(P primitive) {
+    public AbstractManagedPrimitive(LayerManager layerManager, P primitive) {
+        this.layerManager = layerManager;
         assert primitive != null;
         this.primitive = primitive;
     }
 
+    @Override
+    public LayerManager getLayerManager() {
+        return layerManager;
+    }
+    
+    public Collection<ManagedPrimitive<?>> getReferrers() {
+        Set<ManagedPrimitive<?>> referrers = new HashSet<>();
+        for (OsmPrimitive osm : getPrimitive().getReferrers()) {
+            ManagedPrimitive<?> ods = layerManager.getManagedPrimitive(osm);
+            if (ods != null) {
+                referrers.add(ods);
+            }
+        }
+        return referrers;
+    }
+    
     @Override
     public boolean isIncomplete() {
         return false;

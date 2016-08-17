@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -19,7 +20,6 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedWay;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
-import org.openstreetmap.josm.tools.Predicate;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -92,12 +92,12 @@ public class OsmNeighbourFinder {
     }
 
     private boolean isBuildingExterior(Way way) {
-        if (isBuilding.evaluate(way)) {
+        if (isBuilding.test(way)) {
             return true;
         }
         for (OsmPrimitive osm :way.getReferrers()) {
             Relation relation = (Relation)osm;
-            if (isBuilding.evaluate(relation)) {
+            if (isBuilding.test(relation)) {
                 for (RelationMember member : relation.getMembers()) {
                     if ("outer".equals(member.getRole()) &&
                             member.getMember() == way) {

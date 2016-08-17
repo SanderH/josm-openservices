@@ -17,7 +17,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
-import org.openstreetmap.josm.plugins.ods.wfs.file.FileWFSHost;
 
 public class TestFileWFSHost {
     private final static String BAG_URI = "http://bag.geonovum.nl";

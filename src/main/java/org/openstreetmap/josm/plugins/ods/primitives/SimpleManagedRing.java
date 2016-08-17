@@ -8,7 +8,6 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.tools.Geometry;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -29,7 +28,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
     }
 
     public SimpleManagedRing(ManagedWay managedWay, Boolean isClockWise) {
-        super();
+        super(managedWay.getLayerManager());
         this.managedWay = managedWay;
         this.isClockWise = isClockWise;
         if (!managedWay.isClosed()) {
@@ -55,11 +54,6 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
     @Override
     public Map<String, String> getKeys() {
         return managedWay.getKeys();
-    }
-
-    @Override
-    public Entity getEntity() {
-        return managedWay.getEntity();
     }
 
     @Override

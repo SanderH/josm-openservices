@@ -1,17 +1,22 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public interface ManagedPrimitive<T extends OsmPrimitive> {
+    public LayerManager getLayerManager();
     public Long getUniqueId();
+    public void setPrimitive(T primitive);
     public T getPrimitive();
+    public Collection<ManagedPrimitive<?>> getReferrers();
     public <E extends Entity> void setEntity(E entity);
     public Envelope getEnvelope();
     public BBox getBBox();

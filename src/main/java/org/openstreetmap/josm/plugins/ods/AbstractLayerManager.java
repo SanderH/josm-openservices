@@ -6,6 +6,15 @@ import java.util.Map;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.data.osm.event.AbstractDatasetChangedEvent;
+import org.openstreetmap.josm.data.osm.event.DataChangedEvent;
+import org.openstreetmap.josm.data.osm.event.DataSetListener;
+import org.openstreetmap.josm.data.osm.event.NodeMovedEvent;
+import org.openstreetmap.josm.data.osm.event.PrimitivesAddedEvent;
+import org.openstreetmap.josm.data.osm.event.PrimitivesRemovedEvent;
+import org.openstreetmap.josm.data.osm.event.RelationMembersChangedEvent;
+import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
+import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
@@ -17,13 +26,10 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
  * @author Gertjan Idema
  * 
  */
-public abstract class AbstractLayerManager implements LayerManager {
+public abstract class AbstractLayerManager implements LayerManager, DataSetListener {
     private String name;
     private OsmDataLayer osmDataLayer;
     private Map<OsmPrimitive, ManagedPrimitive<?>> primitiveMap = new HashMap<>();
-//    private Map<Long, Entity> nodeEntities = new HashMap<>();
-//    private Map<Long, Entity> wayEntities = new HashMap<>();
-//    private Map<Long, Entity> relationEntities = new HashMap<>();
     private GeoRepository repository = new GeoRepository();
     private boolean active = false;
 
@@ -50,8 +56,10 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
     
     protected OsmDataLayer createOsmDataLayer() {
-        OsmDataLayer layer = new OsmDataLayer(new DataSet(), getName(), null);
+        DataSet dataSet = new DataSet();
+        OsmDataLayer layer = new OsmDataLayer(dataSet, getName(), null);
         layer.setUploadDiscouraged(!isOsm());
+        dataSet.addDataSetListener(this);
         return layer;
     }
 
@@ -100,40 +108,51 @@ public abstract class AbstractLayerManager implements LayerManager {
         primitiveMap.put(primitive, managedPrimitive);
     }
 
-
-//    @Override
-//    public void register(OsmPrimitive primitive, Entity entity) {
-//        switch (primitive.getType()) {
-//        case NODE:
-//            nodeEntities.put(primitive.getUniqueId(), entity);
-//            break;
-//        case WAY:
-//            wayEntities.put(primitive.getUniqueId(), entity);
-//            break;
-//        case RELATION:
-//            relationEntities.put(primitive.getUniqueId(), entity);
-//            break;
-//        default:
-//            break;
-//        }
-//    }
-
     @Override
     public ManagedPrimitive<?> getManagedPrimitive(OsmPrimitive primitive) {
         return primitiveMap.get(primitive);
     }
+
+    // Implement DataSetListener.
+    // The default is to ignore all events
     
-//    @Override
-//    public Entity getEntity(OsmPrimitive primitive) {
-//        switch (primitive.getType()) {
-//        case NODE:
-//            return nodeEntities.get(primitive.getUniqueId());
-//        case WAY:
-//            return wayEntities.get(primitive.getUniqueId());
-//        case RELATION:
-//            return relationEntities.get(primitive.getUniqueId());
-//        default:
-//            return null;
-//        }
-//    }
+    @Override
+    public void primitivesAdded(PrimitivesAddedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void primitivesRemoved(PrimitivesRemovedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void tagsChanged(TagsChangedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void nodeMoved(NodeMovedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void wayNodesChanged(WayNodesChangedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void relationMembersChanged(RelationMembersChangedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void otherDatasetChange(AbstractDatasetChangedEvent event) {
+        // ignore
+    }
+
+    @Override
+    public void dataChanged(DataChangedEvent event) {
+        // ignore
+    }
 }

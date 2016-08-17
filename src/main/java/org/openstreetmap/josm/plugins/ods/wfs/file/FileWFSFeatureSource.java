@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.xml.namespace.QName;
 
-import org.geotools.data.wfs.v1_1_0.parsers.XmlSimpleFeatureParser;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

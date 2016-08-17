@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNodeImpl;
 
@@ -16,8 +17,15 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedNodeImpl;
  *
  */
 public class ManagedNodeSet {
+    private LayerManager layerManager;
     private Map<LatLon, ManagedNode> nodes = new HashMap<>();
     
+    public ManagedNodeSet(LayerManager layerManager) {
+        super();
+        this.layerManager = layerManager;
+    }
+
+
     public ManagedNode add(LatLon latLon, Map<String, String> tags, boolean merge) {
         LatLon ll = latLon.getRoundedToOsmPrecision();
         ManagedNode odsNode = (merge ? nodes.get(ll) : null);
@@ -26,7 +34,7 @@ public class ManagedNodeSet {
             if (tags != null) {
                 osmNode.setKeys(tags);
             }
-            odsNode = new ManagedNodeImpl(osmNode);
+            odsNode = new ManagedNodeImpl(layerManager, osmNode);
             nodes.put(ll, odsNode);
         }
         else {
