@@ -119,6 +119,7 @@ public class OdsFeatureSource<C extends OdsFeatureCollection> implements SimpleF
         return featureCollection;
     }
 
+    @SuppressWarnings("static-method")
     protected OdsFeatureCollection getFeatureCollection(SimpleFeatureCollection wrappedFeatureCollection) {
         return new OdsFeatureCollection(wrappedFeatureCollection);
     }

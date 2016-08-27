@@ -75,7 +75,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         }
     }
     
-    public void initializeHosts(OdsModuleConfiguration configuration) throws OdsException {
+    private static void initializeHosts(OdsModuleConfiguration configuration) throws OdsException {
         StringBuilder sb = new StringBuilder(100);
         for (Host host : configuration.getHosts()) {
             try {
@@ -93,7 +93,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         }
     }
 
-    public void initializeFeatureSources(OdsModuleConfiguration configuration) throws OdsException {
+    private static void initializeFeatureSources(OdsModuleConfiguration configuration) throws OdsException {
         StringBuilder sb = new StringBuilder(100);
         for (OdsFeatureSource featureSource : configuration.getFeatureSources()) {
             try {
@@ -111,7 +111,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         }
     }
 
-    public void initializeDataSources(OdsModuleConfiguration configuration) throws OdsException {
+    private static void initializeDataSources(OdsModuleConfiguration configuration) throws OdsException {
         List<String> problems = new LinkedList<>();
         for (OdsDataSource dataSource : configuration.getDataSources()) {
             try {
@@ -273,8 +273,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         }
     }
 
-    
-    private boolean isExiting() {
+    private static boolean isExiting() {
         for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
             if ("exitJosm".equals(element.getMethodName())) {
                 return true;
@@ -285,12 +284,14 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
 
     @Override
     public void layerOrderChanged(LayerOrderChangeEvent e) {
+        // No action required
     }
 
     public abstract Bounds getBounds();
 
     public abstract MainDownloader getDownloader();
 
+    @SuppressWarnings("static-method")
     public boolean usePolygonFile() {
         return false;
     }

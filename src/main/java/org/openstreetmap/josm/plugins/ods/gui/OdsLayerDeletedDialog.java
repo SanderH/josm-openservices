@@ -4,6 +4,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JButton;
@@ -53,17 +54,17 @@ public class OdsLayerDeletedDialog extends JDialog {
 
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
-        pnl.add(lbl, GBC.eol().anchor(GBC.NORTH).insets(5, 5, 5, 5));
+        pnl.add(lbl, GBC.eol().anchor(GridBagConstraints.NORTH).insets(5, 5, 5, 5));
         pnl.add(buttonReset,
-                GBC.std().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+                GBC.std().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
         pnl.add(buttonDisable,
-                GBC.eol().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+                GBC.eol().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
         pnl.revalidate();
         pnl.repaint();
         return pnl;
     }
 
-    protected Dimension getDimension() {
+    protected static Dimension getDimension() {
         return new Dimension(300, 200);
     }
 

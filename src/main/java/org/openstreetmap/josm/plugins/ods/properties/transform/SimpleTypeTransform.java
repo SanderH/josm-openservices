@@ -24,6 +24,7 @@ public class SimpleTypeTransform<S, T> implements TypeTransform<S, T> {
         return targetType;
     }
 
+    @Override
     public Function<S, T> getFunction() {
         return function;
     }

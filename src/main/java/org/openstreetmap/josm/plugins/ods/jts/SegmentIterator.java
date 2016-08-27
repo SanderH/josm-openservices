@@ -30,7 +30,7 @@ public class SegmentIterator {
         this.geoUtil = geoUtil;
         this.ring = ring;
         int size = ring.getNumPoints();
-        coords = new ArrayList<Coordinate>(size + 5);
+        coords = new ArrayList<>(size + 5);
         if (CGAlgorithms.isCCW(ring.getCoordinates()) ^ ccw) {
             for (int i = size - 1; i >= 0; i--) {
                 coords.add(ring.getCoordinateN(i));
@@ -128,17 +128,17 @@ public class SegmentIterator {
         }
     }
 
-    private void updatePoint(int index, Coordinate coord) {
-        coords.set(index, coord);
+    private void updatePoint(int idx, Coordinate coord) {
+        coords.set(idx, coord);
         if (index == 0) {
             coords.set(coords.size() - 1, coord);
         }
         modified = true;
     }
 
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
+//    public static void remove() {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Get the previous index with respect to the currentLs index
@@ -194,14 +194,14 @@ public class SegmentIterator {
         try {
             return geoUtil.toLinearRing(coords);
         }
-        catch (@SuppressWarnings("unused") IllegalArgumentException e) {
+        catch (IllegalArgumentException e) {
             Main.warn("Invalid ring. Not fixed.");
             return ring;
         }
     }
 
-    public void reset(int index) {
-        this.index = index;
+    public void reset(int idx) {
+        this.index = idx;
         this.startIndex = index;
         this.roundTrip = true;
         currentLs = null;

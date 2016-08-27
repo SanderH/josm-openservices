@@ -18,6 +18,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
  *
  */
 public class OsmBuildingToAddressNodesMatcher {
+    @SuppressWarnings("unused")
     private OdsModule module;
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
     

@@ -74,6 +74,7 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
         return (Point) super.getGeometry();
     }
     
+    @Override
     public String toString() {
         return getAddress().toString();
     }

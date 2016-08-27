@@ -4,6 +4,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.beans.PropertyChangeEvent;
 
@@ -41,6 +42,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
 
     protected SlippyMapBBoxChooser slippyMap;
 
+    @Override
     protected JPanel buildMainPanel() {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
@@ -57,16 +59,16 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         slippyMap.addPropertyChangeListener(this);
         pnl.add(slippyMap, GBC.eol().fill());
         pnl.add(cbDownloadOSM,
-                GBC.std().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+                GBC.std().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
         pnl.add(cbDownloadODS,
-                GBC.eol().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+                GBC.eol().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
 
 //        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
 
         if (!ExpertToggleAction.isExpert()) {
             JLabel infoLabel = new JLabel(
                     tr("Use left click&drag to select area, arrows or right mouse button to scroll map, wheel or +/- to zoom."));
-            pnl.add(infoLabel, GBC.eol().anchor(GBC.SOUTH).insets(0, 0, 0, 0));
+            pnl.add(infoLabel, GBC.eol().anchor(GridBagConstraints.SOUTH).insets(0, 0, 0, 0));
         }
         pnl.revalidate();
         pnl.repaint();
@@ -99,6 +101,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         }
     }
 
+    @Override
     public Bounds getSelectedDownloadArea() {
         return currentBounds;
     }
@@ -120,7 +123,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
      * saved bounding box. If its missing, return null
      * @return
      */
-    private Bounds createBBox() {
+    private static Bounds createBBox() {
         if (Main.isDisplayingMapView()) {
             Bounds bounds = eastNorthToLatLon(Main.map.mapView.getProjectionBounds(), Main.map.mapView.getProjection());
             if (bounds.getCenter().getX() != 0.0 || bounds.getCenter().getY() != 0.0) {
@@ -139,11 +142,12 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         return null;
     }
 
-    private Bounds eastNorthToLatLon(ProjectionBounds bounds, Projection proj) {
+    private static Bounds eastNorthToLatLon(ProjectionBounds bounds, Projection proj) {
         return new Bounds(proj.eastNorth2latlon(bounds.getMin()),
             proj.eastNorth2latlon(bounds.getMax()));
     }
     
+    @Override
     protected Dimension getDimension() {
         return new Dimension(1000, 600);
     }

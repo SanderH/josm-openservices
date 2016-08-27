@@ -14,7 +14,7 @@ public class GeoEntityRepository extends EntityRepository {
         return (GeoIndex<E>) index;
     }
     
-    private <T extends Entity> GeoIndex<T> createGeoIndex(Class<T> type, String property) {
-        return new GeoIndexImpl<T>(type, property);
+    private static <T extends Entity> GeoIndex<T> createGeoIndex(Class<T> type, String property) {
+        return new GeoIndexImpl<>(type, property);
     }
 }

@@ -22,7 +22,7 @@ public abstract class AbstractHost implements Host {
     private URL url;
     private Integer maxFeatures;
     private MetaData metaData;
-    private final List<MetaDataLoader> metaDataLoaders = new LinkedList<MetaDataLoader>();
+    private final List<MetaDataLoader> metaDataLoaders = new LinkedList<>();
 
     public AbstractHost(String name, String url) {
         this(name, url, -1);
@@ -65,7 +65,7 @@ public abstract class AbstractHost implements Host {
         setInitialized(true);
         try {
             url = new URL(uncheckedUrl);
-        } catch (@SuppressWarnings("unused") MalformedURLException e) {
+        } catch (MalformedURLException e) {
             setAvailable(false);
             String msg = String.format("Invalid url: %s", uncheckedUrl);
             throw new OdsException(msg);

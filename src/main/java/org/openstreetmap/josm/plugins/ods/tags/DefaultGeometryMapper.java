@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
@@ -23,7 +22,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Gertjan Idema
  *
  */
-public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T> {
+public class DefaultGeometryMapper implements GeometryMapper {
   private OsmPrimitiveFactory primitiveBuilder;
   private String targetPrimitive;
   private final Boolean merge = false;

@@ -83,10 +83,12 @@ public class UniqueIndexImpl<T> implements UniqueIndex<T> {
 //        }
 //    }
 //    
+    @Override
     public Iterator<T> iterator() {
         return map.values().iterator();
     }
 
+    @Override
     public Stream<T> stream() {
         return map.values().stream();
     }
@@ -100,10 +102,12 @@ public class UniqueIndexImpl<T> implements UniqueIndex<T> {
         return map.get(key);
     }
     
+    @Override
     public Iterable<T> getAll() {
         return map.values();
     }
     
+    @Override
     public List<T> getAll(Object key) {
         T result = map.get(key);
         if (result == null) {
@@ -128,13 +132,11 @@ public class UniqueIndexImpl<T> implements UniqueIndex<T> {
             if (getters.length == 1) {
                 return getters[0].invoke(entity);
             }
-            else {
-                List<Object> key = new ArrayList<>(getters.length);
-                for (int i=0; i<getters.length; i++) {
-                    key.add(getters[i].invoke(entity));
-                }
-                return key;
+            List<Object> key = new ArrayList<>(getters.length);
+            for (int i=0; i<getters.length; i++) {
+                key.add(getters[i].invoke(entity));
             }
+            return key;
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return null;

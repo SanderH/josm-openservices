@@ -57,16 +57,16 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
 
     @Override
     public Relation create(DataSet dataSet) {
-        Relation relation = getPrimitive();
-        if (relation == null) {
-            relation = new Relation();
+        Relation rel = getPrimitive();
+        if (rel == null) {
+            rel = new Relation();
             for (ManagedRelationMember member : getMembers()) {
                 ManagedPrimitive<?> primitive = member.getPrimitive();
                 OsmPrimitive osmPrimitive = primitive.create(dataSet);
-                relation.addMember(new RelationMember(member.getRole(), osmPrimitive));
+                rel.addMember(new RelationMember(member.getRole(), osmPrimitive));
             }
         }
-        return relation;
+        return rel;
     }
 
     public void setMembers(List<ManagedRelationMember> members) {

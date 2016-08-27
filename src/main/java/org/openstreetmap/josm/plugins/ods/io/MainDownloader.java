@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +75,7 @@ public class MainDownloader {
         }
     }
     
-    public void run(ProgressMonitor pm, DownloadRequest request) throws ExecutionException, InterruptedException {
+    public void run(ProgressMonitor pm, DownloadRequest request) {
         status.clear();
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup(request);
@@ -120,7 +119,7 @@ public class MainDownloader {
      */
     private void setup(DownloadRequest request) {
         status.clear();
-        enabledDownloaders = new LinkedList<LayerDownloader>();
+        enabledDownloaders = new LinkedList<>();
         if (request.isGetOsm()) {
             enabledDownloaders.add(osmLayerDownloader);
         }
@@ -152,9 +151,9 @@ public class MainDownloader {
             status.setFailed(true);
         }
         for (LayerDownloader downloader : enabledDownloaders) {
-            Status status = downloader.getStatus();
-            if (!status.isSucces()) {
-                this.status = status;
+            Status st = downloader.getStatus();
+            if (!st.isSucces()) {
+                this.status = st;
             }
         }
     }
@@ -179,18 +178,18 @@ public class MainDownloader {
             status.setFailed(true);
         }
         for (LayerDownloader downloader : enabledDownloaders) {
-            Status status = downloader.getStatus();
-            if (!status.isSucces()) {
-                if (status.isFailed()) {
+            Status st = downloader.getStatus();
+            if (!st.isSucces()) {
+                if (st.isFailed()) {
                     this.status.setFailed(true);
                 }
-                if (status.isCancelled()) {
+                if (st.isCancelled()) {
                     this.status.setCancelled(true);
                 }
-                if (status.isTimedOut()) {
+                if (st.isTimedOut()) {
                     this.status.setTimedOut(true);
                 }
-                this.status.setMessage(this.status.getMessage() + "\n" + status.getMessage());
+                this.status.setMessage(this.status.getMessage() + "\n" + st.getMessage());
             }
             if (this.status.isFailed()) {
                 JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
@@ -232,9 +231,9 @@ public class MainDownloader {
             status.setFailed(true);
         }
         for (LayerDownloader downloader : enabledDownloaders) {
-            Status status = downloader.getStatus();
-            if (!status.isSucces()) {
-                this.status = status;
+            Status st = downloader.getStatus();
+            if (!st.isSucces()) {
+                this.status = st;
             }
         }
         if (status.isSucces()) {
@@ -244,7 +243,7 @@ public class MainDownloader {
         }
     }
 
-    protected void computeBboxAndCenterScale(Bounds bounds) {
+    protected static void computeBboxAndCenterScale(Bounds bounds) {
         BoundingXYVisitor v = new BoundingXYVisitor();
         if (bounds != null) {
             v.visit(bounds);

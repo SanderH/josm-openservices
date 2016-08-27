@@ -8,7 +8,7 @@ import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 public class PojoPropertyHandlerFactory {
     
     public <T1, T2> PropertyHandler<T1, T2> createPropertyHandler(Class<T1> objectClass, Class<T2> attrClass, String name) {
-        PropertyHandler<T1, T2> result = new PojoPropertyHandler<T1, T2>(objectClass, attrClass, name);
+        PropertyHandler<T1, T2> result = new PojoPropertyHandler<>(objectClass, attrClass, name);
         return result;
     }
 

@@ -44,6 +44,7 @@ public class BuildingImpl extends AbstractEntity implements Building {
         return buildingType;
     }
 
+    @Override
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
     }
@@ -53,6 +54,7 @@ public class BuildingImpl extends AbstractEntity implements Building {
         return city;
     }
 
+    @Override
     public void setAddress(Address address) {
         this.address = address;
     }
@@ -73,6 +75,7 @@ public class BuildingImpl extends AbstractEntity implements Building {
         return housingUnits;
     }
 
+    @Override
     public List<AddressNode> getAddressNodes() {
         return addressNodes;
     }

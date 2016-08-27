@@ -49,7 +49,9 @@ public interface HousingUnit extends Entity {
 
     public void setGeometry(Point point);
     
+    @Override
     public Point getGeometry();
     
+    @Override
     public Class<HousingUnit> getBaseType();
 }

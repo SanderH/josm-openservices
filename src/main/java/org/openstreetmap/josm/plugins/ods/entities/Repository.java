@@ -17,10 +17,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class Repository {
-    private Map<Class<?>, EntityManager<?>> managers = new HashMap<>();
+    Map<Class<?>, EntityManager<?>> managers = new HashMap<>();
     
-    public <T> void register(Class<T> type) {
-    }
+//    public <T> void register(Class<T> type) {
+//    }
     
     public <T> void register(Class<T> type, String ... properties) {
         UniqueIndex<T> primaryIndex = new UniqueIndexImpl<>(type, properties);
@@ -62,7 +62,7 @@ public class Repository {
 
     private <E extends Object> EntityManager<E> createEntityManager(
             Class<E> type) {
-        EntityManager<E> manager = new EntityManager<E>(type);
+        EntityManager<E> manager = new EntityManager<>(type);
         for (Class<?> superClass : getSuperClasses(type)) {
             @SuppressWarnings("unchecked")
             EntityManager<? super E> superManager = (EntityManager<? super E>) getUntypedManager(superClass);
@@ -96,7 +96,7 @@ public class Repository {
                         iterators.add(manager.getAll().iterator());
                     }
                 }
-                return new NestedIterator<Object>(iterators);
+                return new NestedIterator<>(iterators);
             }
         };
     }
@@ -170,7 +170,7 @@ public class Repository {
 
         
         public final UniqueIndex<T> createUniqueIndex(String ... properties) {
-            UniqueIndex<T> index = new UniqueIndexImpl<T>(type, properties);
+            UniqueIndex<T> index = new UniqueIndexImpl<>(type, properties);
             addIndex(index);
             return index;
         }
@@ -202,17 +202,17 @@ public class Repository {
             return boundary;
         }
 
-        public void extendBoundary(Geometry boundary) {
+        public void extendBoundary(Geometry bounds) {
             if (this.boundary == null) {
-                this.boundary = boundary;
+                this.boundary = bounds;
             } else {
-                this.boundary = this.boundary.union(boundary);
+                this.boundary = this.boundary.union(bounds);
             }
         }
 
         public UniqueIndex<T> getPrimaryIndex() {
             return primaryIndex;
-        };
+        }
 
         public Iterator<T> iterator() {
             return getPrimaryIndex().iterator();

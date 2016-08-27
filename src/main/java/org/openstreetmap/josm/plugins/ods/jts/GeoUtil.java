@@ -80,11 +80,12 @@ public class GeoUtil {
         return toPoint(toCoordinate(latLon));    
     }
     
+    @SuppressWarnings("static-method")
     public Point toPoint(Coordinate coord) {
         return OSM_GEOMETRY_FACTORY.createPoint(coord);
     }
 
-    public LatLon toLatLon(Point point) {
+    public static LatLon toLatLon(Point point) {
         return new LatLon(point.getY(), point.getX());
     }
     

@@ -23,6 +23,7 @@ public abstract class AbstractEntity implements Entity {
     private ManagedPrimitive<?> primitive;
     private Match<? extends Entity> match;
 
+    @Override
     public void setPrimaryId(Object primaryId) {
         this.primaryId = primaryId;
     }
@@ -32,30 +33,37 @@ public abstract class AbstractEntity implements Entity {
         return primaryId;
     }
 
+    @Override
     public Object getReferenceId() {
         return referenceId;
     }
 
+    @Override
     public void setReferenceId(Object referenceId) {
         this.referenceId = referenceId;
     }
 
+    @Override
     public void setDownloadResponse(DownloadResponse response) {
         this.response = response;
     }
     
+    @Override
     public DownloadResponse getDownloadResponse() {
         return response;
     }
 
+    @Override
     public void setSourceDate(LocalDate date) {
         this.sourceDate = date;
     }
 
+    @Override
     public LocalDate getSourceDate() {
         return sourceDate;
     }
 
+    @Override
     public void setSource(String source) {
         this.source = source;
     }
@@ -65,10 +73,12 @@ public abstract class AbstractEntity implements Entity {
         return source;
     }
 
+    @Override
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
     
+    @Override
     public Geometry getGeometry() {
         return geometry;
     }
@@ -88,10 +98,12 @@ public abstract class AbstractEntity implements Entity {
         return otherTags;
     }
 
+    @Override
     public void setOtherTags(Map<String, String> otherTags) {
         this.otherTags = otherTags;
     }
 
+    @Override
     public void setPrimitive(ManagedPrimitive<?> primitive) {
         this.primitive = primitive;
     }

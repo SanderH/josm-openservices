@@ -55,7 +55,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
      * 
      * @param newEntities
      */
-    private Map<Point, AddressNodeGroup> buildGroups(Building building) {
+    private static Map<Point, AddressNodeGroup> buildGroups(Building building) {
         Map<Point, AddressNodeGroup> groups = new HashMap<>();
         for (HousingUnit housingUnit : building.getHousingUnits()) {
             for (AddressNode addressNode : housingUnit.getAddressNodes()) {
@@ -98,6 +98,10 @@ public class DistributeAddressNodes implements Consumer<Building> {
     private static class DefaultNodeComparator implements Comparator<AddressNode> {
         private Comparator<Address> addressComparator = new DefaultAddressComparator();
 
+        public DefaultNodeComparator() {
+            // TODO Auto-generated constructor stub
+        }
+
         @Override
         public int compare(AddressNode o1, AddressNode o2) {
             return addressComparator.compare(o1.getAddress(), o2.getAddress());
@@ -105,6 +109,10 @@ public class DistributeAddressNodes implements Consumer<Building> {
     }
     
     private static class DefaultAddressComparator implements Comparator<Address> {
+
+        public DefaultAddressComparator() {
+            // TODO Auto-generated constructor stub
+        }
 
         @Override
         public int compare(Address a1, Address a2) {
@@ -117,8 +125,8 @@ public class DistributeAddressNodes implements Consumer<Building> {
             result = Integer.compare(a1.getHouseNumber(), a2.getHouseNumber());
             if (result != 0) return result;
             if (a1.getHouseLetter() == null || a2.getHouseLetter() == null) {
-                if (a2.getHouseNumber() != null) {return -1;};
-                if (a1.getHouseNumber() != null) {return 1;};
+                if (a2.getHouseNumber() != null) return -1;
+                if (a1.getHouseNumber() != null) return 1;
             }
             else {
                 result = Character.compare(a1.getHouseLetter(), a2.getHouseLetter());

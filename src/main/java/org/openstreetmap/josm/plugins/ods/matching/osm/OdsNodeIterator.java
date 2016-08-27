@@ -21,7 +21,7 @@ public class OdsNodeIterator {
 //        this.way = way;
         this.index = startIndex;
         this.reversed = !ring.isClockWise();
-        this.nodes = new ArrayList<ManagedNode>(ring.getNodesCount());
+        this.nodes = new ArrayList<>(ring.getNodesCount());
         Iterator<? extends ManagedNode> it = ring.getNodeIterator();
         while (it.hasNext() ) {
             nodes.add(it.next());
@@ -183,8 +183,8 @@ public class OdsNodeIterator {
         return null;
     }
 
-    protected ManagedNode getNode(int index) {
-        return nodes.get(index);
+    protected ManagedNode getNode(int idx) {
+        return nodes.get(idx);
     }
 
     public boolean dWithin(NodeDWithin dWithin, ManagedNode n) {

@@ -57,7 +57,7 @@ public class GroupByFeatureIterator extends OdsFeatureIterator {
         return result;
     }
     
-    protected SimpleFeature getAggregate(List<SimpleFeature> featureGroup) {
+    protected static SimpleFeature getAggregate(List<SimpleFeature> featureGroup) {
         // Default behaviour: return the first row
         return featureGroup.get(0);
     }

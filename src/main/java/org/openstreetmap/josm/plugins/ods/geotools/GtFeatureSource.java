@@ -18,7 +18,6 @@ public class GtFeatureSource implements OdsFeatureSource {
     private final GtHost host;
     private final String featureName;
     private final String idAttribute;
-    private final String[] attributes;
     private final long maxFeatures;
     private CoordinateReferenceSystem crs;
     private MetaData metaData;
@@ -35,7 +34,6 @@ public class GtFeatureSource implements OdsFeatureSource {
         this.maxFeatures = host.getMaxFeatures();
         this.featureName = featureName;
         this.idAttribute = idAttribute;
-        this.attributes = attributes;
     }
 
     @Override

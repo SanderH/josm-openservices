@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
@@ -19,7 +18,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Gertjan Idema
  *
  */
-public interface GeometryMapper<T extends Entity> {
+public interface GeometryMapper {
   
   /**
    * Map a geometry to a list of OSM primitives. 

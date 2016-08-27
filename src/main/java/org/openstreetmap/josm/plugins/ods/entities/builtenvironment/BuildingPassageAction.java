@@ -9,6 +9,7 @@ import java.util.Collection;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.Notification;
@@ -197,9 +198,9 @@ public class BuildingPassageAction extends JosmAction {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if (getCurrentDataSet() == null)
-            return;
-        Collection<OsmPrimitive> selection = getCurrentDataSet().getSelected();
+        DataSet dataSet = getLayerManager().getEditDataSet();
+        if (dataSet == null) return;
+        Collection<OsmPrimitive> selection = dataSet.getSelected();
         BuildingHighwayPair pair = getPair(selection);
         if (pair == null) {
             new Notification(tr("Please select exactly 1 building and 1 highway."))
@@ -211,7 +212,7 @@ public class BuildingPassageAction extends JosmAction {
         LineString highway = geoUtil.toLineString(pair.getHighway());
         try {
             building = geoUtil.toLinearRing(pair.getBuilding());
-        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
+        } catch (UnclosedWayException e) {
             new Notification(tr("The building ring is not closed."))
                 .setIcon(JOptionPane.INFORMATION_MESSAGE)
                 .setDuration(Notification.TIME_SHORT).show();
@@ -230,11 +231,12 @@ public class BuildingPassageAction extends JosmAction {
 
     @Override
     protected void updateEnabledState() {
-        if (getCurrentDataSet() == null) {
+        DataSet dataSet = getLayerManager().getEditDataSet();
+        if (dataSet == null) {
             setEnabled(false);
             return;
         }
-        Collection<OsmPrimitive> selection = getCurrentDataSet().getSelected();
+        Collection<OsmPrimitive> selection = dataSet.getSelected();
         updateEnabledState(selection);
     }
 

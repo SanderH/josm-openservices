@@ -149,22 +149,21 @@ public class OpenDataServicesPlugin extends Plugin {
      * AbstractDownloadDialog and make sure an OsmData layer is active before
      * continuing;
      */
-    private void addDownloadDialogListener() {
+    private static void addDownloadDialogListener() {
         DownloadDialog.getInstance().addComponentListener(
             new ComponentAdapter() {
                 @Override
                 public void componentShown(ComponentEvent e) {
                     if (!Main.isDisplayingMapView())
                         return;
-                    Layer activeLayer = Main.main.getActiveLayer();
+                    Layer activeLayer = Main.getLayerManager().getActiveLayer();
                     if (activeLayer.getName().startsWith("ODS")
                             || activeLayer.getName().startsWith("OSM")) {
-                        for (Layer layer : Main.map.mapView
-                                .getAllLayersAsList()) {
+                        for (Layer layer : Main.getLayerManager().getLayers()) {
                             if (layer instanceof OsmDataLayer
                                     && !(layer.getName().startsWith("ODS"))
                                     && !(layer.getName().startsWith("OSM"))) {
-                                Main.map.mapView.setActiveLayer(layer);
+                                Main.getLayerManager().setActiveLayer(layer);
                                 return;
                             }
                         }
@@ -173,8 +172,8 @@ public class OpenDataServicesPlugin extends Plugin {
                     }
                     Layer newLayer = new OsmDataLayer(new DataSet(),
                             OsmDataLayer.createNewName(), null);
-                    Main.map.mapView.addLayer(newLayer);
-                    Main.map.mapView.setActiveLayer(newLayer);
+                    Main.getLayerManager().addLayer(newLayer);
+                    Main.getLayerManager().setActiveLayer(newLayer);
                 }
             }
         );

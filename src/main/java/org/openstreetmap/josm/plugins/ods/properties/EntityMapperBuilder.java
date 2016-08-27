@@ -44,7 +44,7 @@ public class EntityMapperBuilder<T1, T2> {
     }
     
     public <A1> void addConstant(String targetAttribute, A1 value) {
-        constantMappings.add(new ConstantMapping<A1>(targetAttribute, value));
+        constantMappings.add(new ConstantMapping<>(targetAttribute, value));
     }
 
     public <T> void addChildMapper(
@@ -119,10 +119,8 @@ public class EntityMapperBuilder<T1, T2> {
             targetAttr, targetAttrType, sourceAttr, sourceAttrType));
             return null;
         }
-        else {
-            return new SimpleEntityAttributeMapper<>(
-                sourceAttributeHandler, targetAttributeHandler);
-        }
+        return new SimpleEntityAttributeMapper<>(
+            sourceAttributeHandler, targetAttributeHandler);
     }
     
     private <A1> EntityAttributeMapper<T1, T2> buildConstantAttributeMapper(ConstantMapping<A1> constantMapping) {
@@ -144,10 +142,8 @@ public class EntityMapperBuilder<T1, T2> {
             value.getClass(), targetAttr, targetAttrType));
             return null;
         }
-        else {
-            return new ConstantAttributeMapper<T1, T2, A1>(
-                targetAttributeHandler, value);
-        }
+        return new ConstantAttributeMapper<>(
+            targetAttributeHandler, value);
     }
     
 
@@ -204,7 +200,7 @@ public class EntityMapperBuilder<T1, T2> {
             addIssue(String.format("The attribute '%s' doesn't exist in target type '%s'", targetAttr, targetType));
         }
         @SuppressWarnings("unchecked")
-        ChildMapper<T1, T2> childMapper = new ChildMapperImpl<T1, T2, A1>(
+        ChildMapper<T1, T2> childMapper = new ChildMapperImpl<>(
                 (EntityMapper<T1, A1>) wrappedMapper, targetAttributeHandler);
         return childMapper;
     }

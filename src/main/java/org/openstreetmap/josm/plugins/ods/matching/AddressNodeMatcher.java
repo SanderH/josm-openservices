@@ -37,6 +37,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
         osmRepository = module.getOsmLayerManager().getRepository();
     }
 
+    @Override
     public void run() {
         matchBuildingAddressNodes();
         matchOtherAddressNodes();
@@ -94,7 +95,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
         for (AddressNode addressNode : osmRepository.getAll(AddressNode.class)) {
             if (addressNode.getMatch() == null) {
                 unmatchedOsmAddressNodes.add(addressNode);
-            };
+            }
         }
         analyze();
     }

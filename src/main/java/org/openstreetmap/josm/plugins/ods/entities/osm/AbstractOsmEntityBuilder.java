@@ -120,7 +120,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
 
     public void updateTags(T entity, Map<String, String> tags) {
         parseKeys(entity, tags);
-    };
+    }
 
     protected void parseKeys(T entity, Map<String, String> tags) {
         entity.setReferenceId(parseReferenceId(tags));
@@ -137,11 +137,10 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
 
     protected abstract Object parseReferenceId(Map<String, String> tags);
 
+    @SuppressWarnings("static-method")
     protected void normalizeTags(ManagedPrimitive<?> primitive) {
         return;
     }
-
-
 
     protected abstract void updateGeometry(T addressNode,
             OsmPrimitive primitive);

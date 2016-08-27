@@ -46,6 +46,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
         childListeners.add(new UpdateWayHandler(layerManager));
     }
 
+    @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             // continue processing
@@ -203,6 +204,10 @@ public class OsmLayerListener implements DataSetListener, Runnable {
      *
      */
     private static class ODSTagRemover extends DefaultDataSetListener {
+        public ODSTagRemover() {
+            // TODO Auto-generated constructor stub
+        }
+
         @Override
         public void primitivesAdded(PrimitivesAddedEvent event) {
             for (OsmPrimitive primitive : event.getPrimitives()) {
@@ -225,6 +230,10 @@ public class OsmLayerListener implements DataSetListener, Runnable {
      *
      */
     private static class DefaultDataSetListener implements DataSetListener {
+
+        public DefaultDataSetListener() {
+            // Default constructor
+        }
 
         @Override
         public void primitivesAdded(PrimitivesAddedEvent event) {

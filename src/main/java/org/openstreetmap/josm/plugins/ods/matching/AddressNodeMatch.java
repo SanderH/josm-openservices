@@ -19,6 +19,7 @@ public class AddressNodeMatch extends MatchImpl<AddressNode> {
         }
     }
 
+    @Override
     public Object getId() {
         return id;
     }

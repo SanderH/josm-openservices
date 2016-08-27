@@ -39,7 +39,7 @@ public class PojoUtils {
                 return method;
             }
             return null;
-        } catch (@SuppressWarnings("unused") NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             return null;
         }
     }
@@ -47,7 +47,7 @@ public class PojoUtils {
     public static Method getGetter(Class<?> classType, String methodName) {
         try {
             return classType.getMethod(methodName, new Class<?>[] {});
-        } catch (@SuppressWarnings("unused") NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             return null;
         }
     }
@@ -74,7 +74,7 @@ public class PojoUtils {
         // First check if there is a setter for the exact type of the attribute
         try {
             return classType.getMethod(methodName, new Class<?>[] {attrType});
-        } catch (@SuppressWarnings("unused") NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             // No action required.
         }
         // If not, iterate over all methods to see if we can find a setter for an enclosing type

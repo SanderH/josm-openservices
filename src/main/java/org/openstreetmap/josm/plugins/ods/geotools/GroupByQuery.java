@@ -26,7 +26,7 @@ public class GroupByQuery extends Query {
     }
     
     public void initialize() throws InvalidQueryException {
-        checkAttributes(featureSource);
+        checkAttributes();
     }
 
     public List<String> getGroupBy() {
@@ -38,9 +38,9 @@ public class GroupByQuery extends Query {
         if (sortByArr == null) {
             List<SortBy> sortList = new LinkedList<>();
             for (String attName : groupBy) {
-                SortBy sortBy = ff.sort(attName, SortOrder.ASCENDING);
-                if (sortBy != null) {
-                    sortList.add(sortBy);
+                SortBy sb = ff.sort(attName, SortOrder.ASCENDING);
+                if (sb != null) {
+                    sortList.add(sb);
                 }
             }
             sortByArr = sortList.toArray(new SortBy[0]);
@@ -48,7 +48,7 @@ public class GroupByQuery extends Query {
         return sortByArr;
     }
     
-    private void checkAttributes(GtFeatureSource featureSource) throws InvalidQueryException {
+    private void checkAttributes() throws InvalidQueryException {
         FeatureType featureType = featureSource.getFeatureType();
         List<String> unknownAttributes = new LinkedList<>();
         for (String attribute : groupBy) {

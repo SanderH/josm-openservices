@@ -6,23 +6,24 @@ import org.opengis.feature.type.Name;
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 
 public class FeaturePropertyHandlerFactory {
+    @SuppressWarnings("static-method")
     public PropertyHandler<SimpleFeature, String> createIDPropertyHandler() {
         return new FeatureIDPropertyHandler();
     }
     
     public <T> PropertyHandler<SimpleFeature, T> createPropertyHandler(SimpleFeatureType simpleFeatureType, Class<T> clazz, Integer index) {
-        return new FeaturePropertyHandler<T>(simpleFeatureType, clazz, index);
+        return new FeaturePropertyHandler<>(simpleFeatureType, clazz, index);
     }
     
     public <T> PropertyHandler<SimpleFeature, T> createPropertyHandler(SimpleFeatureType simpleFeatureType, Class<T> clazz, String name) {
-        return new FeaturePropertyHandler<T>(simpleFeatureType, clazz, name);
+        return new FeaturePropertyHandler<>(simpleFeatureType, clazz, name);
     }
     
     public <T> PropertyHandler<SimpleFeature, T> createPropertyHandler(SimpleFeatureType simpleFeatureType, Class<T> clazz, Name name) {
-        return new FeaturePropertyHandler<T>(simpleFeatureType, clazz, name);
+        return new FeaturePropertyHandler<>(simpleFeatureType, clazz, name);
     }
     
-    public static class FeaturePropertyHandler<T2> implements PropertyHandler<SimpleFeature, T2> {
+    public class FeaturePropertyHandler<T2> implements PropertyHandler<SimpleFeature, T2> {
         private final Class<T2> clazz;
         private int index = -1;
 //        private Name sName;

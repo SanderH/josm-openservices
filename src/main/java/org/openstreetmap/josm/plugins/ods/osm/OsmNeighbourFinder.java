@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import org.openstreetmap.josm.data.osm.BBox;
@@ -21,8 +19,6 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedWay;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
  * Find neighbours for a Building using the Osm primitive.
  * 
@@ -33,7 +29,7 @@ public class OsmNeighbourFinder {
     private final OdsModule module;
     private final LayerManager layerManager;
     private Predicate<OsmPrimitive> isBuilding = Building.IsBuilding;
-    private List<OsmPrimitive> neighbourBuildings = new LinkedList<>();
+//    private List<OsmPrimitive> neighbourBuildings = new LinkedList<>();
     private NodeDWithin dWithin;
 //    private BuildingAligner buildingAligner;
 //    private WayAligner wayAligner;
@@ -57,7 +53,7 @@ public class OsmNeighbourFinder {
         }
         else if (primitive instanceof ManagedOgcMultiPolygon) {
             ManagedOgcMultiPolygon mpg = (ManagedOgcMultiPolygon) primitive;
-            ManagedPolygon polygon = mpg.getPolygons().iterator().next();
+            ManagedPolygon<?> polygon = mpg.getPolygons().iterator().next();
             ManagedRing<?> ring = polygon.getExteriorRing();
             if (ring instanceof SimpleManagedRing) {
                 findWayNeighbourBuildings((SimpleManagedRing)ring);
@@ -65,7 +61,7 @@ public class OsmNeighbourFinder {
         }
     }
     
-    private void findConnectedNeighbours(ManagedPrimitive<?> primitive) {
+    private static void findConnectedNeighbours(ManagedPrimitive<?> primitive) {
         if (primitive instanceof ManagedWay) {
             
         }
@@ -109,18 +105,18 @@ public class OsmNeighbourFinder {
         return false;
     }
 
-    private BBox extend(BBox bbox, Double delta) {
+    private static BBox extend(BBox bbox, Double delta) {
         return new BBox(bbox.getTopLeftLon() - delta,
             bbox.getBottomRightLat() - delta,
             bbox.getBottomRightLon() + delta,
             bbox.getTopLeftLat() + delta);
     }
     
-    private Envelope extend(Envelope bbox, Double delta) {
-        return new Envelope(bbox.getMinX() - delta,
-            bbox.getMaxX() + delta,
-            bbox.getMinY() + delta,
-            bbox.getMaxY() + delta);
-    }
+//    private static Envelope extend(Envelope bbox, Double delta) {
+//        return new Envelope(bbox.getMinX() - delta,
+//            bbox.getMaxX() + delta,
+//            bbox.getMinY() + delta,
+//            bbox.getMaxY() + delta);
+//    }
 
 }

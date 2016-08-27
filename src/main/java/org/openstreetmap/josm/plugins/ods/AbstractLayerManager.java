@@ -26,7 +26,8 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
  * @author Gertjan Idema
  * 
  */
-public abstract class AbstractLayerManager implements LayerManager, DataSetListener {
+public abstract class AbstractLayerManager
+        implements LayerManager, DataSetListener {
     private String name;
     private OsmDataLayer osmDataLayer;
     private Map<OsmPrimitive, ManagedPrimitive<?>> primitiveMap = new HashMap<>();
@@ -51,10 +52,11 @@ public abstract class AbstractLayerManager implements LayerManager, DataSetListe
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public OsmDataLayer getOsmDataLayer() {
         return osmDataLayer;
     }
-    
+
     protected OsmDataLayer createOsmDataLayer() {
         DataSet dataSet = new DataSet();
         OsmDataLayer layer = new OsmDataLayer(dataSet, getName(), null);
@@ -66,7 +68,7 @@ public abstract class AbstractLayerManager implements LayerManager, DataSetListe
     public boolean isActive() {
         return this.active;
     }
-    
+
     public void activate() {
         if (!active) {
             Layer oldLayer = null;
@@ -74,14 +76,15 @@ public abstract class AbstractLayerManager implements LayerManager, DataSetListe
                 oldLayer = Main.getLayerManager().getActiveLayer();
             }
             osmDataLayer = createOsmDataLayer();
-            Main.main.addLayer(osmDataLayer);
+            Main.getLayerManager().addLayer(osmDataLayer);
             if (oldLayer != null) {
                 Main.getLayerManager().setActiveLayer(oldLayer);
             }
             this.active = true;
         }
     }
-    
+
+    @Override
     public void reset() {
         if (isActive()) {
             getRepository().clear();
@@ -98,7 +101,7 @@ public abstract class AbstractLayerManager implements LayerManager, DataSetListe
         if (isActive()) {
             active = false;
             this.reset();
-            Main.main.removeLayer(this.osmDataLayer);
+            Main.getLayerManager().removeLayer(this.osmDataLayer);
         }
     }
 
@@ -115,7 +118,7 @@ public abstract class AbstractLayerManager implements LayerManager, DataSetListe
 
     // Implement DataSetListener.
     // The default is to ignore all events
-    
+
     @Override
     public void primitivesAdded(PrimitivesAddedEvent event) {
         // ignore

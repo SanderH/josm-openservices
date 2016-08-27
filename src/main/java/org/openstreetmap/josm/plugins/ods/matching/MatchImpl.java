@@ -14,6 +14,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     private List<E> osmEntities = new LinkedList<>();
     private List<E> openDataEntities = new LinkedList<>();
     
+    @SuppressWarnings("unchecked")
     public MatchImpl(E osmEntity, E openDataEntity) {
         baseType = (Class<E>) osmEntity.getBaseType();
         if (osmEntity != null && osmEntity.getReferenceId() != null) {

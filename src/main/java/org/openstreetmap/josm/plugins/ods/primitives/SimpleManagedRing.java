@@ -20,7 +20,7 @@ import com.vividsolutions.jts.geom.Envelope;
  *
  */
 public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements ManagedRing<Way> {
-    private final ManagedWay managedWay;
+    final ManagedWay managedWay;
     private Boolean isClockWise; // True if the nodes in this way are oriented clockwise.
 
     public SimpleManagedRing(ManagedWay way) {

@@ -21,7 +21,7 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class ComplexManagedRing extends AbstractManagedPrimitive<Relation> implements ManagedRing<Relation> {
     private boolean clockWise;
-    private final List<RingMember> members;
+    final List<RingMember> members;
     private int nodesCount;
     private Envelope envelope;
 
@@ -103,7 +103,7 @@ public class ComplexManagedRing extends AbstractManagedPrimitive<Relation> imple
     
     public static class RingMember {
         private ManagedWay managedWay;
-        private boolean reversed;
+        boolean reversed;
 
         public RingMember(ManagedWay managedWay, boolean reversed) {
             super();

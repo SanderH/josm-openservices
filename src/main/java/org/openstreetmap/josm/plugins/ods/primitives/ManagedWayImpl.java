@@ -36,6 +36,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
 //        }
 //    }
     
+    @Override
     public void setNodes(List<ManagedNode> nodes) {
         this.nodes = nodes;
     }

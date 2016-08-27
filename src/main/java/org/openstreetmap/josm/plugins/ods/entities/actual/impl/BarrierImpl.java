@@ -35,18 +35,22 @@ public class BarrierImpl extends AbstractEntity implements Barrier {
         return width;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public void setDetail(String detail) {
         this.detail = detail;
     }
 
+    @Override
     public void setHeight(String height) {
         this.height = height;
     }
 
+    @Override
     public void setWidth(String width) {
         this.width = width;
     }

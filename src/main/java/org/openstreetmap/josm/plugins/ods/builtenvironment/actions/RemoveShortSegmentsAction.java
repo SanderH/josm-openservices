@@ -12,6 +12,7 @@ import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.osm.SmallSegmentRemover;
 import org.openstreetmap.josm.tools.I18n;
 
+@Deprecated
 public class RemoveShortSegmentsAction extends OdsAction {
 
     /**
@@ -25,7 +26,7 @@ public class RemoveShortSegmentsAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DataSet ds = Main.main.getCurrentDataSet();
+        DataSet ds = Main.getLayerManager().getEditDataSet();
         Collection<Way> ways = ds.getSelectedWays();
         if (ways.size() != 1) {
             new Notification(I18n.tr("Select 1 way.")).show();

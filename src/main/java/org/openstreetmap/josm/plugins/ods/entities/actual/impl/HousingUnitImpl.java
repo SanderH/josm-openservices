@@ -51,10 +51,12 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
         this.area = area;
     }
 
+    @Override
     public void setType(BuildingType type) {
         this.type = type;
     }
 
+    @Override
     public BuildingType getType() {
         return type;
     }

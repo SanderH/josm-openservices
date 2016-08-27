@@ -49,7 +49,7 @@ public class BuildingAligner {
         }
     }
     
-    private ManagedRing<?> getOuterWay(ManagedPrimitive<?> primitive) {
+    private static ManagedRing<?> getOuterWay(ManagedPrimitive<?> primitive) {
         if (primitive instanceof ManagedRing) {
             return (ManagedRing<?>) primitive;
         }

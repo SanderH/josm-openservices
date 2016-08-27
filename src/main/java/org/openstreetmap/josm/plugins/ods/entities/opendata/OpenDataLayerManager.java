@@ -42,11 +42,11 @@ public class OpenDataLayerManager extends AbstractLayerManager {
         return boundary;
     }
 
-    public void extendBoundary(Geometry boundary) {
+    public void extendBoundary(Geometry bounds) {
         if (this.boundary == null) {
-            this.boundary = boundary;
+            this.boundary = bounds;
         } else {
-            this.boundary = this.boundary.union(boundary);
+            this.boundary = this.boundary.union(bounds);
         }
     }
 }

@@ -10,10 +10,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 //import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 public interface Building extends Entity {
-    public Geometry getGeometry();
 
     public City getCity();
 
@@ -44,13 +41,16 @@ public interface Building extends Entity {
 
     public BuildingType getBuildingType();
 
+    @Override
     public BuildingMatch getMatch();
 
+    @Override
     public Class<Building> getBaseType();
     
     // Setters
     public void setBuildingType(BuildingType buildingType);
 
+    @Override
     public void setIncomplete(boolean incomplete);
     
     public final static Predicate<OsmPrimitive> IsBuilding = new Predicate<OsmPrimitive>() {

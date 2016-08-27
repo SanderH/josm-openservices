@@ -90,7 +90,7 @@ public class FileWFSDataStore implements DataStore {
         }
     }
     
-    private Document parseXml(InputStream is) throws IOException {
+    private static Document parseXml(InputStream is) throws IOException {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setNamespaceAware(true);
@@ -235,11 +235,11 @@ public class FileWFSDataStore implements DataStore {
     @Override
     public String[] getTypeNames() throws IOException {
         if (typeNames == null) {
-            List<String> names = new ArrayList<>(getNames().size());
+            List<String> nms = new ArrayList<>(getNames().size());
             for (Name name : getNames()) {
-                names.add(name.getLocalPart());
+                nms.add(name.getLocalPart());
             }
-            typeNames = names.toArray(new String[0]);
+            typeNames = nms.toArray(new String[0]);
         }
         return typeNames;
     }
@@ -295,8 +295,8 @@ public class FileWFSDataStore implements DataStore {
         return null;
     }
     
-    private Set<String> extractKeywords(List<KeywordsType> keywordsList) {
-        Set<String> keywords = new HashSet<String>();
+    private static Set<String> extractKeywords(List<KeywordsType> keywordsList) {
+        Set<String> keywords = new HashSet<>();
         for (KeywordsType keys : keywordsList) {
             for (Object key : keys.getKeyword()) {
                 keywords.add((String) key);

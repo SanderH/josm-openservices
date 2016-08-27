@@ -28,6 +28,7 @@ public class OdsConfigurationException extends Exception {
         HostUnavailable
     }
     
+    @Override
     public String getMessage() {
         if (cause != null) {
             return cause.getMessage();

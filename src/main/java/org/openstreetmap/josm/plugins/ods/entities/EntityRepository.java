@@ -17,10 +17,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class EntityRepository {
-    private Map<Class<? extends Entity>, EntityManager<? extends Entity>> managers = new HashMap<>();
+    Map<Class<? extends Entity>, EntityManager<? extends Entity>> managers = new HashMap<>();
     
-    public <T extends Entity> void register(Class<T> type) {
-    }
+//    public <T extends Entity> void register(Class<T> type) {
+//    }
     
     public <T extends Entity> void register(Class<T> type, String ... properties) {
         UniqueIndex<T> primaryIndex = new UniqueIndexImpl<>(type, properties);
@@ -62,7 +62,7 @@ public class EntityRepository {
 
     private <E extends Entity> EntityManager<E> createEntityManager(
             Class<E> type) {
-        EntityManager<E> manager = new EntityManager<E>(type);
+        EntityManager<E> manager = new EntityManager<>(type);
         for (Class<?> superClass : getSuperClasses(type)) {
             @SuppressWarnings("unchecked")
             EntityManager<? super E> superManager = (EntityManager<? super E>) getUntypedManager(superClass);
@@ -96,7 +96,7 @@ public class EntityRepository {
                         iterators.add(manager.getAll().iterator());
                     }
                 }
-                return new NestedIterator<Entity>(iterators);
+                return new NestedIterator<>(iterators);
             }
         };
     }
@@ -202,17 +202,17 @@ public class EntityRepository {
             return boundary;
         }
 
-        public void extendBoundary(Geometry boundary) {
+        public void extendBoundary(Geometry bounds) {
             if (this.boundary == null) {
-                this.boundary = boundary;
+                this.boundary = bounds;
             } else {
-                this.boundary = this.boundary.union(boundary);
+                this.boundary = this.boundary.union(bounds);
             }
         }
 
         public UniqueIndex<E> getPrimaryIndex() {
             return primaryIndex;
-        };
+        }
 
         public Iterator<E> iterator() {
             return getPrimaryIndex().iterator();

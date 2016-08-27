@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.properties;
 
-public class AttributeMapperImpl<T1, T2, T3> implements AttributeMapper<T1, T2, T3> {
+public class AttributeMapperImpl<T1, T2, T3> implements AttributeMapper<T1, T2> {
     private PropertyGetter<T1, T3> propertyGetter;
     private PropertySetter<T2, T3> propertySetter;
     

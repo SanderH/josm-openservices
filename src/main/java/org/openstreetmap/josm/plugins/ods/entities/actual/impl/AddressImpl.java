@@ -76,18 +76,22 @@ public class AddressImpl implements Address {
     }
 
     
+    @Override
     public Character getHouseLetter() {
         return houseLetter;
     }
 
+    @Override
     public void setHouseLetter(Character houseLetter) {
         this.houseLetter = houseLetter;
     }
 
+    @Override
     public String getHouseNumberExtra() {
         return houseNumberExtra;
     }
 
+    @Override
     public void setHouseNumberExtra(String houseNumberExtra) {
         this.houseNumberExtra = houseNumberExtra;
     }

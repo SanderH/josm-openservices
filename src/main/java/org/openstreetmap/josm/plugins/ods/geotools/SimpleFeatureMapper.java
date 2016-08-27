@@ -17,12 +17,12 @@ public class SimpleFeatureMapper implements FeatureMapper {
     }
 
     public <T> void addAttributeMapper(String name, Class<T> clazz, AttributeMapper<T> mapper) {
-        attrMap.put(new Attribute<T>(name, clazz), mapper);
+        attrMap.put(new Attribute<>(name, clazz), mapper);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public <T> AttributeMapper<T> getAttributeMapper(String name, Class<T> clazz) {
-        return (AttributeMapper<T>) attrMap.get(new Attribute<T>(name, clazz));
+        return (AttributeMapper<T>) attrMap.get(new Attribute<>(name, clazz));
     }
 }

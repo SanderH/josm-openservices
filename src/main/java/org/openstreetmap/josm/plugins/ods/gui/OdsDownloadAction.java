@@ -5,7 +5,6 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -28,12 +27,12 @@ public class OdsDownloadAction extends OdsAction {
      */
     private static final long serialVersionUID = 1L;
 
-    private MainDownloader downloader;
-    private LocalDateTime startDate;
+    MainDownloader downloader;
+    LocalDateTime startDate;
     private boolean cancelled = false;
-    private Boundary boundary;
-    private boolean downloadOsm;
-    private boolean downloadOpenData;
+    Boundary boundary;
+    boolean downloadOsm;
+    boolean downloadOpenData;
     private SlippyMapDownloadDialog slippyDialog;
     private FixedBoundsDownloadDialog fixedDialog;
     
@@ -60,8 +59,8 @@ public class OdsDownloadAction extends OdsAction {
     }
 
     private Boundary getBoundary() {
-        Boundary boundary = getPolygonBoundary();
-        boolean selectArea = (boundary == null);
+        Boundary bounds = getPolygonBoundary();
+        boolean selectArea = (bounds == null);
         AbstractDownloadDialog dialog;
         if (selectArea) {
             dialog = slippyDialog;
@@ -79,16 +78,16 @@ public class OdsDownloadAction extends OdsAction {
         downloadOsm = dialog.cbDownloadOSM.isSelected();
         downloadOpenData = dialog.cbDownloadODS.isSelected();
         if (selectArea) {
-            boundary = new Boundary(dialog.getSelectedDownloadArea());
+            bounds = new Boundary(dialog.getSelectedDownloadArea());
         }
-        return boundary;
+        return bounds;
     }
     
     private Boundary getPolygonBoundary() {
         if (Main.map == null) {
             return null;
         }
-        Layer activeLayer = Main.map.mapView.getActiveLayer();
+        Layer activeLayer = Main.getLayerManager().getActiveLayer();
         // Make sure the active layer is an Osm datalayer
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
@@ -123,22 +122,18 @@ public class OdsDownloadAction extends OdsAction {
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            try {
-                DownloadRequest request = new DownloadRequest(startDate, boundary,
-                    downloadOsm, downloadOpenData);
-                downloader.run(getProgressMonitor(), request);
-            } catch (ExecutionException|InterruptedException e) {
-                throw new OsmTransferException(e);
-            }
+            DownloadRequest request = new DownloadRequest(startDate, boundary,
+                downloadOsm, downloadOpenData);
+            downloader.run(getProgressMonitor(), request);
         }
 
         @Override
         protected void finish() {
             if (downloadOpenData) {
-                Main.map.mapView.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
+                Main.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
             }
             else {
-                Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+                Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
             }
         }
     }

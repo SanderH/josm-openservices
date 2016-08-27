@@ -72,12 +72,12 @@ public class GroupByFeatureSource extends OdsFeatureSource<GroupByFeatureCollect
     }
 
     @Override
-    public ReferencedEnvelope getBounds(Query query) throws IOException {
+    public ReferencedEnvelope getBounds(Query q) throws IOException {
         return wrappedSource.getBounds();
     }
 
     @Override
-    public int getCount(Query query) throws IOException {
+    public int getCount(Query q) throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -86,6 +86,7 @@ public class GroupByFeatureSource extends OdsFeatureSource<GroupByFeatureCollect
         return wrappedSource.getSupportedHints();
     }
 
+    @Override
     protected OdsFeatureCollection getFeatureCollection(SimpleFeatureCollection wrappedFeatureCollection) {
         return new GroupByFeatureCollection(wrappedFeatureCollection, query);
     }

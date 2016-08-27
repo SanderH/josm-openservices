@@ -30,7 +30,7 @@ public class BuildingAligner {
         this.fixer = new CrossingBuildingFixer(module.getGeoUtil(), tolerance);
     }
 
-    public void align(Building building) {
+    public static void align(Building building) {
         try {
 //            for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
 //                if (candidate == building) continue;
@@ -45,6 +45,7 @@ public class BuildingAligner {
         }
     }
     
+    @SuppressWarnings("unused")
     private void analyzeCrossing(Building building1, Building building2) {
         Geometry geom1 = building1.getGeometry();
         Geometry geom2 = building2.getGeometry();

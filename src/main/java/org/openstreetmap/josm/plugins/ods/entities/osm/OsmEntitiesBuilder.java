@@ -2,14 +2,12 @@ package org.openstreetmap.josm.plugins.ods.entities.osm;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
@@ -56,7 +54,6 @@ public class OsmEntitiesBuilder {
                 }
             }
         }
-        OsmLayerManager layerManager = module.getOsmLayerManager();
         Iterable<AddressNode> iterable = layerManager.getRepository().getAll(AddressNode.class);
         // TODO This code is specific for buildings and should be handled in a more generic way
         iterable.forEach(nodeToBuildingMatcher::match);

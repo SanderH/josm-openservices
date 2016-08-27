@@ -27,7 +27,7 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
             Map<String, String> keys) {
         super(layerManager);
         this.exteriorRing = exteriorRing;
-        this.interiorRings = (interiorRings != null ? interiorRings : new ArrayList<ManagedRing<?>>(0)); 
+        this.interiorRings = (interiorRings != null ? interiorRings : new ArrayList<>(0)); 
         this.keys = keys;
     }
 
@@ -67,21 +67,21 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
 
     @Override
     public Relation create(DataSet dataSet) {
-        Relation relation = getPrimitive();
-        if (relation == null) {
+        Relation rel = getPrimitive();
+        if (rel == null) {
             List<RelationMember> members = new LinkedList<>();
             ManagedRing<?> outer  = getExteriorRing();
             members.add(new RelationMember("outer", outer.create(dataSet)));
             for (ManagedRing<?> inner : getInteriorRings()) {
                 members.add(new RelationMember("inner", inner.create(dataSet)));
             }
-            relation = new Relation();
-            relation.setKeys(getKeys());
-            relation.setMembers(members);
-            setPrimitive(relation);
-            dataSet.addPrimitive(relation);
+            rel = new Relation();
+            rel.setKeys(getKeys());
+            rel.setMembers(members);
+            setPrimitive(rel);
+            dataSet.addPrimitive(rel);
         }
-        return relation;
+        return rel;
     }
     
     

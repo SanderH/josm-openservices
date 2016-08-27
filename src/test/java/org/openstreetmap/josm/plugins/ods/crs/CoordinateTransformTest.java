@@ -15,7 +15,7 @@ public class CoordinateTransformTest {
     }
 
     @Test
-    public void testTransform() throws Exception {
+    public static void testTransform() throws Exception {
         CoordinateReferenceSystem sourceCRS;
         CoordinateReferenceSystem targetCRS;
 

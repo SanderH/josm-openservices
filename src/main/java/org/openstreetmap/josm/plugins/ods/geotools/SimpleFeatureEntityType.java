@@ -7,7 +7,7 @@ import org.openstreetmap.josm.plugins.ods.properties.EntityType;
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 
 public class SimpleFeatureEntityType implements EntityType<SimpleFeature> {
-    private final FeaturePropertyHandlerFactory propertyHandlerFactory = new FeaturePropertyHandlerFactory();
+//    private final FeaturePropertyHandlerFactory propertyHandlerFactory = new FeaturePropertyHandlerFactory();
     private SimpleFeatureType featureType;
     
     public SimpleFeatureEntityType(SimpleFeatureType featureType) {
@@ -24,7 +24,7 @@ public class SimpleFeatureEntityType implements EntityType<SimpleFeature> {
         if (descriptor == null) {
             return null;
         }
-        return propertyHandlerFactory.createPropertyHandler(featureType, descriptor.getType().getBinding(), attributeName);
+        return new FeaturePropertyHandlerFactory().createPropertyHandler(featureType, descriptor.getType().getBinding(), attributeName);
     }
  
 }

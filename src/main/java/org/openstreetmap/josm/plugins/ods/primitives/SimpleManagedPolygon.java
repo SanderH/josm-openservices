@@ -13,6 +13,7 @@ import org.openstreetmap.josm.data.osm.Way;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
+@SuppressWarnings("unused")
 public class SimpleManagedPolygon extends SimpleManagedRing implements ManagedPolygon<Way>, ManagedRing<Way> {
     
     public SimpleManagedPolygon(ManagedWay exteriorWay,

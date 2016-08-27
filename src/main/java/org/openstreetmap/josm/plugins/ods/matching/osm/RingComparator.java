@@ -70,7 +70,7 @@ public class RingComparator {
          * @param itOsm The iterator for the Osm way
          * @param nodeMatch The node match for the starting points of both iterators
          */
-        private void compare(OdsNodeIterator itOd, OdsNodeIterator itOsm,
+        private static void compare(OdsNodeIterator itOd, OdsNodeIterator itOsm,
                 NodeMatch nodeMatch) {
             boolean matchingNodes = true; /* True if both ways have the same number of nodes and all 
                 node pairs are within the tolerated distance of each other */
@@ -82,16 +82,6 @@ public class RingComparator {
             assert itOsm.isClockWise();
             assert itOd.peek().equals(nodeMatch.getOdNode());
             assert itOsm.peek().equals(nodeMatch.getOsmNode());
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
-     * Compare the ways, given the fact that we know 2 matching nodes for the ways;
-     * 
-     * @param nodeMatch
-     */
-    private void compare(NodeMatch nodeMatch) {
         // TODO Auto-generated method stub
         
     }

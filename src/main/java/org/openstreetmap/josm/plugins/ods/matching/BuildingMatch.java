@@ -37,7 +37,7 @@ public class BuildingMatch extends MatchImpl<Building> {
     private MatchStatus compareStartDates() {
         if (Objects.equals(getOsmEntity().getStartDate(), getOpenDataEntity().getStartDate())) {
             return MatchStatus.MATCH;
-        };
+        }
         return MatchStatus.NO_MATCH;
     }
 

@@ -41,6 +41,7 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
         return layerManager;
     }
     
+    @Override
     public Collection<ManagedPrimitive<?>> getReferrers() {
         Set<ManagedPrimitive<?>> referrers = new HashSet<>();
         for (OsmPrimitive osm : getPrimitive().getReferrers()) {
@@ -57,6 +58,7 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
         return false;
     }
 
+    @Override
     public void setPrimitive(P primitive) {
         this.primitive = primitive;
     }

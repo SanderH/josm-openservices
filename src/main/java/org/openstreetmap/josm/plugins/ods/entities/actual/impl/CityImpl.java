@@ -11,6 +11,7 @@ public class CityImpl extends AbstractEntity implements City {
     private String name;
     private MultiPolygon multiPolygon;
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

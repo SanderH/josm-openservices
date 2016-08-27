@@ -83,7 +83,7 @@ public class FileWFSHost extends AbstractHost {
         }
     }
     
-    private Document parseXml(InputStream is) throws IOException {
+    private static Document parseXml(InputStream is) throws IOException {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setNamespaceAware(true);

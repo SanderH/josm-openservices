@@ -24,8 +24,10 @@ public interface AddressNode extends Entity {
 
     public void setGeometry(Point point);
     
+    @Override
     public Point getGeometry();
     
+    @Override
     public Class<AddressNode> getBaseType();
     
     public static boolean isAddressNode(OsmPrimitive primitive) {

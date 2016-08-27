@@ -23,7 +23,7 @@ public class MultiPolygonBuilder {
 //    private final List<Way> innerWays = new LinkedList<Way>();
 //    private final List<List<Node>> nonClosedWays = new ArrayList<List<Node>>();
 //    private final List<RelationMember> otherMembers = new LinkedList<RelationMember>();
-    private final List<Node> memberNodes = new LinkedList<Node>();
+    private final List<Node> memberNodes = new LinkedList<>();
 //    private JosmIssue issue;
     private Geometry geometry;
 

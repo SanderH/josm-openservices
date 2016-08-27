@@ -88,6 +88,7 @@ public class IndexImpl<T> implements Index<T> {
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.Index#get(U)
      */
+    @Override
     public List<T> getAll(Object key) {
         List<T> result = map.get(key);
         if (result == null) {
@@ -107,13 +108,11 @@ public class IndexImpl<T> implements Index<T> {
             if (getters.length == 1) {
                 return getters[0].invoke(entity);
             }
-            else {
-                List<Object> key = new ArrayList<>(getters.length);
-                for (int i=0; i<getters.length; i++) {
-                    key.add(getters[i].invoke(entity));
-                }
-                return key;
+            List<Object> key = new ArrayList<>(getters.length);
+            for (int i=0; i<getters.length; i++) {
+                key.add(getters[i].invoke(entity));
             }
+            return key;
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return null;

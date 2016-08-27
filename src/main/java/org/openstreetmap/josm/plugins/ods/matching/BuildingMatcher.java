@@ -84,7 +84,7 @@ public class BuildingMatcher implements Matcher<Building> {
         try {
             l = (Long)id;
         }
-        catch (@SuppressWarnings("unused") Exception e) {
+        catch (Exception e) {
             unidentifiedOsmBuildings.add(osmBuilding);
             return;
         }
