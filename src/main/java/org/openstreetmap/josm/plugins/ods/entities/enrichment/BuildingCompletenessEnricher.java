@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
@@ -15,22 +17,26 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
  *
  */
 public class BuildingCompletenessEnricher implements Consumer<Building> {
-    PreparedPolygon boundary;
-    
+    List<PreparedPolygon> boundaries = new LinkedList<>();
+
     public BuildingCompletenessEnricher(Geometry layerBoundary) {
         super();
-        try {
-            this.boundary = new PreparedPolygon((Polygonal) layerBoundary);
-        } catch (ClassCastException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        for (int i = 0; i < layerBoundary.getNumGeometries(); i++) {
+            Polygonal polygonal = (Polygonal) layerBoundary.getGeometryN(i);
+            boundaries.add(new PreparedPolygon(polygonal));
         }
     }
 
     @Override
     public void accept(Building building) {
-        if (building.isIncomplete() && boundary.covers(building.getGeometry())) {
-            building.setIncomplete(false);
+        if (!building.isIncomplete()) {
+            return;
+        }
+        for (PreparedPolygon prep : boundaries) {
+            if (prep.covers(building.getGeometry())) {
+                building.setIncomplete(false);
+                break;
+            }
         }
     }
 }
