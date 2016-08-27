@@ -78,6 +78,10 @@ public class OdsFeatureCollection implements SimpleFeatureCollection {
         return wrapped.toArray(a);
     }
 
+    /** (non-Javadoc)
+     * @see org.geotools.data.simple.SimpleFeatureCollection#features()
+     */
+    @SuppressWarnings("resource")
     @Override
     public OdsFeatureIterator features() {
         SimpleFeatureIterator wrappedFeatures = wrapped.features();
@@ -86,6 +90,7 @@ public class OdsFeatureCollection implements SimpleFeatureCollection {
         return features;
     }
 
+    @SuppressWarnings("static-method")
     protected OdsFeatureIterator getFeatureIterator(SimpleFeatureIterator wrappedFeatures) {
         return new OdsFeatureIterator(wrappedFeatures);
     }

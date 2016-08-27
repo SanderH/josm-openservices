@@ -16,7 +16,6 @@ import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.tools.I18n;
 
