@@ -1,5 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.openstreetmap.josm.tools.I18n;
+
 public class Status {
     private boolean failed = false;
     private boolean timedOut = false;
@@ -45,7 +50,13 @@ public class Status {
     }
 
     public String getMessage() {
-        return message;
+        if (message != null) {
+            return message;
+        }
+        if (exception != null) {
+            return exception.getMessage();
+        }
+        return I18n.tr("An unknown error occurred.");
     }
 
     public Exception getException() {
@@ -58,5 +69,39 @@ public class Status {
         this.timedOut = false;
         this.exception = null;
         this.message = null;
+    }
+    
+    public static Status getAggregate(List<Status> statusses) {
+        List<String> failureMessages = new LinkedList<>();
+        List<String> cancelMessages = new LinkedList<>();
+        boolean timedOut = false;
+        for (Status st : statusses) {
+            if (!st.isSucces()) {
+                if (st.isFailed()) {
+                    failureMessages.add(st.getMessage());
+                }
+                if (st.isCancelled()) {
+                    cancelMessages.add(st.getMessage());
+                }
+                if (st.isTimedOut()) {
+                    timedOut = true;
+                }
+            }
+        }
+        Status status = new Status();
+        if (!failureMessages.isEmpty()) {
+            String message = String.join("\n", failureMessages);
+            status.setFailed(true);
+            status.setMessage(message);
+        }
+        else if (!cancelMessages.isEmpty()) {
+            String message = String.join("\n", cancelMessages);
+            status.setCancelled(true);
+            status.setMessage(message);
+        }
+        else if (timedOut) {
+            status.setTimedOut(true);
+        }
+        return status;
     }
 }

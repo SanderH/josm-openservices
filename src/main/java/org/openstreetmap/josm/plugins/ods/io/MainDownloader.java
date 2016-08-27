@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 
@@ -147,15 +148,9 @@ public class MainDownloader {
             for (LayerDownloader downloader : enabledDownloaders) {
                 downloader.cancel();
             }
-            status.setException(e);
-            status.setFailed(true);
+            status.setCancelled(true);
         }
-        for (LayerDownloader downloader : enabledDownloaders) {
-            Status st = downloader.getStatus();
-            if (!st.isSucces()) {
-                this.status = st;
-            }
-        }
+        this.status = getStatus(enabledDownloaders);
     }
 
     private void download() {
@@ -174,35 +169,20 @@ public class MainDownloader {
             for (LayerDownloader downloader : enabledDownloaders) {
                 downloader.cancel();
             }
-            status.setException(e);
-            status.setFailed(true);
+            status.setCancelled(true);
+            return;
         }
-        for (LayerDownloader downloader : enabledDownloaders) {
-            Status st = downloader.getStatus();
-            if (!st.isSucces()) {
-                if (st.isFailed()) {
-                    this.status.setFailed(true);
-                }
-                if (st.isCancelled()) {
-                    this.status.setCancelled(true);
-                }
-                if (st.isTimedOut()) {
-                    this.status.setTimedOut(true);
-                }
-                this.status.setMessage(this.status.getMessage() + "\n" + st.getMessage());
-            }
-            if (this.status.isFailed()) {
-                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
-                    status.getMessage()));
-            }
-            else if (this.status.isTimedOut()) {
-                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
-            }
-            else if (this.status.isCancelled()) {
-                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download was cancelled because of the following reason(s):\n" +
-                    status.getMessage()));
-            }
-
+        status = getStatus(enabledDownloaders);
+        if (this.status.isFailed()) {
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
+                status.getMessage()));
+        }
+        else if (this.status.isTimedOut()) {
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
+        }
+        else if (this.status.isCancelled()) {
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download was cancelled because of the following reason(s):\n" +
+                status.getMessage()));
         }
     }
     
@@ -227,15 +207,11 @@ public class MainDownloader {
 //            for (LayerDownloader downloader : enabledDownloaders) {
 //                downloader.cancel();
 //            }
-            status.setException(e);
-            status.setFailed(true);
+//            status.setException(e);
+//            status.setFailed(true);
+            return;
         }
-        for (LayerDownloader downloader : enabledDownloaders) {
-            Status st = downloader.getStatus();
-            if (!st.isSucces()) {
-                this.status = st;
-            }
-        }
+        status = getStatus(enabledDownloaders);
         if (status.isSucces()) {
             for (Matcher<?> matcher : matchers) {
                 matcher.run();
@@ -257,5 +233,11 @@ public class MainDownloader {
             downloader.cancel();
         }
         executorService.shutdownNow();
+    }
+    
+    private Status getStatus(List<LayerDownloader> downloaders) {
+        List<Status> statusses = enabledDownloaders.stream().map(dl->dl.getStatus())
+                .filter(st->st.isFailed()).collect(Collectors.toList());
+        return Status.getAggregate(statusses);
     }
 }
