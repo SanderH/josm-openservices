@@ -112,19 +112,24 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
     }
 
     public void initializeDataSources(OdsModuleConfiguration configuration) throws OdsException {
-        StringBuilder sb = new StringBuilder(100);
+        List<String> problems = new LinkedList<>();
         for (OdsDataSource dataSource : configuration.getDataSources()) {
             try {
                 dataSource.initialize();
             }
             catch (OdsException e) {
+                problems.add(e.getMessage());
+            }
+        }
+        if (!problems.isEmpty()) {
+            StringBuilder sb = new StringBuilder(100);
+            for (String problem : problems) {
                 if (sb.length() == 0) {
                     sb.append("The following problems(s) occured while trying to initialize this module:\n");
                 }
-                sb.append(e.getMessage()).append("\n");
+                sb.append(problem).append("\n");
+
             }
-        }
-        if (sb.length() > 0) {
             throw new OdsException(sb.toString());
         }
     }
