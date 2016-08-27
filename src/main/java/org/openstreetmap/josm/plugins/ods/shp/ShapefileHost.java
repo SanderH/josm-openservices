@@ -20,33 +20,38 @@ public class ShapefileHost extends GtHost {
         super(name, urlString, -1);
     }
 
+    
+    @Override
+    public DataStore getDataStore() throws OdsException {
+        return dataStore;
+    }
+
+
+    @Override
+    public synchronized void initialize() throws OdsException {
+        super.initialize();
+        try {
+            createDataStore();
+        }
+        catch (OdsException e) {
+            setAvailable(false);
+            throw e;
+        }
+    }
+
+
     /**
      * Retrieve a new DataStore for this host with the default timeout
      * 
      * @return the DataStore object
      * @throws OdsException 
      */
-    public DataStore getDataStore() throws OdsException {
-        return getDataStore(-1);
-    }
-    
-    /**
-     * Retrieve a new DataStore for this host with the given timeout
-     * 
-     * @param timeout A timeout in milliseconds
-     * @return the DataStore object
-     * @throws OdsException 
-     */
-    @Override
-    public DataStore getDataStore(Integer timeout) throws OdsException {
-        if (dataStore == null) {
-            ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
-            try {
-                dataStore = factory.createDataStore(getUrl());
-            } catch (IOException e) {
-                throw new OdsException(e);
-            }
+    public void createDataStore() throws OdsException {
+        ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
+        try {
+            dataStore = factory.createDataStore(getUrl());
+        } catch (IOException e) {
+            throw new OdsException(e);
         }
-        return dataStore;
     }
 }

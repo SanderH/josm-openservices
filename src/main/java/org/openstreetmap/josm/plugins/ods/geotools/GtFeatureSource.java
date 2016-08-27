@@ -20,7 +20,6 @@ public class GtFeatureSource implements OdsFeatureSource {
     private final String idAttribute;
     private final String[] attributes;
     private final long maxFeatures;
-    private final int timeout = 60000;
     private CoordinateReferenceSystem crs;
     private MetaData metaData;
     private SimpleFeatureSource featureSource;
@@ -84,27 +83,12 @@ public class GtFeatureSource implements OdsFeatureSource {
              *  First use-a dataStore object with a short timeout, so it will fail
              *  fast if the service is not available;
              */
-            DataStore dataStore = getHost().getDataStore(500);
-            SimpleFeatureSource fs = dataStore.getFeatureSource(featureName);
-            crs = fs.getInfo().getCRS();
-            featureType = fs.getSchema();
-        }
-        catch (@SuppressWarnings("unused") IOException e) {
-            String msg = String.format("The feature named '%s' is not accessable, " +
-                    "because of a network timeout on host host %s",
-                getFeatureName(),
-                getHost().getName());
-            throw new OdsException(msg);
-        }
-        // TODO Check is all selected attributes exist;
-        /*
-         * Now we know the service is available, we can set the required timeout
-         */
-        try {
-            DataStore dataStore = host.getDataStore(timeout);
+            DataStore dataStore = getHost().getDataStore();
             featureSource = dataStore.getFeatureSource(featureName);
+            crs = featureSource.getInfo().getCRS();
+            featureType = featureSource.getSchema();
         }
-        catch (@SuppressWarnings("unused") IOException e) {
+        catch (IOException e) {
             String msg = String.format("The feature named '%s' is not accessable, " +
                 "because of a network timeout on host %s",
             getFeatureName(),

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.exceptions.UnavailableHostException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
 
 /**
@@ -27,14 +29,44 @@ import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
  */
 public class WFSHost extends GtHost {
     /**
-     * Cache dataStores by timeout. -1 for no timeout
+     * We use two separate data stores. The reason for this is that currently Geotools stores the timeout as a parameter
+     * in the data store.
+     * A large time-out in the initialization phase would cause 
      */
-    private Map<Integer, DataStore> dataStores = new HashMap<>();
+    private DataStore dataStore;
+    private OdsException hostException;
+    private final int initTimeout;
+    private final int dataTimeout;
     
-    public WFSHost(String name, String urlString, Integer maxFeatures) {
+    public WFSHost(String name, String urlString, Integer maxFeatures, int initTimeout, int dataTimeout) {
         super(name, urlString, maxFeatures);
+        this.initTimeout = initTimeout;
+        this.dataTimeout = dataTimeout;
     }
     
+    @Override
+    public synchronized void initialize() throws OdsException {
+        if (isInitialized()) {
+            return;
+        }
+        super.initialize();
+        try {
+            dataStore = createDataStore(initTimeout);
+        } catch (OdsException e) {
+            setAvailable(false);
+            throw new UnavailableHostException(this, e);
+        }
+        try {
+            dataStore = createDataStore(dataTimeout);
+            setFeatureTypes(Arrays.asList(dataStore.getTypeNames()));
+        } catch (OdsException|IOException e) {
+            setAvailable(false);
+            throw new UnavailableHostException(this, e);
+        }
+        setAvailable(true);
+        return;
+    }
+
 //    @Override
 //    public synchronized void initialize() throws OdsException {
 //        if (isInitialized()) return;
@@ -47,52 +79,55 @@ public class WFSHost extends GtHost {
      * @return the DataStore object
      * @throws OdsException 
      */
+    @Override
     public DataStore getDataStore() throws OdsException {
-        return getDataStore(-1);
+        if (hostException != null) {
+            throw hostException;
+        }
+        return dataStore;
     }
     
     /**
-     * Retrieve a new DataStore for this host with the given timeout
+     * Create a new DataStore for this host with the given timeout
      * 
      * @param timeout A timeout in milliseconds
      * @return the DataStore object
      * @throws OdsException 
      */
-    @Override
-    public DataStore getDataStore(Integer timeout) throws OdsException {
-//        assert isAvailable();
-        DataStore dataStore = dataStores.get(timeout);
-        if (dataStore == null) {
-            Map<String, Object> connectionParameters = new HashMap<>();
-            URL capabilitiesUrl = WFSDataStoreFactory
-                    .createGetCapabilitiesRequest(getUrl());
-            connectionParameters.put(URL.key, capabilitiesUrl);
-            if (timeout > 0) {
-                connectionParameters.put(TIMEOUT.key, timeout);
-            }
-            connectionParameters.put(BUFFER_SIZE.key, 1000);
-            connectionParameters.put(PROTOCOL.key, false);
-            try {
-                dataStore = DataStoreFinder.getDataStore(connectionParameters);
-                dataStores.put(timeout, dataStore);
-            } catch (@SuppressWarnings("unused") UnknownHostException e) {
-                String msg = String.format("Host %s (%s) doesn't exist",
-                        getName(), getUrl().getHost());
-                throw new OdsException(msg);
-            } catch (@SuppressWarnings("unused") SocketTimeoutException e) {
-                String msg = String.format("Host %s (%s) timed out when trying to open the datastore",
-                        getName(), getUrl().toString());
-                throw new OdsException(msg);
-            } catch (FileNotFoundException e) {
-                String msg = String.format("No dataStore for Host %s could be found at this url: %s",
-                        getName(), getUrl().toString());
-                throw new OdsException(msg, e);
-            } catch (IOException e) {
-                String msg = String.format("No dataStore for Host %s (%s) could be created",
-                        getName(), getUrl().toString());
-                throw new OdsException(msg, e);
-            }
+    private DataStore createDataStore(Integer timeout) throws OdsException {
+        Map<String, Object> connectionParameters = new HashMap<>();
+        URL capabilitiesUrl = WFSDataStoreFactory
+                .createGetCapabilitiesRequest(getUrl());
+        connectionParameters.put(URL.key, capabilitiesUrl);
+        if (timeout > 0) {
+            connectionParameters.put(TIMEOUT.key, timeout);
         }
-        return dataStore;
+        connectionParameters.put(BUFFER_SIZE.key, 1000);
+        connectionParameters.put(PROTOCOL.key, false);
+        DataStore ds;
+        try {
+            ds = DataStoreFinder.getDataStore(connectionParameters);
+        } catch (UnknownHostException e) {
+            String msg = String.format("Host %s (%s) doesn't exist",
+                    getName(), getUrl().getHost());
+            hostException = new OdsException(msg);
+            throw hostException;
+        } catch (SocketTimeoutException e) {
+            String msg = String.format("Host %s (%s) timed out when trying to open the datastore",
+                    getName(), getUrl().toString());
+            hostException = new OdsException(msg);
+            throw hostException;
+        } catch (FileNotFoundException e) {
+            String msg = String.format("No dataStore for Host %s could be found at this url: %s",
+                    getName(), getUrl().toString());
+            hostException = new OdsException(msg);
+            throw hostException;
+        } catch (IOException e) {
+            String msg = String.format("No dataStore for Host %s (%s) could be created",
+                    getName(), getUrl().toString());
+            hostException = new OdsException(msg);
+            throw hostException;
+        }
+        return ds;
     }
 }

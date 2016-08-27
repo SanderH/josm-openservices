@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +11,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.exceptions.UnavailableHostException;
 import org.openstreetmap.josm.plugins.ods.io.AbstractHost;
 
 /**
@@ -28,30 +26,14 @@ public abstract class GtHost extends AbstractHost {
         super(name, url, maxFeatures);
     }
 
-    @Override
-    public synchronized void initialize() throws OdsException {
-        if (isInitialized()) {
-            return;
-        }
-        super.initialize();
-        try {
-            DataStore dataStore = getDataStore(1000);
-            featureTypes.addAll(Arrays.asList(dataStore.getTypeNames()));
-        } catch (IOException e) {
-            setAvailable(false);
-            throw new UnavailableHostException(this, e);
-        }
-        setAvailable(true);
-        return;
-    }
-
-    protected Set<String> getFeatureTypes() {
-        return featureTypes;
+    synchronized protected void setFeatureTypes(Collection<String> featureTypes) {
+        this.featureTypes.clear();
+        this.featureTypes.addAll(featureTypes);
     }
 
     @Override
     public boolean hasFeatureType(String type) {
-        return getFeatureTypes().contains(type);
+        return featureTypes.contains(type);
     }
 
 //    public SimpleFeatureSource getFeatureSource(String name, int timeout) {
@@ -73,5 +55,5 @@ public abstract class GtHost extends AbstractHost {
         return new GtDownloader<>(module, dataSource, clazz);
     }
 
-    public abstract DataStore getDataStore(Integer timeout) throws OdsException;
+    public abstract DataStore getDataStore() throws OdsException;
 }
