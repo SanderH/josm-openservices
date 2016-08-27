@@ -33,10 +33,10 @@ public class OdsEnableAction extends AbstractAction {
             ods.activate(module);
             Layer activeLayer = null;
             if (Main.map != null) {
-                activeLayer = Main.map.mapView.getActiveLayer();
+                activeLayer = Main.getLayerManager().getActiveLayer();
             }
             if (activeLayer != null) {
-                Main.map.mapView.setActiveLayer(activeLayer);
+                Main.getLayerManager().setActiveLayer(activeLayer);
             }
             Bounds bounds = new Bounds(
                     Main.pref.get("openservices.download.bounds"), ";");
@@ -47,7 +47,7 @@ public class OdsEnableAction extends AbstractAction {
             if (e == ModuleActivationException.CANCELLED) {
                 return;
             }
-            Main.error(e, true);
+            Main.error(e, false);
             String msg = I18n.tr("The module could not be activated because of the following error(s): {0}",
                     e.getMessage());
             JOptionPane.showMessageDialog(Main.panel, msg, "Module not available", JOptionPane.ERROR_MESSAGE);

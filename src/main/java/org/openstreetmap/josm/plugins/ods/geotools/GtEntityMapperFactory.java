@@ -28,7 +28,7 @@ public abstract class GtEntityMapperFactory implements EntityMapperFactory {
 
     final protected DataStore getDataStore() throws OdsException {
         if (host != null) {
-            return host.getDataStore(-1);
+            return host.getDataStore();
         }
         return dataStore;
     }
