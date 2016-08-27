@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -22,7 +23,7 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
  */
 public class OsmAddressNodeToBuildingMatcher {
     private final GeoRepository repository;
-    private Consumer<AddressNode> unmatchedAddressNodeHandler;
+//    private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
     public OsmAddressNodeToBuildingMatcher(OsmLayerManager layerManager) {
         super();
@@ -31,12 +32,11 @@ public class OsmAddressNodeToBuildingMatcher {
 
     public void setUnmatchedAddressNodeHandler(
             Consumer<AddressNode> unmatchedAddressNodeHandler) {
-        this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
+//        this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
     }
 
     /**
      * Find a matching building for an address.
-     * TODO use the geometry index to find the building
      * 
      * @param addressNode
      */
@@ -44,13 +44,33 @@ public class OsmAddressNodeToBuildingMatcher {
         GeoIndex<Building> geoIndex = repository.getGeoIndex(Building.class, "geometry");
         if (addressNode.getBuilding() == null) {
             List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
-            if (buildings.size() != 1) {
-                reportUnmatched(addressNode);
+            if (buildings.size() == 0) {
+    //                reportUnmatched(addressNode);
                 return;
             }
-            Building building = buildings.get(0);
-            addressNode.setBuilding(building);
-            building.getAddressNodes().add(addressNode);
+            if (buildings.size() == 1) {
+                Building building = buildings.get(0);
+                addressNode.setBuilding(building);
+                building.getAddressNodes().add(addressNode);
+                return;
+            }
+            List<Building> bagBuildings = new LinkedList<>();
+            List<Building> otherBuildings = new LinkedList<>();
+            for (Building building : buildings) {
+                if (building.getReferenceId() != null) {
+                    bagBuildings.add(building);
+                }
+                else {
+                     otherBuildings.add(building);
+                }
+            }
+            if (bagBuildings.size() == 1) {
+                Building building = bagBuildings.get(0);
+                addressNode.setBuilding(building);
+                building.getAddressNodes().add(addressNode);
+                return;
+            }
+            // TODO report duplicate BAG Buildings
         }
     }
     
@@ -80,9 +100,9 @@ public class OsmAddressNodeToBuildingMatcher {
 //        }
 //    }
     
-    private void reportUnmatched(AddressNode addressNode) {
-        if (unmatchedAddressNodeHandler != null) {
-            unmatchedAddressNodeHandler.accept(addressNode);
-        }
-    }
+//    private void reportUnmatched(AddressNode addressNode) {
+//        if (unmatchedAddressNodeHandler != null) {
+//            unmatchedAddressNodeHandler.accept(addressNode);
+//        }
+//    }
 }
