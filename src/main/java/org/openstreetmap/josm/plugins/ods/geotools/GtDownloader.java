@@ -24,6 +24,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Host;
@@ -38,6 +39,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private List<PropertyName> properties;
     private final CRSUtil crsUtil;
     private DownloadRequest request;
+    @SuppressWarnings("unused")
     private DownloadResponse response;
     private SimpleFeatureSource featureSource;
     private Query query;
@@ -119,7 +121,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             if (properties != null) {
                 query.setProperties(properties);
             }
-        } catch (Exception e) {
+        } catch (OdsException e) {
             Main.warn(e.getMessage());
             e.printStackTrace();
             status.setException(e);
@@ -168,11 +170,12 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             status.setException(e);
             return;
         }
-        if (downloadedFeatures.isEmpty() && getDataSource().isRequired()) {
-            String featureType = dataSource.getFeatureType();
-            status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
-                        featureType));
-            status.setCancelled(true);
+        if (downloadedFeatures.isEmpty()) {
+            if (dataSource.isRequired()) {
+                String featureType = dataSource.getFeatureType();
+                status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
+                            featureType));
+            }
         }
         else {
             // Check if the data is complete

@@ -19,8 +19,8 @@ public class GroupByQuery extends Query {
     private final List<String> groupBy;
     private SortBy[] sortByArr = null;
 
-    public GroupByQuery(GtFeatureSource featureSource, List<String> groupBy) {
-        super(featureSource.getFeatureName(), Filter.INCLUDE);
+    public GroupByQuery(GtFeatureSource featureSource, List<String> propertyNames, List<String> groupBy) {
+        super(featureSource.getFeatureName(), Filter.INCLUDE, propertyNames.toArray(new String[0]));
         this.featureSource = featureSource;
         this.groupBy = groupBy;
     }
