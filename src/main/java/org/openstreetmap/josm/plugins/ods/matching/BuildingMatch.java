@@ -81,7 +81,7 @@ public class BuildingMatch extends MatchImpl<Building> {
         if (centroidDistance == 0) {
             return MatchStatus.MATCH;
         }
-        if (centroidDistance < 1e-5) {
+        if (centroidDistance < 1e-6) {
             return MatchStatus.COMPARABLE;
         }
         return MatchStatus.NO_MATCH;
