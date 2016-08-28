@@ -52,7 +52,7 @@ public class PolygonLayerManager extends AbstractLayerManager {
             ) {
                 newDataLayer = importer.loadLayer(is, polygonFile,
                         layerName, NullProgressMonitor.INSTANCE).getLayer();
-                osmDataLayer.setUploadDiscouraged(true);
+                newDataLayer.setUploadDiscouraged(true);
 //                Main.main.addLayer(osmDataLayer);
                 // Main.map.mapView.zoomTo(polygonLayer.data.);
             } catch (FileNotFoundException e) {
