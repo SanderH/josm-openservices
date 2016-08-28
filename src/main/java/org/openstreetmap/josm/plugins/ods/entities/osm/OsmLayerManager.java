@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.osm;
 
+import org.openstreetmap.josm.data.osm.event.NodeMovedEvent;
 import org.openstreetmap.josm.data.osm.event.PrimitivesAddedEvent;
 import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
@@ -39,7 +40,6 @@ public class OsmLayerManager extends AbstractLayerManager {
         return entitiesBuilder;
     }
 
-    
     @Override
     public void primitivesAdded(PrimitivesAddedEvent event) {
         layerListener.primitivesAdded(event);
@@ -53,5 +53,10 @@ public class OsmLayerManager extends AbstractLayerManager {
     @Override
     public void wayNodesChanged(WayNodesChangedEvent event) {
         layerListener.wayNodesChanged(event);
+    }
+
+    @Override
+    public void nodeMoved(NodeMovedEvent event) {
+        layerListener.nodeMoved(event);
     }
 }
