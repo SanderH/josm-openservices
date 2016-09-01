@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.properties.transform.TypeTransform;
+import org.openstreetmap.josm.tools.I18n;
 
 public class EntityMapperBuilder<T1, T2> {
     private final EntityType<T1> sourceType;
@@ -100,13 +101,13 @@ public class EntityMapperBuilder<T1, T2> {
         PropertyHandler<T1, A1> sourceAttributeHandler = 
                 (PropertyHandler<T1, A1>) sourceType.createAttributeHandler(sourceAttr);
         if (sourceAttributeHandler == null) {
-            addIssue(String.format("The attribute '%s' doesn't exist in source type '%s'", sourceAttr, sourceType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in source type ''{1}''", sourceAttr, sourceType));
         }
         @SuppressWarnings("unchecked")
         PropertyHandler<T2, A1> targetAttributeHandler = 
                 (PropertyHandler<T2, A1>) targetType.createAttributeHandler(targetAttr);
         if (targetAttributeHandler == null) {
-            addIssue(String.format("The attribute '%s' doesn't exist in target type '%s'", targetAttr, targetType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in target type ''{1}''", targetAttr, targetType));
         }
         if (sourceAttributeHandler == null || targetAttributeHandler == null) {
             return null;
@@ -114,7 +115,7 @@ public class EntityMapperBuilder<T1, T2> {
         Class<?> sourceAttrType = sourceAttributeHandler.getType();
         Class<?> targetAttrType = targetAttributeHandler.getType();
         if (!targetAttrType.isAssignableFrom(sourceAttrType) && !attributeMapping.getCast()) {
-            addIssue(String.format("Target attribute '%s(%s)' is not assignable from source attribute '%s(%s)'." +
+            addIssue(I18n.tr("Target attribute ''{0}({1})' is not assignable from source attribute ''{2}({3})'." +
               " And no transform function was specified",
             targetAttr, targetAttrType, sourceAttr, sourceAttrType));
             return null;
@@ -131,14 +132,14 @@ public class EntityMapperBuilder<T1, T2> {
         PropertyHandler<T2, A1> targetAttributeHandler = 
                 (PropertyHandler<T2, A1>) targetType.createAttributeHandler(targetAttr);
         if (targetAttributeHandler == null) {
-            addIssue(String.format("The attribute '%s' doesn't exist in target type '%s'", targetAttr, targetType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in target type ''{1}''", targetAttr, targetType));
         }
         if (targetAttributeHandler == null) {
             return null;
         }
         Class<?> targetAttrType = targetAttributeHandler.getType();
         if (!targetAttrType.isAssignableFrom(value.getClass())) {
-            addIssue(String.format("The type of the constant (%s) is not compatible with the target attribute '%s' (%s).",
+            addIssue(I18n.tr("The type of the constant ({0}) is not compatible with the target attribute ''{1}'' ({2}).",
             value.getClass(), targetAttr, targetAttrType));
             return null;
         }
@@ -158,13 +159,13 @@ public class EntityMapperBuilder<T1, T2> {
         PropertyHandler<T1, A1> sourceAttributeHandler = 
                 (PropertyHandler<T1, A1>) sourceType.createAttributeHandler(sourceAttr);
         if (sourceAttributeHandler == null) {
-            addIssue(String.format("The attribute '%s' doesn't exist in source type '%s'", sourceAttr, sourceType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in source type ''{1}''", sourceAttr, sourceType));
         }
         @SuppressWarnings("unchecked")
         PropertyHandler<T2, A2> targetAttributeHandler = 
                 (PropertyHandler<T2, A2>) targetType.createAttributeHandler(targetAttr);
         if (targetAttributeHandler == null) {
-            addIssue(String.format("The attribute '%s' doesn't exist the target type '%s'", targetAttr, targetType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist the target type ''{1}''", targetAttr, targetType));
         }
         if (sourceAttributeHandler == null || targetAttributeHandler == null) {
             return null;
@@ -174,12 +175,12 @@ public class EntityMapperBuilder<T1, T2> {
 
         boolean hasIssues = false;
         if (!transform.getSourceType().isAssignableFrom(sourceAttrType)) {
-            addIssue(String.format("The input type of the transform function (%s) is not applicable to the source attribute '%s (%s)'.",
+            addIssue(I18n.tr("The input type of the transform function ({0}) is not applicable to the source attribute ''{1} ({2})'.",
                 transform.getSourceType(), sourceAttr, sourceAttrType));
             hasIssues = true;
         }
         if (!targetAttrType.isAssignableFrom(transform.getTargetType())) {
-            addIssue(String.format("Target attribute '%s (%s)' is not assignable from the result type of the transform function (%s).",
+            addIssue(I18n.tr("Target attribute ''{0} ({1})' is not assignable from the result type of the transform function ({2}).",
                 targetAttr, targetAttrType.getName(), transform.getTargetType()));
             hasIssues = true;
         }
@@ -197,7 +198,7 @@ public class EntityMapperBuilder<T1, T2> {
         PropertyHandler<T2, A1> targetAttributeHandler = 
                 (PropertyHandler<T2, A1>) targetType.createAttributeHandler(targetAttr);
         if (targetAttributeHandler == null) {
-            addIssue(String.format("The attribute '%s' doesn't exist in target type '%s'", targetAttr, targetType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in target type ''{1}''", targetAttr, targetType));
         }
         @SuppressWarnings("unchecked")
         ChildMapper<T1, T2> childMapper = new ChildMapperImpl<>(

@@ -9,6 +9,7 @@ import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
 
 /**
  * Class to represent a shp file odsFeatureSource host.
+ * Still work in progress.
  * 
  * @author Gertjan Idema
  * 
@@ -26,15 +27,16 @@ public class ShapefileHost extends GtHost {
         return dataStore;
     }
 
-
     @Override
     public synchronized void initialize() throws OdsException {
+        if (isInitialized()) return;
         super.initialize();
         try {
             createDataStore();
+            setInitialized(true);
         }
         catch (OdsException e) {
-            setAvailable(false);
+            setInitialized(false);
             throw e;
         }
     }

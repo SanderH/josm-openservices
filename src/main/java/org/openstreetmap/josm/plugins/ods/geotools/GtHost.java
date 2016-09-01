@@ -36,14 +36,6 @@ public abstract class GtHost extends AbstractHost {
         return featureTypes.contains(type);
     }
 
-//    public SimpleFeatureSource getFeatureSource(String name, int timeout) {
-//        DataStore dataStore = getDataStore(timeout);
-//        if (dataStore == null) {
-//            return null;
-//        }
-//        dataStore.getFeatureSource(name);
-//    }
-    
     @Override
     public OdsFeatureSource getOdsFeatureSource(String feature) {
         return new GtFeatureSource(this, feature, null);
@@ -55,5 +47,11 @@ public abstract class GtHost extends AbstractHost {
         return new GtDownloader<>(module, dataSource, clazz);
     }
 
+    /**
+     * Retrieve the Geotools DataStore for this host.
+     * 
+     * @return
+     * @throws OdsException
+     */
     public abstract DataStore getDataStore() throws OdsException;
 }

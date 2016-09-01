@@ -20,6 +20,7 @@ import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.exceptions.UnavailableHostException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * Class to represent a WFS odsFeatureSource host.
@@ -46,32 +47,24 @@ public class WFSHost extends GtHost {
     
     @Override
     public synchronized void initialize() throws OdsException {
-        if (isInitialized()) {
-            return;
+        if (!isInitialized()) {
+            super.initialize();
+            setInitialized(false);
+            try {
+                dataStore = createDataStore(initTimeout);
+            } catch (OdsException e) {
+                throw new UnavailableHostException(this, e);
+            }
+            try {
+                dataStore = createDataStore(dataTimeout);
+                setFeatureTypes(Arrays.asList(dataStore.getTypeNames()));
+            } catch (OdsException|IOException e) {
+                throw new UnavailableHostException(this, e);
+            }
+            setInitialized(true);
         }
-        super.initialize();
-        try {
-            dataStore = createDataStore(initTimeout);
-        } catch (OdsException e) {
-            setAvailable(false);
-            throw new UnavailableHostException(this, e);
-        }
-        try {
-            dataStore = createDataStore(dataTimeout);
-            setFeatureTypes(Arrays.asList(dataStore.getTypeNames()));
-        } catch (OdsException|IOException e) {
-            setAvailable(false);
-            throw new UnavailableHostException(this, e);
-        }
-        setAvailable(true);
         return;
     }
-
-//    @Override
-//    public synchronized void initialize() throws OdsException {
-//        if (isInitialized()) return;
-//        super.initialize();
-//    }
 
     /**
      * Retrieve a new DataStore for this host with the default timeout
@@ -108,22 +101,22 @@ public class WFSHost extends GtHost {
         try {
             ds = DataStoreFinder.getDataStore(connectionParameters);
         } catch (UnknownHostException e) {
-            String msg = String.format("Host %s (%s) doesn't exist",
+            String msg = I18n.tr("Host {0} ({1}) doesn't exist",
                     getName(), getUrl().getHost());
             hostException = new OdsException(msg);
             throw hostException;
         } catch (SocketTimeoutException e) {
-            String msg = String.format("Host %s (%s) timed out when trying to open the datastore",
+            String msg = I18n.tr("Host {0} ({1}) timed out when trying to open the datastore",
                     getName(), getUrl().toString());
             hostException = new OdsException(msg);
             throw hostException;
         } catch (FileNotFoundException e) {
-            String msg = String.format("No dataStore for Host %s could be found at this url: %s",
+            String msg = I18n.tr("No dataStore for Host {0} could be found at this url: {1}",
                     getName(), getUrl().toString());
             hostException = new OdsException(msg);
             throw hostException;
         } catch (IOException e) {
-            String msg = String.format("No dataStore for Host %s (%s) could be created",
+            String msg = I18n.tr("No dataStore for Host {0} ({1}) could be created",
                     getName(), getUrl().toString());
             hostException = new OdsException(msg);
             throw hostException;

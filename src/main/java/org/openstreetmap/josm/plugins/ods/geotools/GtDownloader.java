@@ -2,8 +2,10 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
@@ -28,7 +30,6 @@ import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Host;
-import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.properties.EntityMapper;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -45,20 +46,8 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private Query query;
     private DefaultFeatureCollection downloadedFeatures;
     private final Repository repository;
-//    private EntityStore<T> entityStore;
-    private final Status status = new Status();
-//    private final GeotoolsEntityBuilder<T> entityBuilder;
     private final EntityMapper<SimpleFeature, T> entityMapper;
     private Normalisation normalisation = Normalisation.FULL;
-    
-//    public GtDownloader(OdsDataSource dataSource, CRSUtil crsUtil,
-//            EntityMapper<SimpleFeature, T> entityMapper, EntityStore<T> entityStore) {
-//        super();
-//        this.dataSource = dataSource;
-//        this.crsUtil = crsUtil;
-//        this.entityMapper = entityMapper;
-//        this.entityStore = entityStore;
-//    }
     
     @SuppressWarnings("unchecked")
     public GtDownloader(OdsModule module, OdsDataSource dataSource,
@@ -66,7 +55,6 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         this.dataSource = dataSource;
         this.crsUtil = module.getCrsUtil();
         this.entityMapper = (EntityMapper<SimpleFeature, T>) dataSource.getEntityMapper();
-//        this.entityStore = module.getOpenDataLayerManager().getEntityStore(clazz);
         this.repository = module.getOpenDataLayerManager().getRepository();
     }
 
@@ -87,14 +75,8 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     }
 
     @Override
-    public Status getStatus() {
-        return status;
-    }
-
-    @Override
-    public void prepare() {
+    public void prepare() throws ExecutionException {
         Thread.currentThread().setName(dataSource.getFeatureType() + " prepare");
-        status.clear();
         try {
             GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource.getOdsFeatureSource();
             gtFeatureSource.initialize();
@@ -122,9 +104,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                 query.setProperties(properties);
             }
         } catch (OdsException e) {
-            Main.warn(e.getMessage());
-            e.printStackTrace();
-            status.setException(e);
+            throw new ExecutionException(e.getMessage(), e);
         }
         return;
     }
@@ -149,31 +129,36 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     }
     
     @Override
-    public void download() {
+    public void download() throws ExecutionException {
         Thread.currentThread().setName(dataSource.getFeatureType() + " download");
         String key = dataSource.getOdsFeatureSource().getIdAttribute();
         downloadedFeatures = new DefaultFeatureCollection(key);
+        SimpleFeatureCollection featureCollection;
+        try {
+            featureCollection = featureSource.getFeatures(query);
+        }
+        catch (IOException e) {
+            throw new ExecutionException("WrappedException", e);
+        }
+        if (featureCollection.isEmpty()) {
+            return;
+        }
         try (
-            SimpleFeatureIterator it = featureSource.getFeatures(query).features();
+            SimpleFeatureIterator it = featureCollection.features();
         )  {
-           while (it.hasNext()) {
+           while (it.hasNext() && !Thread.currentThread().isInterrupted()) {
                SimpleFeature feature = it.next();
                FeatureUtil.normalizeFeature(feature, normalisation);
                downloadedFeatures.add(feature);
-               if (Thread.currentThread().isInterrupted()) {
-                   status.setCancelled(true);
-                   return;
-               }
            }
-        } catch (IOException e) {
-            Main.warn(e);
-            status.setException(e);
-            return;
+           if (Thread.currentThread().isInterrupted()) {
+               downloadedFeatures.clear();
+           }
         }
         if (downloadedFeatures.isEmpty()) {
             if (dataSource.isRequired()) {
                 String featureType = dataSource.getFeatureType();
-                status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
+                Main.info(I18n.tr("The selected download area contains no {0} objects.",
                             featureType));
             }
         }
@@ -183,14 +168,9 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             Integer maxFeatures = host.getMaxFeatures();
             if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
                 String featureType = dataSource.getFeatureType();
-                status.setMessage(I18n.tr(
-                    "To many {0} objects. Please choose a smaller download area.", featureType));
-                status.setCancelled(true);
+                throw new ExecutionException(I18n.tr(
+                    "To many {0} objects. Please choose a smaller download area.", featureType), null);
             }
-        }
-        if (!status.isSucces()) {
-             Thread.currentThread().interrupt();
-             return;
         }
     }
     
@@ -199,7 +179,10 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         Thread.currentThread().setName(dataSource.getFeatureType() + " process");
         for (SimpleFeature feature : downloadedFeatures) {
             entityMapper.mapAndConsume(feature, repository::add);
-//            entity.setSourceDate(request.getDownloadTime().toLocalDate());
+            if (Thread.currentThread().isInterrupted()) {
+                downloadedFeatures.clear();
+                repository.clear();
+            }
         }
     }
 
@@ -210,6 +193,6 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
 
     @Override
     public void cancel() {
-        status.setCancelled(true);
+        Thread.currentThread().interrupt();
     }
 }

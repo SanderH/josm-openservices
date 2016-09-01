@@ -2,8 +2,8 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
@@ -22,7 +22,7 @@ public class OsmLayerDownloader implements LayerDownloader {
     private DownloadRequest request;
     @SuppressWarnings("unused")
     private DownloadResponse response;
-    private Status status = new Status();
+//    private Status status = new Status();
     private DownloadSource downloadSource=  DownloadSource.OVERPASS;
     private OsmServerReader osmServerReader;
     private OsmLayerManager layerManager;
@@ -48,21 +48,20 @@ public class OsmLayerDownloader implements LayerDownloader {
         
     }
 
-
-    @Override
-    public Status getStatus() {
-        return status;
-    }
-
+//
+//    @Override
+//    public Status getStatus() {
+//        return status;
+//    }
+//
     @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
     }
 
     @Override
-    public void setup(DownloadRequest request) {
+    public void setup(DownloadRequest request) throws OdsException {
         this.request = request;
-        status.clear();
         switch (downloadSource) {
         case OSM:
             host = new PlainOsmHost();
@@ -76,49 +75,45 @@ public class OsmLayerDownloader implements LayerDownloader {
         try {
             osmServerReader = host.getServerReader(request);
         } catch (MalformedURLException e) {
-            status.setException(e);
+            throw new OdsException(e);
         }
     }
 
     @Override
-    public void download() {
+    public void download() throws ExecutionException {
         try {
             dataSet = parseDataSet();
             if (downloadSource == DownloadSource.OSM) {
                 MultiPolygonFilter filter = new MultiPolygonFilter(request.getBoundary().getMultiPolygon());
                 dataSet = filter.filter(dataSet);
             }
-            if (dataSet.allPrimitives().isEmpty()) {
-                status.setCancelled(true);
-                status.setMessage(I18n.tr("The selected download area contains no OSM objects"));
-                return;
-            }
+//            if (dataSet.allPrimitives().isEmpty()) {
+////                status.setCancelled(true);
+//                status.setMessage(I18n.tr("The selected download area contains no OSM objects"));
+//                return status;
+//            }
         }
         catch(OsmTransferException e) {
-            if (status.isCancelled()) {
-                Main.info(I18n.tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
-                return;
-            }
-            status.setFailed(true);
             if (e instanceof OsmApiException) {
                 switch (((OsmApiException) e).getResponseCode()) {
                 case 400:
-                    status.setMessage(I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."));
-                    return;
+                    throw new ExecutionException(
+                        I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."), e);
                 case 404:
-                    status.setMessage(I18n.tr("No OSM server could be found at this location: {0}", 
-                        host.getHostString().toString()));
-                    return;
+                    throw new ExecutionException(
+                        I18n.tr("No OSM server could be found at this location: {0}", 
+                        host.getHostString().toString()), e);
+                case 504:
+                    throw new ExecutionException(
+                    I18n.tr("A timeout occurred for the OSM server at this location: {0}", 
+                        host.getHostString().toString()), e);
                 default:
-                    status.setMessage(I18n.tr(e.getMessage()));
-                    return;
+                    throw new ExecutionException(I18n.tr(e.getMessage()), e);
                 }
             }
             else if (e.getCause() instanceof UnknownHostException) {
-                status.setMessage(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()));
-                return;
+                throw new ExecutionException(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()), e);
             }
-            status.setException(e);
         }
     }
 
@@ -152,6 +147,5 @@ public class OsmLayerDownloader implements LayerDownloader {
     @Override
     public void cancel() {
         osmServerReader.cancel();
-        status.setCancelled(true);
     }
 }

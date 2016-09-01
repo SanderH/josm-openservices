@@ -12,6 +12,15 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.openstreetmap.josm.tools.I18n;
 
+/**
+ * Extension to Query that supports a group by functionality.
+ * The current implementation is a bit clumsy. The actual grouping is done in
+ * a feature iterator.
+ * Using a Filter would allow for a much neater solution.
+ * 
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
 public class GroupByQuery extends Query {
     // TODO Use Hints to discover the default filterFactory 
     private final GtFeatureSource featureSource;

@@ -9,6 +9,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * @author Gertjan Idema <mail@gertjanidema.nl>
@@ -78,8 +79,8 @@ public class DefaultOdsDataSource implements OdsDataSource {
             for (String propertyName : getRequiredProperties()) {
                 PropertyDescriptor descriptor = featureType.getDescriptor(propertyName);
                 if (descriptor == null) {
-                    throw new OdsException(String.format(
-                        "Property '%s' doesn't exist for feature type '%s'",
+                    throw new OdsException(I18n.tr(
+                        "Property ''{0}'' doesn't exist for feature type ''{1}''",
                         featureType.getName(), propertyName));
                 }
             }

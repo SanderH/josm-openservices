@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.properties.pojo;
 
 import org.openstreetmap.josm.plugins.ods.properties.EntityType;
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
+import org.openstreetmap.josm.tools.I18n;
 
 public class PojoEntityType<T> implements EntityType<T> {
     private final PojoPropertyHandlerFactory handlerFactory = new PojoPropertyHandlerFactory();
@@ -19,7 +20,7 @@ public class PojoEntityType<T> implements EntityType<T> {
 
     @Override
     public String toString() {
-        return String.format("Pojo entity type (%s)", type.getSimpleName());
+        return I18n.tr("Pojo entity type ({0})", type.getSimpleName());
     }
     
     

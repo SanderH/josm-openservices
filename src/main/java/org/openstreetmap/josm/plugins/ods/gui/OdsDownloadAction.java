@@ -3,8 +3,10 @@ package org.openstreetmap.josm.plugins.ods.gui;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -13,13 +15,12 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.ImageProvider;
-import org.xml.sax.SAXException;
 
 public class OdsDownloadAction extends OdsAction {
     /**
@@ -120,11 +121,19 @@ public class OdsDownloadAction extends OdsAction {
         }
 
         @Override
-        protected void realRun() throws SAXException, IOException,
-                OsmTransferException {
-            DownloadRequest request = new DownloadRequest(startDate, boundary,
-                downloadOsm, downloadOpenData);
-            downloader.run(getProgressMonitor(), request);
+        protected void realRun() {
+            try {
+                DownloadRequest request = new DownloadRequest(startDate, boundary,
+                    downloadOsm, downloadOpenData);
+                downloader.run(getProgressMonitor(), request);
+            }
+            catch (ExecutionException e) {
+                JOptionPane.showMessageDialog(Main.panel, I18n.tr("The download failed because of the following reason(s):\n{0}",
+                        e.getMessage()),
+                        I18n.tr("Download error"), JOptionPane.ERROR_MESSAGE);
+            } catch (InterruptedException e) {
+                Main.info(I18n.tr("The dowload process was interrupted by the user"));
+            }
         }
 
         @Override

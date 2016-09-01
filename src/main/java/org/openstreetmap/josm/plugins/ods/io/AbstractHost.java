@@ -4,24 +4,33 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.OdsConfigurationException;
-import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
-import org.openstreetmap.josm.plugins.ods.ServiceException;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
+import org.openstreetmap.josm.tools.I18n;
 
+/**
+ * Abstract implementation of the @Host class that provides basic functionality.
+ * 
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
 public abstract class AbstractHost implements Host {
     private boolean initialized = false;
-    private boolean available = false;
     private String name;
     private String type;
     private String uncheckedUrl;
     private URL url;
     private Integer maxFeatures;
     private MetaData metaData;
+    /**
+     * A list of metaData downloaders that can retrieve extra meta data about the host. Mainly intended to process OWS meta data in the future,
+     * but currently not actively used. 
+     */
     private final List<MetaDataLoader> metaDataLoaders = new LinkedList<>();
 
     public AbstractHost(String name, String url) {
@@ -44,30 +53,17 @@ public abstract class AbstractHost implements Host {
     }
     
     /**
-     * @see org.openstreetmap.josm.plugins.ods.io.Host#isAvailable()
-     */
-    @Override
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public final void setAvailable(boolean available) {
-        this.available = available;
-    }
-
-    /**
      * @throws OdsConfigurationException 
      * @see org.openstreetmap.josm.plugins.ods.io.Host#initialize()
      */
     @Override
     public synchronized void initialize() throws OdsException {
         if (isInitialized()) return;
-        setInitialized(true);
         try {
             url = new URL(uncheckedUrl);
         } catch (MalformedURLException e) {
-            setAvailable(false);
-            String msg = String.format("Invalid url: %s", uncheckedUrl);
+            setInitialized(false);
+            String msg = I18n.tr("Invalid url: {0}", uncheckedUrl);
             throw new OdsException(msg);
         }
         metaData = new MetaData();
@@ -75,10 +71,11 @@ public abstract class AbstractHost implements Host {
             try {
                 loader.populateMetaData(metaData);
             } catch (MetaDataException e) {
-                setAvailable(false);
+                setInitialized(false);
                 throw new OdsException("Invalid meta data", e);
             }
         }
+        setInitialized(true);
         return;
     }
 
@@ -88,10 +85,6 @@ public abstract class AbstractHost implements Host {
     @Override
     public final String getName() {
         return name;
-    }
-
-    public final void setName(String name) {
-        this.name = name;
     }
 
     /* (non-Javadoc)
@@ -108,10 +101,6 @@ public abstract class AbstractHost implements Host {
     @Override
     public final String getType() {
         return type;
-    }
-
-    public final void setType(String type) {
-        this.type = type;
     }
 
     /* (non-Javadoc)
@@ -146,18 +135,8 @@ public abstract class AbstractHost implements Host {
                 && other.getUrl().equals(url);
     }
 
-    /* (non-Javadoc)
-     * @see org.openstreetmap.josm.plugins.ods.io.Host#hasFeatureType(java.lang.String)
-     */
     @Override
-    public abstract boolean hasFeatureType(String feature)
-            throws ServiceException;
-
-    /* (non-Javadoc)
-     * @see org.openstreetmap.josm.plugins.ods.io.Host#getOdsFeatureSource(java.lang.String)
-     */
-    @Override
-    public abstract OdsFeatureSource getOdsFeatureSource(String feature)
-            throws ServiceException;
-
+    public int hashCode() {
+        return Objects.hash(getName(), getType(), getUrl());
+    }
 }

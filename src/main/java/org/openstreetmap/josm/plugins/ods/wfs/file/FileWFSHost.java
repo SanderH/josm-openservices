@@ -38,17 +38,25 @@ import org.w3c.dom.Document;
 import net.opengis.wfs.FeatureTypeType;
 import net.opengis.wfs.WFSCapabilitiesType;
 
+/**
+ * Implementation of {@link Host} that reads data from (a collection of) files
+ * containing WFS data.
+ * Intended to be used to for test data.
+ * This class is still work in progress.
+ * 
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
 public class FileWFSHost extends AbstractHost {
     private final File directory;
     private final URL schemaLocation;
     private final WFSStrategy strategy;
     private WFSCapabilitiesType parsedCapabilities;
-//    private final String ns = "";
     private final Configuration configuration;
     private final Map<String, FeatureTypeType> featureTypeTypes = new HashMap<>();
     private final Map<String, SimpleFeatureType> featureTypes = new HashMap<>();
     
-    public FileWFSHost(org.geotools.data.wfs.v1_1_0.WFSStrategy strategy, File dir) throws IOException {
+    public FileWFSHost(WFSStrategy strategy, File dir) throws IOException {
         // TODO should we extend AbstractHost ?
         super("FileWFS", dir.toString());
         this.strategy = strategy;

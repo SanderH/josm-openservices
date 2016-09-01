@@ -22,15 +22,19 @@ public class GroupByFeatureCollection extends OdsFeatureCollection {
         return new GroupByFeatureIterator(wrapped.features(), query);
     }
     
-//    @Override
-//    protected Iterator<SimpleFeature> openIterator() {
-//        return new SimpleFeatureIteratorIterator(
-//    }
     
     @Override
     public int size() {
         // TODO This result is not accurate, because the duplicate features are counted;
+        // However, the main use of the size is to determine if the result has been truncated
+        // to the maximum number of features. For this purpose the size of the wrapped iterator
+        // is what we need.
         return wrapped.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return wrapped.isEmpty();
     }
 
     @Override

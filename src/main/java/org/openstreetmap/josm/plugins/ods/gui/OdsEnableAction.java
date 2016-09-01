@@ -48,8 +48,8 @@ public class OdsEnableAction extends AbstractAction {
                 return;
             }
             Main.error(e, false);
-            String msg = I18n.tr("The module could not be activated because of the following error(s): {0}",
-                    e.getMessage());
+            String msg = I18n.tr("The module could not be activated because of the following error(s):") +
+                    "\n" + e.getMessage();
             JOptionPane.showMessageDialog(Main.panel, msg, "Module not available", JOptionPane.ERROR_MESSAGE);
         }
     }

@@ -69,7 +69,7 @@ public class MultiPolygonBuilder {
                     outerPolygonizer.add(geoUtil.toLineString(member.getWay()));
                     break;
                 default:
-                    Main.warn(I18n.tr("Invalid role '{0}' in building relation {1}", member.getRole(), relation.getUniqueId()));
+                    Main.warn(I18n.tr("Invalid role ''{0}'' in building relation {1}", member.getRole(), relation.getUniqueId()));
                 }
                 break;
             case RELATION:

@@ -7,6 +7,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.openstreetmap.josm.plugins.ods.entities.EntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.tools.I18n;
 
 public abstract class GtEntityMapperFactory implements EntityMapperFactory {
     private GtHost host;
@@ -38,7 +39,7 @@ public abstract class GtEntityMapperFactory implements EntityMapperFactory {
             SimpleFeatureSource featureSource = getDataStore().getFeatureSource(featureName);
             return featureSource.getSchema();
         } catch (IOException e) {
-            throw new OdsException(String.format("Feature '%s' doesn't exist.", featureName), e);
+            throw new OdsException(I18n.tr("Feature ''{0}'' doesn't exist.", featureName), e);
         }
     }
 }

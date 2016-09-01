@@ -11,6 +11,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
+import org.openstreetmap.josm.tools.I18n;
 
 public class GtFeatureSource implements OdsFeatureSource {
     private boolean initialized = false;
@@ -58,22 +59,11 @@ public class GtFeatureSource implements OdsFeatureSource {
     @Override
     public void initialize() throws OdsException {
         if (initialized) return;
-        initialized = true;
-        setAvailable(false);
-        if (!getHost().isAvailable()) {
-            String msg = String.format("The feature named '%s' is not accessable, " +
-                "because the host %s is unavailable",
-                this.getFeatureName(),
-                getHost().getName());
-            this.setAvailable(false);
-            throw new OdsException(msg);
-        }
         metaData = new MetaData(host.getMetaData());
         if (!getHost().hasFeatureType(featureName)) {
-            String msg = String.format("The feature named '%s' is not known to host '%s'",
+            String msg = I18n.tr("The feature named ''{0}'' is not known to host ''{1}''",
                 this.getFeatureName(),
                 getHost().getName());
-            this.setAvailable(false);
             throw new OdsException(msg);
         }
         try {
@@ -87,13 +77,13 @@ public class GtFeatureSource implements OdsFeatureSource {
             featureType = featureSource.getSchema();
         }
         catch (IOException e) {
-            String msg = String.format("The feature named '%s' is not accessable, " +
-                "because of a network timeout on host %s",
+            String msg = I18n.tr("The feature named ''{0}'' is not accessable, " +
+                "because of a network timeout on host {1}",
             getFeatureName(),
             getHost().getName());
             throw new OdsException(msg);
         }
-        // TODO do we want these lines here?
+        // TODO do we want these lines here? The source.date should be a response parameter
         if (!metaData.containsKey("source.date")) {
             metaData.put("source.date", LocalDate.now());
         }

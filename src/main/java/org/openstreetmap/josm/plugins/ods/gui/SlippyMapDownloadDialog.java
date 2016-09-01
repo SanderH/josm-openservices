@@ -132,12 +132,8 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         }
         if (!Main.pref.get("openservices.download.bounds").isEmpty()) {
             // read the bounding box from the preferences
-            try {
-                return new Bounds(
-                    Main.pref.get("openservices.download.bounds"), ";");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            return new Bounds(
+                Main.pref.get("openservices.download.bounds"), ";");
         }
         return null;
     }

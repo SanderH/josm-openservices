@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.exceptions;
 
 import org.openstreetmap.josm.plugins.ods.io.Host;
+import org.openstreetmap.josm.tools.I18n;
 
 public class UnavailableHostException extends OdsException {
     private Host host;
@@ -21,7 +22,7 @@ public class UnavailableHostException extends OdsException {
     @Override
     public String getMessage() {
         String msg = (getCause() == null ? getMessage() : getCause().getMessage());
-        return String.format("Host {0} ({1}) is not available: {2}",
+        return I18n.tr("Host {0} ({1}) is not available: {2}",
             host.getName(),
             host.getUrl().toString(),
             msg);

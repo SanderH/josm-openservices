@@ -29,6 +29,7 @@ import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers 
@@ -76,20 +77,17 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
     }
     
     private static void initializeHosts(OdsModuleConfiguration configuration) throws OdsException {
-        StringBuilder sb = new StringBuilder(100);
+        List<String> messages = new LinkedList<>();
         for (Host host : configuration.getHosts()) {
             try {
                 host.initialize();
             }
             catch (OdsException e) {
-                if (sb.length() == 0) {
-                    sb.append("The following problems(s) occured while trying to initialize this module:\n");
-                }
-                sb.append(e.getMessage()).append("\n");
+                messages.add(e.getLocalizedMessage());
             }
         }
-        if (sb.length() > 0) {
-            throw new OdsException(sb.toString());
+        if (!messages.isEmpty()) {
+            throw new OdsException(I18n.tr("The following problems(s) occured while trying to initialize this module:"), messages);
         }
     }
 
@@ -212,11 +210,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
             this.initialize();
         }
         catch (Exception e) {
-            throw new ModuleActivationException(e);
-        }
-        JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
-        for (OdsAction action : getActions()) {
-            menu.add(action);
+            throw new ModuleActivationException(e.getMessage(), e);
         }
         getOsmLayerManager().activate();
         getOpenDataLayerManager().activate();
@@ -226,6 +220,10 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         }
         this.matcherManager = new MatcherManager(this);
         active = true;
+        JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
+        for (OdsAction action : getActions()) {
+            menu.add(action);
+        }
     }
 
     public void deActivate() {

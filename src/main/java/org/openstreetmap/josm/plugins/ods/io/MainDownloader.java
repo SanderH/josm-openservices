@@ -2,12 +2,12 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
@@ -29,6 +29,8 @@ import org.openstreetmap.josm.tools.I18n;
  */
 public class MainDownloader {
     private static final int NTHREADS = 10;
+    private boolean initialized = false;
+    private boolean cancelled = false;
     private OdsModule module;
     private OpenDataLayerDownloader openDataLayerDownloader;
     private OsmLayerDownloader osmLayerDownloader;
@@ -37,9 +39,9 @@ public class MainDownloader {
     
     private List<Matcher<?>> matchers = new LinkedList<>();
     
-    private ExecutorService executorService;
+    private ExecutorService executor;
 
-    private Status status = new Status();
+//    private Status status = new Status();
 
     public MainDownloader(OdsModule module) {
         super();
@@ -64,61 +66,64 @@ public class MainDownloader {
     }
 
     public void initialize() throws OdsException {
-        if (osmLayerDownloader != null) {
-            osmLayerDownloader.initialize();
+        if (!initialized) {
+            List<String> messages = new LinkedList<>();
+            if (osmLayerDownloader != null) {
+                try {
+                    osmLayerDownloader.initialize();
+                }
+                catch (OdsException e) {
+                    messages.add(e.getMessage());
+                }
+            }
+            if (openDataLayerDownloader != null) {
+                try {
+                    openDataLayerDownloader.initialize();
+                }
+                catch (OdsException e) {
+                    messages.add(e.getMessage());
+                }
+            }
+            if (!messages.isEmpty()) {
+                throw new OdsException("", messages);
+            }
+            for (Matcher<?> matcher : matchers) {
+                matcher.initialize();
+            }
         }
-        if (openDataLayerDownloader != null) {
-            openDataLayerDownloader.initialize();
-        }
-        for (Matcher<?> matcher : matchers) {
-            matcher.initialize();
-        }
+        initialized = true;
     }
     
-    public void run(ProgressMonitor pm, DownloadRequest request) {
-        status.clear();
+    public void run(ProgressMonitor pm, DownloadRequest request) throws ExecutionException, InterruptedException {
         pm.indeterminateSubTask(I18n.tr("Setup"));
-        setup(request);
-        if (status.isCancelled()) {
-            return;
-        }
-        pm.indeterminateSubTask(I18n.tr("Preparing"));
-        prepare();
-        if (status.isCancelled()) {
-            return;
-        }
-        pm.indeterminateSubTask(I18n.tr("Downloading"));
-        download();
-        if (status.isCancelled()) {
-            return;
-        }
-        if (!status.isSucces()) {
+        cancelled = false;
+        try {
+            setup(request);
+            pm.indeterminateSubTask(I18n.tr("Preparing"));
+            prepare();
+            if (cancelled) return;
+            pm.indeterminateSubTask(I18n.tr("Downloading"));
+            download();
+            if (cancelled) return;
+            pm.indeterminateSubTask(I18n.tr("Processing data"));
+            DownloadResponse response = new DownloadResponse(request);
+            process(response);
+            if (cancelled) return;
+            
+            Bounds bounds = request.getBoundary().getBounds();
+            computeBboxAndCenterScale(bounds);
             pm.finishTask();
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr(
-                "An error occurred: " + status.getMessage()));
-            return;
+        } catch (OdsException e) {
+            throw new ExecutionException(e);
         }
-        pm.indeterminateSubTask(I18n.tr("Processing data"));
-        DownloadResponse response = new DownloadResponse(request);
-        process(response);
-        if (!status.isSucces()) {
-            pm.finishTask();
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr(
-                    "An error occurred: " + status.getMessage()));
-            return;
-        }
-        
-        Bounds bounds = request.getBoundary().getBounds();
-        computeBboxAndCenterScale(bounds);
-        pm.finishTask();
     }
 
     /**
      * Setup the download jobs. One job for the Osm data and one for imported data.
      * Setup the download tasks. Maybe more than 1 per job. 
+     * @throws OdsException 
      */
-    private void setup(DownloadRequest request) {
-        status.clear();
+    private void setup(DownloadRequest request) throws OdsException {
         enabledDownloaders = new LinkedList<>();
         if (request.isGetOsm()) {
             enabledDownloaders.add(osmLayerDownloader);
@@ -126,117 +131,77 @@ public class MainDownloader {
         if (request.isGetOds()) {
             enabledDownloaders.add(openDataLayerDownloader);
         }
+        List<String> messages = new LinkedList<>();
         for (LayerDownloader downloader : enabledDownloaders) {
-            downloader.setup(request);
+            try {
+                downloader.setup(request);
+            }
+            catch (OdsException e) {
+                messages.add(e.getMessage());
+            }
+            if (!messages.isEmpty()) {
+                throw new OdsException(messages);
+            }
         }
     }
 
-    private void prepare() {
-        status.clear();
-        executorService = Executors.newFixedThreadPool(NTHREADS);
-        for (final LayerDownloader downloader : enabledDownloaders) {
-            executorService.execute(downloader::prepare);
-        }
-        
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
-        }
-        catch (InterruptedException e) {
-            executorService.shutdownNow();
-            for (LayerDownloader downloader : enabledDownloaders) {
-                downloader.cancel();
-            }
-            status.setCancelled(true);
-        }
-        this.status = getStatus(enabledDownloaders);
+    private void prepare() throws ExecutionException, InterruptedException {
+        runTasks(Downloader.getPrepareTasks(enabledDownloaders));
     }
 
-    private void download() {
-        status.clear();
-        executorService = Executors.newFixedThreadPool(NTHREADS);
-        for (final LayerDownloader downloader : enabledDownloaders) {
-            executorService.execute(downloader::download);
-        }
-        
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
-        }
-        catch (InterruptedException e) {
-            executorService.shutdownNow();
-            for (LayerDownloader downloader : enabledDownloaders) {
-                downloader.cancel();
-            }
-            status.setCancelled(true);
-            return;
-        }
-        status = getStatus(enabledDownloaders);
-        if (this.status.isFailed()) {
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
-                status.getMessage()));
-        }
-        else if (this.status.isTimedOut()) {
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
-        }
-        else if (this.status.isCancelled()) {
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download was cancelled because of the following reason(s):\n" +
-                status.getMessage()));
-        }
+    private void download() throws ExecutionException, InterruptedException {
+        runTasks(Downloader.getDownloadTasks(enabledDownloaders));
     }
     
     /**
-     * Run the tasks that depend on more than one entity store.
+     * Run the processing tasks.
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      * 
      */
-    protected void process(DownloadResponse response) {
-        status.clear();
-        executorService = Executors.newFixedThreadPool(NTHREADS);
-        for (final LayerDownloader downloader : enabledDownloaders) {
-            downloader.setResponse(response);
-            executorService.execute(downloader::process);
+    protected void process(DownloadResponse response) throws ExecutionException, InterruptedException {
+        runTasks(Downloader.getProcessTasks(enabledDownloaders));
+        for (Matcher<?> matcher : matchers) {
+            matcher.run();
         }
-        
-        executorService.shutdown();
+    }
+
+    private void runTasks(List<Callable<Void>> tasks) throws ExecutionException, InterruptedException {
+        executor = Executors.newFixedThreadPool(NTHREADS);
         try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
-        }
-        catch (InterruptedException e) {
-            executorService.shutdownNow();
-//            for (LayerDownloader downloader : enabledDownloaders) {
-//                downloader.cancel();
-//            }
-//            status.setException(e);
-//            status.setFailed(true);
-            return;
-        }
-        status = getStatus(enabledDownloaders);
-        if (status.isSucces()) {
-            for (Matcher<?> matcher : matchers) {
-                matcher.run();
+            List<Future<Void>> futures = executor.invokeAll(tasks, 1, TimeUnit.MINUTES);
+            List<String> messages = new LinkedList<>();
+            for (Future<Void> future : futures) {
+                try {
+                    future.get();
+                } catch (ExecutionException e) {
+                    messages.add(e.getCause().getMessage());
+                }
             }
+            if (!messages.isEmpty()) {
+                throw new ExecutionException(String.join("\n",  messages), null);
+            }
+        } catch (InterruptedException e) {
+            for (Downloader dl : enabledDownloaders) {
+                dl.cancel();
+            }
+            throw e;
         }
     }
 
     protected static void computeBboxAndCenterScale(Bounds bounds) {
-        BoundingXYVisitor v = new BoundingXYVisitor();
         if (bounds != null) {
-            v.visit(bounds);
+            new BoundingXYVisitor().visit(bounds);
             Main.map.mapView.zoomTo(bounds);
         }
     }
 
     public void cancel() {
-        status.setCancelled(true);
+        cancelled = true;
         for (LayerDownloader downloader : enabledDownloaders) {
             downloader.cancel();
         }
-        executorService.shutdownNow();
+        executor.shutdownNow();
     }
     
-    private Status getStatus(List<LayerDownloader> downloaders) {
-        List<Status> statusses = enabledDownloaders.stream().map(dl->dl.getStatus())
-                .filter(st->st.isFailed()).collect(Collectors.toList());
-        return Status.getAggregate(statusses);
-    }
 }

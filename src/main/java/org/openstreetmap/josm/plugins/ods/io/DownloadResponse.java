@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 public class DownloadResponse {
     private DownloadRequest request;
-    private Status status;
+//    private Status status;
 
     public DownloadResponse(DownloadRequest request) {
         super();
@@ -13,11 +13,11 @@ public class DownloadResponse {
         return request;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+//    public Status getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(Status status) {
+//        this.status = status;
+//    }
 }
