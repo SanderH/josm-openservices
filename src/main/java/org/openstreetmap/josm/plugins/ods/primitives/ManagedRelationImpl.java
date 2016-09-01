@@ -95,4 +95,11 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public double getArea() {
+        // In general a relation has no area.
+        // Area relations should be implemented as ManagedRing or ManagedPolygon
+        return 0;
+    }
 }

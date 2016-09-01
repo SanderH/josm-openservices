@@ -168,6 +168,10 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         }
         return getUniqueId().equals(((ManagedWay)obj).getUniqueId());
     }
-    
-    
+
+    @Override
+    public double getArea() {
+        // A line has no area. Closed ways should be wrapped in a ManagedRing
+        return 0;
+    }
 }

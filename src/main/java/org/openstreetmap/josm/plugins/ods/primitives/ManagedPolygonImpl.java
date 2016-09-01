@@ -21,6 +21,7 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
     private ManagedRing<?> exteriorRing;
     private Collection<ManagedRing<?>> interiorRings;
     private Map<String, String> keys;
+    private double area;
     
     public ManagedPolygonImpl(LayerManager layerManager, ManagedRing<?> exteriorRing,
             Collection<ManagedRing<?>> interiorRings,
@@ -84,5 +85,16 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
         return rel;
     }
     
-    
+    @Override
+    public double getArea() {
+        if (area == 0) updateArea();
+        return area;
+    }
+
+    private synchronized void updateArea() {
+        area = getExteriorRing().getArea();
+        for (ManagedRing<?> ring : getInteriorRings()) {
+            area -= ring.getArea();
+        }
+    }
 }

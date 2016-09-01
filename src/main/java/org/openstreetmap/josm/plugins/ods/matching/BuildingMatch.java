@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.tools.Geometry;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -58,9 +57,9 @@ public class BuildingMatch extends MatchImpl<Building> {
     
     private MatchStatus compareAreas() {
 //        double osmArea = getOsmEntity().getGeometry().getArea();
-        double osmArea = Geometry.computeArea(getOsmEntity().getPrimitive().getPrimitive());
+        double osmArea = getOsmEntity().getPrimitive().getArea();
 //        double odArea = getOpenDataEntity().getGeometry().getArea();
-        double odArea = Geometry.computeArea(getOpenDataEntity().getPrimitive().getPrimitive());
+        double odArea = getOpenDataEntity().getPrimitive().getArea();
         if (osmArea == 0.0 || odArea == 0.0) {
             areaMatch = MatchStatus.NO_MATCH;
         }

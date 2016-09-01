@@ -96,4 +96,9 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements M
         }
         return node;
     }
+
+    @Override
+    public double getArea() {
+        return 0;
+    }
 }

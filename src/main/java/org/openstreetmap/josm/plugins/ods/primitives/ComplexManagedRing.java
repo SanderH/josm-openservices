@@ -173,7 +173,15 @@ public class ComplexManagedRing extends AbstractManagedPrimitive<Relation> imple
 
     @Override
     public Relation create(DataSet dataSet) {
-        // TODO Implement this functionality
+        // TODO Implement this, or at least report an unsupported type
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public double getArea() {
+        // TODO Implement this, or at least report an unsupported type
+        throw new UnsupportedOperationException();
+    }
+    
+    
 }

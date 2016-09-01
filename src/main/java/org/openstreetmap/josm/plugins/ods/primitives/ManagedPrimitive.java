@@ -43,4 +43,5 @@ public interface ManagedPrimitive<T extends OsmPrimitive> {
     public void putAll(Map<String, String> tags);
     public Map<String, String> getKeys();
     public void remove(String string);
+    public double getArea();
 }

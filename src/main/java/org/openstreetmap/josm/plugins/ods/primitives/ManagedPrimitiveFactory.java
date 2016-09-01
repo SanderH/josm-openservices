@@ -15,6 +15,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ComplexManagedRing.RingMember;
 import org.openstreetmap.josm.tools.Geometry.MultiPolygonMembers;
+import org.openstreetmap.josm.tools.I18n;
 
 public class ManagedPrimitiveFactory {
     private final LayerManager layerManager;
@@ -32,7 +33,7 @@ public class ManagedPrimitiveFactory {
         case RELATION:
             return createArea((Relation)primitive);
         default:
-            throw new IllegalArgumentException(String.format("Invalid area. Type of primitive %d is %s",
+            throw new IllegalArgumentException(I18n.tr("Invalid area. Type of primitive {0} is {1}",
                     primitive.getId(), primitive.getDisplayType()));
         }
     }

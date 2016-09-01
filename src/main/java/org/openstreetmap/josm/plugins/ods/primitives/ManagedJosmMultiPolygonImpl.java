@@ -17,6 +17,7 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
     private Collection<ManagedRing<?>> outerRings;
     private Collection<ManagedRing<?>> innerRings;
     private Envelope envelope;
+    private double area;
     private boolean incomplete = false;
     
     public ManagedJosmMultiPolygonImpl(LayerManager layerManager, Collection<ManagedRing<?>> outerRings,
@@ -67,5 +68,21 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
     public Relation create(DataSet dataSet) {
         // TODO Implement this method
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getArea() {
+        if (area == 0) updateArea();
+        return area;
+    }
+
+    private synchronized void updateArea() {
+        area = 0;
+        for (ManagedRing<?> ring : outerRings()) {
+            area += ring.getArea();
+        }
+        for (ManagedRing<?> ring : innerRings()) {
+            area -= ring.getArea();
+        }
     }
 }

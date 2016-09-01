@@ -153,24 +153,4 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
     public String get(String key) {
         return getKeys().get(key);
     }
-
-//    @Override
-//    public void remove(String key) {
-//        getKeys().remove(key);
-//    }
-//
-//    @Override
-//    public boolean hasKeys() {
-//        return !getKeys().isEmpty();
-//    }
-//
-//    @Override
-//    public Collection<String> keySet() {
-//        return getKeys().keySet();
-//    }
-//
-//    @Override
-//    public void removeAll() {
-//        getKeys().clear();
-//    }
 }
