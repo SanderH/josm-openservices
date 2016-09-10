@@ -2,9 +2,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.Iterator;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-
-public interface ManagedRing<T extends OsmPrimitive> extends ManagedPrimitive<T> {
+public interface ManagedRing extends ManagedPrimitive {
     public boolean isClockWise();
     public int getNodesCount();
     

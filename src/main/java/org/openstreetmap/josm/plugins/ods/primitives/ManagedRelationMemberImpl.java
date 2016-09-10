@@ -1,13 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-
 public class ManagedRelationMemberImpl implements ManagedRelationMember {
     private String role;
-    private ManagedPrimitive<? extends OsmPrimitive> primitive;
+    private ManagedPrimitive primitive;
     
     public ManagedRelationMemberImpl(String role,
-            ManagedPrimitive<? extends OsmPrimitive> primitive) {
+            ManagedPrimitive primitive) {
         super();
         this.role = role;
         this.primitive = primitive;
@@ -17,7 +15,7 @@ public class ManagedRelationMemberImpl implements ManagedRelationMember {
         this.role = role;
     }
 
-    public void setPrimitive(ManagedPrimitive<OsmPrimitive> primitive) {
+    public void setPrimitive(ManagedPrimitive primitive) {
         this.primitive = primitive;
     }
 
@@ -27,7 +25,7 @@ public class ManagedRelationMemberImpl implements ManagedRelationMember {
     }
 
     @Override
-    public ManagedPrimitive<? extends OsmPrimitive> getPrimitive() {
+    public ManagedPrimitive getPrimitive() {
         return primitive;
     }
 

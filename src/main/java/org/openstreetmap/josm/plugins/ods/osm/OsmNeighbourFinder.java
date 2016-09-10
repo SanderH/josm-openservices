@@ -21,10 +21,12 @@ import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
 
 /**
  * Find neighbours for a Building using the Osm primitive.
+ * TODO incomplete class finish or remove if we don;t need it.
  * 
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
+@Deprecated
 public class OsmNeighbourFinder {
     private final OdsModule module;
     private final LayerManager layerManager;
@@ -41,7 +43,7 @@ public class OsmNeighbourFinder {
         dWithin = new NodeDWithinLatLon(module.getTolerance());
     }
 
-    public void findNeighbours(ManagedPrimitive<?> primitive) {
+    public void findNeighbours(ManagedPrimitive primitive) {
         // Look for connected neighbours
         findConnectedNeighbours(primitive);
         Entity entity = primitive.getEntity();
@@ -53,15 +55,15 @@ public class OsmNeighbourFinder {
         }
         else if (primitive instanceof ManagedOgcMultiPolygon) {
             ManagedOgcMultiPolygon mpg = (ManagedOgcMultiPolygon) primitive;
-            ManagedPolygon<?> polygon = mpg.getPolygons().iterator().next();
-            ManagedRing<?> ring = polygon.getExteriorRing();
+            ManagedPolygon polygon = mpg.getPolygons().iterator().next();
+            ManagedRing ring = polygon.getExteriorRing();
             if (ring instanceof SimpleManagedRing) {
                 findWayNeighbourBuildings((SimpleManagedRing)ring);
             }
         }
     }
     
-    private static void findConnectedNeighbours(ManagedPrimitive<?> primitive) {
+    private static void findConnectedNeighbours(ManagedPrimitive primitive) {
         if (primitive instanceof ManagedWay) {
             
         }
@@ -77,11 +79,11 @@ public class OsmNeighbourFinder {
                 continue;
             }
             if (isBuildingExterior(way2)) {
-                ManagedPrimitive<?> mPrimitive = layerManager.getManagedPrimitive(way2);
+                ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(way2);
                 if (mPrimitive != null && mPrimitive instanceof SimpleManagedRing) {
                     SimpleManagedRing ring2 = (SimpleManagedRing) mPrimitive;
-                    WayAligner wayAligner = new WayAligner(ring1, ring2, dWithin, true);
-                    wayAligner.run();
+//                    WayAligner wayAligner = new WayAligner(ring1, ring2, dWithin, true);
+//                    wayAligner.run();
                 }
             }
         }

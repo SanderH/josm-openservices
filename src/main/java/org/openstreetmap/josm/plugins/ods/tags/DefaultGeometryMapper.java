@@ -37,17 +37,17 @@ public class DefaultGeometryMapper implements GeometryMapper {
   }
 
   @Override
-  public List<ManagedPrimitive<?>> createPrimitives(Geometry geometry,
+  public List<ManagedPrimitive> createPrimitives(Geometry geometry,
       Map<String, String> tags, DataSet dataSet) {
     if (geometry instanceof GeometryCollection && !targetPrimitive.equals("MULTIPOLYGON")) {
-      return createPrimitives((GeometryCollection)geometry, tags, dataSet);
+      return createPrimitives(geometry, tags, dataSet);
     }
     return Collections.singletonList(createPrimitive(geometry, tags, dataSet));
   }
   
-  protected ManagedPrimitive<?> createPrimitive(Geometry geometry,
+  protected ManagedPrimitive createPrimitive(Geometry geometry,
       Map<String, String> tags, DataSet dataSet) {
-    ManagedPrimitive<?> primitive = null;
+    ManagedPrimitive primitive = null;
     if (targetPrimitive.equals("WAY")) {
       if (geometry instanceof LineString) {
         primitive = primitiveBuilder.buildWay((LineString)geometry, tags);
@@ -81,9 +81,9 @@ public class DefaultGeometryMapper implements GeometryMapper {
     return primitive;
   }
 
-  private List<ManagedPrimitive<?>> createPrimitives(GeometryCollection gc,
+  private List<ManagedPrimitive> createPrimitives(GeometryCollection gc,
     Map<String, String> tags, DataSet dataSet) {
-    List<ManagedPrimitive<?>> primitives = new ArrayList<>(gc.getNumGeometries());
+    List<ManagedPrimitive> primitives = new ArrayList<>(gc.getNumGeometries());
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       primitives.add(createPrimitive(gc.getGeometryN(i), tags, dataSet));
     }

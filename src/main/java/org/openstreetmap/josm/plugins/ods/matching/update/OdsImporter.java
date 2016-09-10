@@ -20,11 +20,12 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.opendata.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
+ * TODO fix building alignment. Either in this class or through listeners
  * The importer imports objects from the OpenData layer to the Osm layer.
  * 
  * TODO Use AddPrimitivesCommand
@@ -38,20 +39,20 @@ public class OdsImporter {
     private final ImportFilter importFilter = new DefaultImportFilter();
     // TODO Move buildingAligner out of this class in favour of a
     // Observer pattern
-    private final BuildingAligner buildingAligner;
+//    private final BuildingAligner buildingAligner;
     
     public OdsImporter(OdsModule module) {
         super();
         this.module = module;
-        this.buildingAligner=new BuildingAligner(module, 
-                module.getOsmLayerManager());
+//        this.buildingAligner=new BuildingAligner(module, 
+//                module.getOsmLayerManager());
     }
 
     public void doImport(Collection<OsmPrimitive> primitives) {
         LayerManager layerManager = module.getOpenDataLayerManager();
         Set<Entity> entitiesToImport = new HashSet<>();
         for (OsmPrimitive primitive : primitives) {
-            ManagedPrimitive<?> managedPrimitive = layerManager.getManagedPrimitive(primitive);
+            ManagedPrimitive managedPrimitive = layerManager.getManagedPrimitive(primitive);
             if (managedPrimitive != null) {
                 Entity entity = managedPrimitive.getEntity();
                 if (entity != null && entity.getMatch() == null 
@@ -73,10 +74,10 @@ public class OdsImporter {
     }
     
     private void importEntities(Set<Entity> entitiesToImport) {
-        Set<ManagedPrimitive<?>> primitivesToImport = new HashSet<>();
+        Set<ManagedPrimitive> primitivesToImport = new HashSet<>();
         PrimitiveDataBuilder builder = new PrimitiveDataBuilder();
         for (Entity entity : entitiesToImport) {
-            ManagedPrimitive<?> primitive = entity.getPrimitive();
+            ManagedPrimitive primitive = entity.getPrimitive();
 //            if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
 //                Relation relation = (Relation) primitive;
 //                for (OsmPrimitive member : relation.getMemberPrimitives()) {
@@ -146,7 +147,11 @@ public class OdsImporter {
     private class PrimitiveDataBuilder {
         private List<PrimitiveData> primitiveData = new LinkedList<>();
         
-        public void addPrimitive(ManagedPrimitive<? extends OsmPrimitive> managedPrimitive) {
+        public PrimitiveDataBuilder() {
+            // TODO Auto-generated constructor stub
+        }
+
+        public void addPrimitive(ManagedPrimitive managedPrimitive) {
             OsmPrimitive primitive = managedPrimitive.getPrimitive();
             primitiveData.add(primitive.save());
             if (primitive.getType() == OsmPrimitiveType.WAY) {

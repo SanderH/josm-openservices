@@ -40,7 +40,7 @@ public interface LayerManager {
      */
     public void reset();
     
-    public void register(OsmPrimitive primitive, ManagedPrimitive<?> managedPrimitive);
+    public void register(OsmPrimitive primitive, ManagedPrimitive managedPrimitive);
 
 //    /**
 //     * Get the Entity related to the given OsmPrimitive
@@ -56,7 +56,7 @@ public interface LayerManager {
      * @param primitive
      * @return
      */
-    public ManagedPrimitive<?> getManagedPrimitive(OsmPrimitive primitive);
+    public ManagedPrimitive getManagedPrimitive(OsmPrimitive primitive);
     
 //    /**
 //     * Get the entity store for the given Entity type

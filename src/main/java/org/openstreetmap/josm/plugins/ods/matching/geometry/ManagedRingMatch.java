@@ -4,21 +4,21 @@ import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 public class ManagedRingMatch {
-    private final ManagedRing<?> localRing;
-    private final ManagedRing<?> remoteRing;
+    private final ManagedRing localRing;
+    private final ManagedRing remoteRing;
     private MatchStatus status;
     
-    public ManagedRingMatch(ManagedRing<?> localRing, ManagedRing<?> remoteRing, MatchStatus status) {
+    public ManagedRingMatch(ManagedRing localRing, ManagedRing remoteRing, MatchStatus status) {
         super();
         this.localRing = localRing;
         this.remoteRing = remoteRing;
     }
     
-    public ManagedRing<?> getLocalRing() {
+    public ManagedRing getLocalRing() {
         return localRing;
     }
     
-    public ManagedRing<?> getRemoteRing() {
+    public ManagedRing getRemoteRing() {
         return remoteRing;
     }
     

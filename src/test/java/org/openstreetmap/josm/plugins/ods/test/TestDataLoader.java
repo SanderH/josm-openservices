@@ -22,11 +22,12 @@ import org.openstreetmap.josm.io.OsmReader;
 public class TestDataLoader {
     private static Map<URL, DataSet> cache = new HashMap<>();
     
-    public static OsmDataLayer loadTestData(Class<?> clazz, String name) throws IOException, IllegalDataException {
+    public static TestLayerManager loadTestData(Class<?> clazz, String name) throws IOException, IllegalDataException {
         URL url = clazz.getResource(name);
         DataSet dataSet = loadTestData(url);
         File file = new File(url.getFile());
-        return new OsmDataLayer(dataSet, "test", file);
+        OsmDataLayer dataLayer = new OsmDataLayer(dataSet, "test", file);
+        return new TestLayerManager(dataLayer);
     }
 
 //    public static OsmDataLayer loadTestData(String path) throws IOException, IllegalDataException {

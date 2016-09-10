@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class ComplexManagedRing extends AbstractManagedPrimitive<Relation> implements ManagedRing<Relation> {
+public class ComplexManagedRing extends AbstractManagedPrimitive implements ManagedRing {
     private boolean clockWise;
     final List<RingMember> members;
     private int nodesCount;

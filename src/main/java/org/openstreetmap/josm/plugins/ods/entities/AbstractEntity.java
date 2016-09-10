@@ -20,7 +20,7 @@ public abstract class AbstractEntity implements Entity {
     private EntityStatus status = EntityStatus.UNKNOWN;
     private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
-    private ManagedPrimitive<?> primitive;
+    private ManagedPrimitive primitive;
     private Match<? extends Entity> match;
 
     @Override
@@ -104,7 +104,7 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public void setPrimitive(ManagedPrimitive<?> primitive) {
+    public void setPrimitive(ManagedPrimitive primitive) {
         this.primitive = primitive;
     }
 
@@ -124,7 +124,7 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public ManagedPrimitive<?> getPrimitive() {
+    public ManagedPrimitive getPrimitive() {
         return primitive;
     }
 

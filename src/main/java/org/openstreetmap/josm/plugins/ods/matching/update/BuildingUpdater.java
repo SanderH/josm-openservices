@@ -43,7 +43,7 @@ public class BuildingUpdater implements EntityUpdater {
     }
 
     private void updateAttributes(Building odBuilding, Building osmBuilding) {
-        ManagedPrimitive<?> osmPrimitive = osmBuilding.getPrimitive();
+        ManagedPrimitive osmPrimitive = osmBuilding.getPrimitive();
         osmBuilding.setSourceDate(odBuilding.getSourceDate());
         osmPrimitive.put("source:date", odBuilding.getPrimitive().get("source:date"));
         osmBuilding.setStartDate(odBuilding.getStartDate());
@@ -52,8 +52,8 @@ public class BuildingUpdater implements EntityUpdater {
     }
 
     private void updateStatus(Building odBuilding, Building osmBuilding) {
-        ManagedPrimitive<?> odPrimitive = odBuilding.getPrimitive();
-        ManagedPrimitive<?> localPrimitive = osmBuilding.getPrimitive();
+        ManagedPrimitive odPrimitive = odBuilding.getPrimitive();
+        ManagedPrimitive localPrimitive = osmBuilding.getPrimitive();
         if (osmBuilding.getStatus().equals(EntityStatus.CONSTRUCTION)
                 && odBuilding.getStatus().equals(EntityStatus.IN_USE)) {
             if (odBuilding.getSourceDate() != null) {

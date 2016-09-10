@@ -92,7 +92,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
 
     @Override
     public void updateMatchTags() {
-        ManagedPrimitive<?> osm = getOpenDataEntity().getPrimitive();
+        ManagedPrimitive osm = getOpenDataEntity().getPrimitive();
         if (osm != null) {
             osm.put(ODS.KEY.BASE, "true");
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
@@ -106,8 +106,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
 
     @Override
     public Object getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
     @Override

@@ -20,10 +20,11 @@ import com.vividsolutions.jts.geom.Envelope;
  *
  */
 public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements ManagedOgcMultiPolygon {
-    private Collection<ManagedPolygon<?>> managedPolygons;
+    private Collection<ManagedPolygon> managedPolygons;
     private Envelope envelope;
+    private Double area = null;
     
-    public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon<?>> managedPolygons,
+    public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon> managedPolygons,
             Map<String, String> keys) {
         super(getLayerManager(managedPolygons), createRelationMembers(managedPolygons), keys);
         this.managedPolygons = managedPolygons;
@@ -33,7 +34,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
     public Envelope getEnvelope() {
         if (envelope == null) {
             envelope = new Envelope();
-            for (ManagedPolygon<?> pg : managedPolygons) {
+            for (ManagedPolygon pg : managedPolygons) {
                 envelope = envelope.intersection(pg.getEnvelope());
             }
         }
@@ -41,7 +42,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
     }
 
     @Override
-    public Collection<ManagedPolygon<?>> getPolygons() {
+    public Collection<ManagedPolygon> getPolygons() {
         return managedPolygons;
     }
 
@@ -50,10 +51,10 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         Relation relation = getPrimitive();
         if (relation == null) {
             List<RelationMember> members = new LinkedList<>();
-            for (ManagedPolygon<?> mPolygon : managedPolygons) {
-                ManagedRing<?> outer  = mPolygon.getExteriorRing();
+            for (ManagedPolygon mPolygon : managedPolygons) {
+                ManagedRing outer  = mPolygon.getExteriorRing();
                 members.add(new RelationMember("outer", outer.create(dataSet)));
-                for (ManagedRing<?> inner : mPolygon.getInteriorRings()) {
+                for (ManagedRing inner : mPolygon.getInteriorRings()) {
                     members.add(new RelationMember("inner", inner.create(dataSet)));
                 }
             }
@@ -66,21 +67,32 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         return relation;
     }
     
-    private static List<ManagedRelationMember> createRelationMembers(Collection<ManagedPolygon<?>> managedPolygons) {
+    private static List<ManagedRelationMember> createRelationMembers(Collection<ManagedPolygon> managedPolygons) {
         List<ManagedRelationMember> members = new ArrayList<>(managedPolygons.size());
-        for (ManagedPolygon<?> polygon : managedPolygons) {
+        for (ManagedPolygon polygon : managedPolygons) {
             members.add(new ManagedRelationMemberImpl("", polygon));
         }
         return members;
     }
     
-    private static LayerManager getLayerManager(Collection<ManagedPolygon<?>> managedPolygons) {
+    private static LayerManager getLayerManager(Collection<ManagedPolygon> managedPolygons) {
         assert !managedPolygons.isEmpty();
-        Iterator<ManagedPolygon<?>> it = managedPolygons.iterator();
+        Iterator<ManagedPolygon> it = managedPolygons.iterator();
         LayerManager layerManager = it.next().getLayerManager();
         while (it.hasNext()) {
             assert it.next().getLayerManager() == layerManager;
         }
         return layerManager;
+    }
+
+    @Override
+    public double getArea() {
+        if (area == null) {
+            area = 0.0;
+            for (ManagedPolygon polygon : managedPolygons) {
+                area += polygon.getArea();
+            }
+        }
+        return area;
     }
 }

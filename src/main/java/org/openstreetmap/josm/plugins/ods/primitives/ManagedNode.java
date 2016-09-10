@@ -4,10 +4,12 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
 
-public interface ManagedNode extends ManagedPrimitive<Node> {
+public interface ManagedNode extends ManagedPrimitive {
     public NodeMatch getMatch();
 
     public void setMatch(NodeMatch nodeMatch);
+    
+    public Node getNode();
     
 //    public void addReferrer(ManagedPrimitive<?> referrer);
 //    public Integer getIndex(ManagedWay referringWay);

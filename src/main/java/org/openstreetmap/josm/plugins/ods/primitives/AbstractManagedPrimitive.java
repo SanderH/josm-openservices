@@ -12,8 +12,8 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implements ManagedPrimitive<P> {
-    private P primitive = null;
+public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
+    private OsmPrimitive primitive = null;
     private LayerManager layerManager;
 //    private Set<ManagedPrimitive<?>> referrers;
     private long uniqueId = (new NodeData()).getUniqueId();
@@ -30,7 +30,7 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
         this.keys = (keys == null ? new HashMap<>() : keys);
     }
 
-    public AbstractManagedPrimitive(LayerManager layerManager, P primitive) {
+    public AbstractManagedPrimitive(LayerManager layerManager, OsmPrimitive primitive) {
         this.layerManager = layerManager;
         assert primitive != null;
         this.primitive = primitive;
@@ -42,10 +42,10 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
     }
     
     @Override
-    public Collection<ManagedPrimitive<?>> getReferrers() {
-        Set<ManagedPrimitive<?>> referrers = new HashSet<>();
+    public Collection<ManagedPrimitive> getReferrers() {
+        Set<ManagedPrimitive> referrers = new HashSet<>();
         for (OsmPrimitive osm : getPrimitive().getReferrers()) {
-            ManagedPrimitive<?> ods = layerManager.getManagedPrimitive(osm);
+            ManagedPrimitive ods = layerManager.getManagedPrimitive(osm);
             if (ods != null) {
                 referrers.add(ods);
             }
@@ -59,12 +59,12 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
     }
 
     @Override
-    public void setPrimitive(P primitive) {
+    public void setPrimitive(OsmPrimitive primitive) {
         this.primitive = primitive;
     }
 
     @Override
-    public P getPrimitive() {
+    public OsmPrimitive getPrimitive() {
         return primitive;
     }
 
@@ -140,7 +140,7 @@ public abstract class AbstractManagedPrimitive<P extends OsmPrimitive> implement
 
     @Override
     public void put(String key, String value) {
-        P osm = getPrimitive();
+        OsmPrimitive osm = getPrimitive();
         if (osm != null) {
             osm.put(key, value);
         }

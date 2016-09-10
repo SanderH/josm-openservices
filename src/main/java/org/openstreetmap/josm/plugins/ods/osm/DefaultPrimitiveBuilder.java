@@ -23,9 +23,10 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedRelationImpl;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRelationMember;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedWay;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedWayImpl;
+import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedWay;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedRing;
+import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -60,7 +61,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Geometry)
      */
     @Override
-    public ManagedPrimitive<?> create(Geometry geometry, Map<String, String> tags) {
+    public ManagedPrimitive create(Geometry geometry, Map<String, String> tags) {
         tags.put(ODS.KEY.BASE, "true");
         switch (geometry.getGeometryType()) {
         case "Polygon":
@@ -83,7 +84,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public ManagedPrimitive<?> create(Polygon polygon, Map<String, String> tags) {
+    public ManagedPrimitive create(Polygon polygon, Map<String, String> tags) {
         return buildArea(polygon, tags);
     }
 
@@ -91,7 +92,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.MultiPolygon)
      */
     @Override
-    public ManagedPrimitive<?> build(MultiPolygon mpg, Map<String, String> tags) {
+    public ManagedPrimitive build(MultiPolygon mpg, Map<String, String> tags) {
         return buildArea(mpg, tags);
     }
 
@@ -110,13 +111,19 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
     }
 
     @Override
-    public ManagedPrimitive<?> build(LineString ls, Map<String, String> tags) {
-        ManagedWay way = buildWay(ls, tags);
-        return way;
+    public ManagedPrimitive build(LineString ls, Map<String, String> tags) {
+        int numPoints = ls.getNumPoints();
+        if (numPoints < 1600) {
+            ManagedWay way = buildWay(ls, tags);
+            return way;
+        }
+        // Implement handling of lineStrings with more than200 points
+        throw new UnsupportedOperationException(I18n.tr(
+            "Lines with more than 2000 nodes are not supported"));
     }
     
     @Override
-    public ManagedPrimitive<?> build(MultiLineString mls, Map<String, String> tags) {
+    public ManagedPrimitive build(MultiLineString mls, Map<String, String> tags) {
         // TODO implement this by creating an OdsPrimitiveGroup relation
         //        OsmPrimitive primitive = build((LineString)mls.getGeometryN(i), tags));
         return build((LineString)mls.getGeometryN(0), tags);
@@ -127,8 +134,8 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildArea(com.vividsolutions.jts.geom.MultiPolygon)
      */
     @Override
-    public ManagedPrimitive<?> buildArea(MultiPolygon mpg, Map<String, String> tags) {
-        ManagedPrimitive<?> primitive;
+    public ManagedPrimitive buildArea(MultiPolygon mpg, Map<String, String> tags) {
+        ManagedPrimitive primitive;
         if (mpg.getNumGeometries() > 1) {
             Map<String, String> keys = new HashMap<>();
             keys.putAll(tags);
@@ -144,8 +151,8 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildArea(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public ManagedPrimitive<?> buildArea(Polygon polygon, Map<String, String> tags) {
-        ManagedPrimitive<?> managedPrimitive;
+    public ManagedPrimitive buildArea(Polygon polygon, Map<String, String> tags) {
+        ManagedPrimitive managedPrimitive;
         if (polygon.getNumInteriorRing() > 0) {
             Map<String, String> keys = new HashMap<>();
             keys.putAll(tags);
@@ -173,18 +180,18 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      */
     @Override
     public ManagedOgcMultiPolygon buildMultiPolygon(MultiPolygon mpg, Map<String, String> tags) {
-        List<ManagedPolygon<?>> managedPolygons = new ArrayList<>(mpg.getNumGeometries());
+        List<ManagedPolygon> managedPolygons = new ArrayList<>(mpg.getNumGeometries());
         for (int i = 0; i < mpg.getNumGeometries(); i++) {
             Polygon polygon = (Polygon) mpg.getGeometryN(i);
             ManagedWay way = buildWay(polygon.getExteriorRing(), Collections.emptyMap());
-            ManagedRing<?> exteriorRing = new SimpleManagedRing(way);
-            List<ManagedRing<?>> interiorRings = new ArrayList<>(polygon.getNumInteriorRing());
+            ManagedRing exteriorRing = new SimpleManagedRing(way);
+            List<ManagedRing> interiorRings = new ArrayList<>(polygon.getNumInteriorRing());
             for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
                 way = buildWay(polygon.getInteriorRingN(j), null);
-                ManagedRing<?> interiorRing = new SimpleManagedRing(way);
+                ManagedRing interiorRing = new SimpleManagedRing(way);
                 interiorRings.add(interiorRing);
             }
-            ManagedPolygon<?> managedPolygon = new ManagedPolygonImpl(layerManager,
+            ManagedPolygon managedPolygon = new ManagedPolygonImpl(layerManager,
                     exteriorRing, interiorRings, null);
             managedPolygons.add(managedPolygon);
         }
@@ -227,14 +234,14 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
             // Remove duplicate nodes in ways
             if (!node.getCoor().equals(previousCoor)) {
                 managedNodes.add(node);
-                osmNodes.add(node.getPrimitive());
+                osmNodes.add(node.getNode());
             }
             previousCoor = node.getCoor();
         }
         Way way = new Way();
         way.setNodes(osmNodes);
         way.setKeys(tags);
-        return new ManagedWayImpl(layerManager, way);
+        return new SimpleManagedWay(layerManager, way);
     }
 
     @Override

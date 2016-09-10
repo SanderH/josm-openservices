@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import java.util.Map;
 
-import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
@@ -28,31 +27,31 @@ import com.vividsolutions.jts.geom.Polygon;
 public interface OsmPrimitiveFactory {
     public LayerManager getLayerManager();
 
-    public ManagedPrimitive<?> create(Geometry geometry, Map<String, String> tags);
+    public ManagedPrimitive create(Geometry geometry, Map<String, String> tags);
 
-    public ManagedPrimitive<?> create(Polygon polygon, Map<String, String> tags);
+    public ManagedPrimitive create(Polygon polygon, Map<String, String> tags);
 
-    public ManagedPrimitive<?> build(MultiPolygon mpg, Map<String, String> tags);
+    public ManagedPrimitive build(MultiPolygon mpg, Map<String, String> tags);
 
     public ManagedNode build(Point point, Map<String, String> tags);
 
-    public ManagedPrimitive<?> build(LineString ls, Map<String, String> tags);
+    public ManagedPrimitive build(LineString ls, Map<String, String> tags);
 
-    public ManagedPrimitive<?> build(MultiLineString mls, Map<String, String> tags);
+    public ManagedPrimitive build(MultiLineString mls, Map<String, String> tags);
 
     /**
      * Create a josm Object from a MultiPolygon object The resulting Object depends
      * on whether the input Multipolygon consists of multiple polygons. If so, the result will be a
      * Relation of type Multipolyon. Otherwise the single polygon will be built.
      */
-    public ManagedPrimitive<?> buildArea(MultiPolygon mpg, Map<String, String> tags);
+    public ManagedPrimitive buildArea(MultiPolygon mpg, Map<String, String> tags);
 
     /**
      * Create a josm Object from a Polygon object The resulting Object depends
      * on whether the input polygon has inner rings. If so, the result will be a
      * Relation of type Multipolyon. Otherwise the result will be a Way
      */
-    public ManagedPrimitive<?> buildArea(Polygon polygon, Map<String, String> tags);
+    public ManagedPrimitive buildArea(Polygon polygon, Map<String, String> tags);
 
     /**
      * Create a josm MultiPolygon relation from a Polygon object.
@@ -103,7 +102,7 @@ public interface OsmPrimitiveFactory {
      *            if true, merge this node with an existing node
      * @return the node
      */
-    public ManagedPrimitive<Node> buildNode(Coordinate coordinate, Map<String, String> tags, boolean merge);
+    public ManagedPrimitive buildNode(Coordinate coordinate, Map<String, String> tags, boolean merge);
 
     /**
      * Create a josm Node from a Point object. Optionally merge with existing
@@ -113,7 +112,7 @@ public interface OsmPrimitiveFactory {
      * @param merge
      * @return
      */
-    public ManagedPrimitive<Node> buildNode(Point point, Map<String, String> tags, boolean merge);
+    public ManagedPrimitive buildNode(Point point, Map<String, String> tags, boolean merge);
 
     public ManagedWay buildWay(Coordinate[] coordinates, int i, int j, Map<String, String> tags);
 }

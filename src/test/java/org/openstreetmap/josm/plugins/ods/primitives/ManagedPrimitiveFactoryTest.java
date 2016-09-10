@@ -56,7 +56,7 @@ public class ManagedPrimitiveFactoryTest {
     public void testCreateSimpleRing() {
         Way way = testData.getWay("inktpotInner1");
         assert way.isClosed();
-        ManagedRing<?> managedRing = factory.createRing(way);
+        ManagedRing managedRing = factory.createRing(way);
         assertNotNull("Ring shouldExist", managedRing);
     }
     
@@ -64,8 +64,8 @@ public class ManagedPrimitiveFactoryTest {
     public void testCreateSimpleRingTwice() {
         Way way = testData.getWay("inktpotInner1");
         assert way.isClosed();
-        ManagedRing<?> mr1 = factory.createRing(way);
-        ManagedRing<?> mr2 = factory.createRing(way);
+        ManagedRing mr1 = factory.createRing(way);
+        ManagedRing mr2 = factory.createRing(way);
         assertSame("Two calls to createRing with same parameter should return same result", mr1, mr2);
     }
     
@@ -82,7 +82,7 @@ public class ManagedPrimitiveFactoryTest {
         Way way = testData.getWay("inktpotInner1");
         assert way.isClosed();
         Node node = testData.getNode("inktpotInner1Node6");
-        ManagedRing<?> mr = factory.createRing(way);
+        ManagedRing mr = factory.createRing(way);
         Iterator<ManagedNode> it = mr.getNodeIterator();
         for (int i = 0; i < 6; i++) {
             it.next();
@@ -94,7 +94,7 @@ public class ManagedPrimitiveFactoryTest {
     @Test
     public void testCreateArea_type() {
         Relation relation = testData.getRelation("inktpotInner2");
-        ManagedPrimitive<?> area = factory.createArea(relation);
+        ManagedPrimitive area = factory.createArea(relation);
         assertTrue("Area should exist and be of type 'MultiPolygon'", 
             area != null && area instanceof ManagedJosmMultiPolygon);
     }
@@ -102,7 +102,7 @@ public class ManagedPrimitiveFactoryTest {
     @Test
     public void testCreateArea_tags() {
         Relation relation = testData.getRelation("inktpotInner2");
-        ManagedPrimitive<?> area = factory.createArea(relation);
+        ManagedPrimitive  area = factory.createArea(relation);
         assertEquals("Area should have the same tags as the related Relation", 
             area.getKeys(), relation.getKeys());
     }
@@ -111,7 +111,7 @@ public class ManagedPrimitiveFactoryTest {
     public void testCreateArea2() {
         Relation relation = testData.getRelation("inktpot");
 //        assert way.isClosed();
-        ManagedPrimitive<?> area = factory.createArea(relation);
+        ManagedPrimitive area = factory.createArea(relation);
         assertNotNull("Area shouldExist", area);
     }
     

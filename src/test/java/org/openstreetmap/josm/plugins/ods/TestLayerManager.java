@@ -15,7 +15,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class TestLayerManager implements LayerManager, LayerChangeListener {
     private final OsmDataLayer osmDataLayer;
-    private final Map<OsmPrimitive, ManagedPrimitive<?>> primitiveMap = new HashMap<>();
+    private final Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
     private final GeoRepository repository = new GeoRepository();
     
     public TestLayerManager(OsmDataLayer osmDataLayer) {
@@ -23,7 +23,6 @@ public class TestLayerManager implements LayerManager, LayerChangeListener {
         this.osmDataLayer = osmDataLayer;
     }
 
-    
     @Override
     public GeoRepository getRepository() {
         return repository;
@@ -66,12 +65,12 @@ public class TestLayerManager implements LayerManager, LayerChangeListener {
 
     @Override
     public void register(OsmPrimitive primitive,
-            ManagedPrimitive<?> managedPrimitive) {
+            ManagedPrimitive managedPrimitive) {
         primitiveMap.put(primitive, managedPrimitive);
     }
 
     @Override
-    public ManagedPrimitive<?> getManagedPrimitive(OsmPrimitive primitive) {
+    public ManagedPrimitive getManagedPrimitive(OsmPrimitive primitive) {
         return primitiveMap.get(primitive);
     }
 

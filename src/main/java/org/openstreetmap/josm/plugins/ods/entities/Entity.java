@@ -48,7 +48,7 @@ public interface Entity {
     * or that was/were constructed from this entity.
     *
     */
-    public ManagedPrimitive<?> getPrimitive();
+    public ManagedPrimitive getPrimitive();
     
     /**
      * The tags that are not associated with any of the entity's properties.
@@ -56,5 +56,5 @@ public interface Entity {
     public void setOtherTags(Map<String, String> tags);
     public Map<String, String> getOtherTags();
     
-    public void setPrimitive(ManagedPrimitive<?> primitive);
+    public void setPrimitive(ManagedPrimitive primitive);
 }

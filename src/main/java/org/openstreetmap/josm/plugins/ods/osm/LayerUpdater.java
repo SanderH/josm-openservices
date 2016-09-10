@@ -40,7 +40,7 @@ public class LayerUpdater {
         dataSet.endUpdate();
     }
 
-    private void update(ManagedPrimitive<? extends OsmPrimitive> primitive) {
+    private void update(ManagedPrimitive primitive) {
         Entity entity = primitive.getEntity();
         if (entity != null && !entity.isIncomplete()) {
             OsmPrimitive osmPrimitive = primitive.create(dataSet);

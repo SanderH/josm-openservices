@@ -12,7 +12,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/WayAligner_OldTest.java|org/openstreetmap/josm/plugins/ods/osm/SegmentMatcher_OldTest.java|org/openstreetmap/josm/plugins/ods/osm/SegmentMatcherTest.java|org/openstreetmap/josm/plugins/ods/osm/WayAlignerTest.java" kind="src" path="src/test/java"/>
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/WayAligner_OldTest.java|org/openstreetmap/josm/plugins/ods/osm/SegmentMatcher_OldTest.java|org/openstreetmap/josm/plugins/ods/osm/SegmentMatcherTest.java" kind="src" path="src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

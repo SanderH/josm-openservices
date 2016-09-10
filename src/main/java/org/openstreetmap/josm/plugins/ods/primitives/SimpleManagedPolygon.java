@@ -14,7 +14,7 @@ import org.openstreetmap.josm.data.osm.Way;
  *
  */
 @SuppressWarnings("unused")
-public class SimpleManagedPolygon extends SimpleManagedRing implements ManagedPolygon<Way>, ManagedRing<Way> {
+public class SimpleManagedPolygon extends SimpleManagedRing implements ManagedPolygon, ManagedRing {
     
     public SimpleManagedPolygon(ManagedWay exteriorWay,
             Map<String, String> tags) {
@@ -22,12 +22,12 @@ public class SimpleManagedPolygon extends SimpleManagedRing implements ManagedPo
     }
 
     @Override
-    public ManagedRing<Way> getExteriorRing() {
+    public ManagedRing getExteriorRing() {
         return this;
     }
     
     @Override
-    public Collection<ManagedRing<?>> getInteriorRings() {
+    public Collection<ManagedRing> getInteriorRings() {
         return Collections.emptyList();
     }
 

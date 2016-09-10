@@ -20,18 +20,23 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
-import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.opendata.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
+/*
+ * TODO Incomplete class. Either finish or remove
+*/
+
+@Deprecated
 public class BuildingGeometryUpdaterNg {
-    private final BuildingAligner buildingAligner;
+//    private final BuildingAligner buildingAligner;
     private final OsmDataLayer osmDataLayer;
     private Map<Node, PoolNode> nodeMapping = new HashMap<>();
     
     public BuildingGeometryUpdaterNg(OdsModule module) {
         super();
         this.osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        this.buildingAligner = new BuildingAligner(module, module.getOsmLayerManager());
+//        this.buildingAligner = new BuildingAligner(module, module.getOsmLayerManager());
     }
 
     public void updateGeometries(List<Match<Building>> matches) {
@@ -61,8 +66,8 @@ public class BuildingGeometryUpdaterNg {
     }
     
     private void updateGeometry(Building osmBuilding, Building odBuilding) {
-        ManagedPrimitive<?> osmPrimitive = osmBuilding.getPrimitive();
-        ManagedPrimitive<?> odPrimitive = odBuilding.getPrimitive();
+        ManagedPrimitive osmPrimitive = osmBuilding.getPrimitive();
+        ManagedPrimitive odPrimitive = odBuilding.getPrimitive();
         // Only update osm ways to start with
         if (osmPrimitive.getPrimitive().getDisplayType() != OsmPrimitiveType.CLOSEDWAY ||
                 odPrimitive.getPrimitive().getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {

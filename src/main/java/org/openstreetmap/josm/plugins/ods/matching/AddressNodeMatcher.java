@@ -156,7 +156,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
             }
         }
         for (AddressNode addressNode: unmatchedOpenDataAddressNodes) {
-            ManagedPrimitive<?> osm = addressNode.getPrimitive();
+            ManagedPrimitive osm = addressNode.getPrimitive();
             if (osm != null) {
                 osm.put(ODS.KEY.IDMATCH, "false");
                 osm.put(ODS.KEY.STATUS, addressNode.getStatus().toString());

@@ -9,7 +9,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 public class OdsNodeIterator {
-    private ManagedRing<?> ring;
+    private ManagedRing ring;
     private List<ManagedNode> nodes;
     private int index;
 //    private boolean closed;
@@ -17,7 +17,7 @@ public class OdsNodeIterator {
 //    private boolean modified = false;
 //    private List<Command> movedNodes = new LinkedList<>();
     
-    public OdsNodeIterator(ManagedRing<?> ring, int startIndex) {
+    public OdsNodeIterator(ManagedRing ring, int startIndex) {
 //        this.way = way;
         this.index = startIndex;
         this.reversed = !ring.isClockWise();
@@ -318,10 +318,10 @@ public class OdsNodeIterator {
      * @return
      */
     public Double angle() {
-        Double x1 = this.peek().getPrimitive().getEastNorth().east();
-        Double y1 = this.peek().getPrimitive().getEastNorth().north();
-        Double x2 = this.peekNext().getPrimitive().getEastNorth().east();
-        Double y2 = this.peekNext().getPrimitive().getEastNorth().north();
+        Double x1 = this.peek().getNode().getEastNorth().east();
+        Double y1 = this.peek().getNode().getEastNorth().north();
+        Double x2 = this.peekNext().getNode().getEastNorth().east();
+        Double y2 = this.peekNext().getNode().getEastNorth().north();
         return Math.atan2(y1 - y2, x1 - x2);
     }    
 }

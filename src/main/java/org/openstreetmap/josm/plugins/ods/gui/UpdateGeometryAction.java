@@ -46,7 +46,7 @@ public class UpdateGeometryAction extends OdsAction {
         Match<Building> match = null;
         if (primitives.size() == 1) {
             OsmPrimitive primitive = primitives.iterator().next();
-            ManagedPrimitive<?> mPrimitive = layerManager.getManagedPrimitive(primitive);
+            ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(primitive);
             if (mPrimitive != null) {
                 Entity entity = mPrimitive.getEntity();
                 if (entity != null && entity.getBaseType() == Building.class) {

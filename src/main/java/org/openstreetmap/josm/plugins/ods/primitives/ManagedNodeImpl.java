@@ -13,7 +13,7 @@ import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements ManagedNode {
+public class ManagedNodeImpl extends AbstractManagedPrimitive implements ManagedNode {
     private NodeMatch nodeMatch;
     private Envelope envelope;
     
@@ -21,6 +21,7 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements M
         super(layerManager, primitive);
     }
 
+    
 //    @Override
 //    public void putAll(Map<String, String> tags) {
 //        if (tags != null) {
@@ -40,6 +41,11 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements M
 //    public List<NodeReferrer> getReferrers() {
 //        return referrers;
 //    }
+
+    @Override
+    public Node getNode() {
+        return (Node) getPrimitive();
+    }
 
     @Override
     public Map<String, String> getKeys() {
@@ -65,7 +71,7 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements M
 
     @Override
     public LatLon getCoor() {
-        return getPrimitive().getCoor();
+        return getNode().getCoor();
     }
 
 //    @Override
@@ -90,7 +96,7 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive<Node> implements M
 
     @Override
     public Node create(DataSet dataSet) {
-        Node node = getPrimitive();
+        Node node = getNode();
         if (node.getDataSet() == null) {
             dataSet.addPrimitive(node);
         }

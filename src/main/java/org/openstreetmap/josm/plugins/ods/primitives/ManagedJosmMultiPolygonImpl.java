@@ -13,15 +13,15 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relation> implements ManagedJosmMultiPolygon {
-    private Collection<ManagedRing<?>> outerRings;
-    private Collection<ManagedRing<?>> innerRings;
+public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive implements ManagedJosmMultiPolygon {
+    private Collection<ManagedRing> outerRings;
+    private Collection<ManagedRing> innerRings;
     private Envelope envelope;
     private double area;
     private boolean incomplete = false;
     
-    public ManagedJosmMultiPolygonImpl(LayerManager layerManager, Collection<ManagedRing<?>> outerRings,
-            Collection<ManagedRing<?>> innerRings, Relation relation) {
+    public ManagedJosmMultiPolygonImpl(LayerManager layerManager, Collection<ManagedRing> outerRings,
+            Collection<ManagedRing> innerRings, Relation relation) {
         super(layerManager, relation);
         this.outerRings = outerRings;
         this.innerRings = innerRings;
@@ -38,12 +38,12 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
     }
 
     @Override
-    public Collection<ManagedRing<?>> outerRings() {
+    public Collection<ManagedRing> outerRings() {
         return outerRings;
     }
 
     @Override
-    public Collection<ManagedRing<?>> innerRings() {
+    public Collection<ManagedRing> innerRings() {
         return innerRings;
     }
 
@@ -51,7 +51,7 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
     public Envelope getEnvelope() {
         if (envelope == null) {
             envelope = new Envelope();
-            for (ManagedRing<?> ring : outerRings) {
+            for (ManagedRing ring : outerRings) {
                 envelope = envelope.intersection(ring.getEnvelope());
             }
         }
@@ -78,10 +78,10 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive<Relati
 
     private synchronized void updateArea() {
         area = 0;
-        for (ManagedRing<?> ring : outerRings()) {
+        for (ManagedRing ring : outerRings()) {
             area += ring.getArea();
         }
-        for (ManagedRing<?> ring : innerRings()) {
+        for (ManagedRing ring : innerRings()) {
             area -= ring.getArea();
         }
     }

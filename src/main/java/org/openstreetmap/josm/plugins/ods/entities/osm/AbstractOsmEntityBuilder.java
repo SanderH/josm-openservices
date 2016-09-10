@@ -59,7 +59,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         return geoUtil;
     }
     
-    protected void register(ManagedPrimitive<?> primitive, T entity) {
+    protected void register(ManagedPrimitive primitive, T entity) {
         entity.setPrimitive(primitive);
         repository.add(entity);
         primitive.setEntity(entity);
@@ -82,7 +82,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
 
     @Override
     public void updateTags(OsmPrimitive primitive, Map<String, String> newTags) {
-        ManagedPrimitive<?> ods = getLayerManager().getManagedPrimitive(primitive);
+        ManagedPrimitive ods = getLayerManager().getManagedPrimitive(primitive);
         if (ods == null) return;
         @SuppressWarnings("unchecked")
         T entity = (T) ods.getEntity();
@@ -99,8 +99,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
 
     @Override
     public void updateGeometry(Way way) {
-        @SuppressWarnings("unchecked")
-        ManagedPrimitive<Way> ods = (ManagedPrimitive<Way>) getLayerManager().getManagedPrimitive(way);
+        ManagedPrimitive ods = getLayerManager().getManagedPrimitive(way);
         if (ods == null) return;
         ods.setPrimitive(way);
         @SuppressWarnings("unchecked")
@@ -138,7 +137,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
     protected abstract Object parseReferenceId(Map<String, String> tags);
 
     @SuppressWarnings("static-method")
-    protected void normalizeTags(ManagedPrimitive<?> primitive) {
+    protected void normalizeTags(ManagedPrimitive primitive) {
         return;
     }
 

@@ -12,13 +12,13 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
  *
  */
 public class RingComparator {
-    private ManagedRing<?> odRing;
-    private ManagedRing<?> osmRing;
+    private ManagedRing odRing;
+    private ManagedRing osmRing;
     private NodeDWithin dWithin;
     private boolean matchingNodes = false;
     private Boolean fullMatch = true;
     
-    public RingComparator(ManagedRing<?> odRing, ManagedRing<?> osmRing, NodeDWithin dWithin) {
+    public RingComparator(ManagedRing odRing, ManagedRing osmRing, NodeDWithin dWithin) {
         super();
         this.odRing = odRing;
         this.osmRing = osmRing;

@@ -7,11 +7,11 @@ import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 public class RingMatch {
-    public final ManagedRing<?> odRing;
-    public final ManagedRing<?> osmRing;
+    public final ManagedRing odRing;
+    public final ManagedRing osmRing;
     public final List<NodeMatch> matchedNodes;
     
-    public RingMatch(ManagedRing<?> odRing, ManagedRing<?> osmRing) {
+    public RingMatch(ManagedRing odRing, ManagedRing osmRing) {
         super();
         this.osmRing = osmRing;
         this.odRing = odRing;

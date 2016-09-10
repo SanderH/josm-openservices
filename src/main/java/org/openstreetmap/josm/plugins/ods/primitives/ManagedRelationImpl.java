@@ -13,18 +13,15 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> implements ManagedRelation {
-    private Relation relation;
+public class ManagedRelationImpl extends AbstractManagedPrimitive implements ManagedRelation {
     private List<ManagedRelationMember> members;
     private long uniqueId = (new RelationData()).getUniqueId();
-    private Map<String, String> keys;
     private Envelope envelope = new Envelope();
     private BBox bbox = null;
     
     public ManagedRelationImpl(LayerManager layerManager, List<ManagedRelationMember> members, Map<String, String> keys) {
-        super(layerManager);
+        super(layerManager, keys);
         this.members = members;
-        this.keys = keys;
     }
 
     @Override
@@ -44,15 +41,7 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
 
     @Override
     public Relation getPrimitive() {
-        return relation;
-    }
-
-    @Override
-    public Map<String, String> getKeys() {
-        if (relation != null) {
-            return relation.getKeys();
-        }
-        return keys;
+        return (Relation) super.getPrimitive();
     }
 
     @Override
@@ -61,10 +50,12 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive<Relation> impl
         if (rel == null) {
             rel = new Relation();
             for (ManagedRelationMember member : getMembers()) {
-                ManagedPrimitive<?> primitive = member.getPrimitive();
+                ManagedPrimitive primitive = member.getPrimitive();
                 OsmPrimitive osmPrimitive = primitive.create(dataSet);
+                setPrimitive(osmPrimitive);
                 rel.addMember(new RelationMember(member.getRole(), osmPrimitive));
             }
+            setPrimitive(rel);
         }
         return rel;
     }

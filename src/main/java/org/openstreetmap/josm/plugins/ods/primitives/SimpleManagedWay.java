@@ -12,12 +12,12 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements ManagedWay {
+public class SimpleManagedWay extends AbstractManagedPrimitive implements ManagedWay {
     private List<ManagedNode> nodes;
 //    private Set<ManagedWay> adjacentWays = new HashSet<>();
     private BBox bbox;
 
-    public ManagedWayImpl(LayerManager layerManager, Way way) {
+    public SimpleManagedWay(LayerManager layerManager, Way way) {
         super(layerManager, way);
 //        this.nodes = new ArrayList<>(nodes);
 //        int last = nodes.size() - 1;
@@ -27,7 +27,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
 //        findAdjacentWays();
     }
 
-//    public ManagedWayImpl(LayerManager layerManager, List<ManagedNode> nodes, Map<String, String> tags) {
+//    public SimpleManagedWay(LayerManager layerManager, List<ManagedNode> nodes, Map<String, String> tags) {
 //        super(layerManager, tags);
 //        this.nodes = new ArrayList<>(nodes);
 //        int last = nodes.size() - 1;
@@ -41,6 +41,10 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
         this.nodes = nodes;
     }
     
+    public Way getWay() {
+        return (Way) getPrimitive();
+    }
+    
 //    private void findAdjacentWays() {
 //        for (ManagedNode node : nodes) {
 //            for (NodeReferrer referrer : node.getReferrers()) {
@@ -52,7 +56,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
 //        }
 //    }
 
-//    public ManagedWayImpl(Way osmWay, LayerManager layerManager) {
+//    public SimpleManagedWay(Way osmWay, LayerManager layerManager) {
 //        super(osmWay);
 //        nodes = new ArrayList<>(osmWay.getNodesCount());
 //        for (Node node : osmWay.getNodes()) {
@@ -91,7 +95,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
     @Override
     public boolean isClosed() {
         if (getPrimitive() != null) {
-            return getPrimitive().isClosed();
+            return getWay().isClosed();
         }
         ManagedNode startNode = nodes.get(0);
         ManagedNode endNode = nodes.get(nodes.size() - 1);
@@ -143,7 +147,7 @@ public class ManagedWayImpl extends AbstractManagedPrimitive<Way> implements Man
 
     @Override
     public Way create(DataSet dataSet) {
-        Way way = getPrimitive();
+        Way way = getWay();
         for (Node node : way.getNodes()) {
             if (node.getDataSet() == null) {
                 dataSet.addPrimitive(node);

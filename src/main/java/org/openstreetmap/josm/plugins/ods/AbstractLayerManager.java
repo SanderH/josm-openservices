@@ -30,7 +30,7 @@ public abstract class AbstractLayerManager
         implements LayerManager, DataSetListener {
     private String name;
     private OsmDataLayer osmDataLayer;
-    private Map<OsmPrimitive, ManagedPrimitive<?>> primitiveMap = new HashMap<>();
+    private Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
     private GeoRepository repository = new GeoRepository();
     private boolean active = false;
 
@@ -107,12 +107,12 @@ public abstract class AbstractLayerManager
 
     @Override
     public void register(OsmPrimitive primitive,
-            ManagedPrimitive<?> managedPrimitive) {
+            ManagedPrimitive managedPrimitive) {
         primitiveMap.put(primitive, managedPrimitive);
     }
 
     @Override
-    public ManagedPrimitive<?> getManagedPrimitive(OsmPrimitive primitive) {
+    public ManagedPrimitive getManagedPrimitive(OsmPrimitive primitive) {
         return primitiveMap.get(primitive);
     }
 

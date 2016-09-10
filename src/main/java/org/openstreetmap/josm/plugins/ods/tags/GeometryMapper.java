@@ -27,7 +27,7 @@ public interface GeometryMapper {
    * @param dataSet 
    * @return
    */
-  public List<ManagedPrimitive<?>> createPrimitives(Geometry geometry, Map<String, String> tags, DataSet dataSet);
+  public List<ManagedPrimitive> createPrimitives(Geometry geometry, Map<String, String> tags, DataSet dataSet);
 
   // TODO remove this method and use a GeometryMapperFactory instead 
   public void setObjectFactory(OsmPrimitiveFactory primitiveBuilder);

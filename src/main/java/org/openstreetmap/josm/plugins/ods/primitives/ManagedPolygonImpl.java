@@ -15,16 +15,16 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> implements ManagedPolygon<Relation> {
+public class ManagedPolygonImpl extends AbstractManagedPrimitive implements ManagedPolygon {
     private Relation relation;
     private Entity entity;
-    private ManagedRing<?> exteriorRing;
-    private Collection<ManagedRing<?>> interiorRings;
+    private ManagedRing exteriorRing;
+    private Collection<ManagedRing> interiorRings;
     private Map<String, String> keys;
     private double area;
     
-    public ManagedPolygonImpl(LayerManager layerManager, ManagedRing<?> exteriorRing,
-            Collection<ManagedRing<?>> interiorRings,
+    public ManagedPolygonImpl(LayerManager layerManager, ManagedRing exteriorRing,
+            Collection<ManagedRing> interiorRings,
             Map<String, String> keys) {
         super(layerManager);
         this.exteriorRing = exteriorRing;
@@ -43,12 +43,12 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
     }
 
     @Override
-    public ManagedRing<?> getExteriorRing() {
+    public ManagedRing getExteriorRing() {
         return exteriorRing;
     }
     
     @Override
-    public Collection<ManagedRing<?>> getInteriorRings() {
+    public Collection<ManagedRing> getInteriorRings() {
         return interiorRings;
     }
     @Override
@@ -71,9 +71,9 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
         Relation rel = getPrimitive();
         if (rel == null) {
             List<RelationMember> members = new LinkedList<>();
-            ManagedRing<?> outer  = getExteriorRing();
+            ManagedRing outer  = getExteriorRing();
             members.add(new RelationMember("outer", outer.create(dataSet)));
-            for (ManagedRing<?> inner : getInteriorRings()) {
+            for (ManagedRing inner : getInteriorRings()) {
                 members.add(new RelationMember("inner", inner.create(dataSet)));
             }
             rel = new Relation();
@@ -93,7 +93,7 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive<Relation> imple
 
     private synchronized void updateArea() {
         area = getExteriorRing().getArea();
-        for (ManagedRing<?> ring : getInteriorRings()) {
+        for (ManagedRing ring : getInteriorRings()) {
             area -= ring.getArea();
         }
     }

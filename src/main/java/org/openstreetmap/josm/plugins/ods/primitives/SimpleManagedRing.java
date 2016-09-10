@@ -7,6 +7,7 @@ import java.util.Map;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.tools.Geometry;
 import org.openstreetmap.josm.tools.I18n;
@@ -19,7 +20,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements ManagedRing<Way> {
+public class SimpleManagedRing extends AbstractManagedPrimitive implements ManagedRing {
     final ManagedWay managedWay;
     private Boolean isClockWise; // True if the nodes in this way are oriented clockwise.
     private double area = 0;
@@ -48,11 +49,6 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
     }
 
     @Override
-    public Way getPrimitive() {
-        return managedWay.getPrimitive();
-    }
-
-    @Override
     public Map<String, String> getKeys() {
         return managedWay.getKeys();
     }
@@ -61,7 +57,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
     public boolean isClockWise() {
         if (isClockWise == null) {
             if (getPrimitive() != null) {
-                isClockWise = Geometry.isClockwise(getPrimitive());
+                isClockWise = Geometry.isClockwise((Way)getPrimitive());
             }
             else {
                 isClockWise = isClockwise(this);
@@ -86,7 +82,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
      * @return true if and only if way is oriented clockwise.
      * @throws IllegalArgumentException if way has less than 3 nodes
      */
-    public static boolean isClockwise(ManagedRing<?> ring) {
+    public static boolean isClockwise(ManagedRing ring) {
         double area2 = 0.;
         if (ring.getNodesCount() < 3) {
             throw new IllegalArgumentException("Way must be closed to check orientation.");
@@ -135,11 +131,33 @@ public class SimpleManagedRing extends AbstractManagedPrimitive<Way> implements 
     }
 
     private void updateArea() {
-        this.area = Geometry.computeArea(getPrimitive());
+        this.area = Geometry.computeArea(managedWay.getPrimitive());
     }
 
     @Override
-    public Way create(DataSet dataSet) {
+    public OsmPrimitive create(DataSet dataSet) {
         return managedWay.create(dataSet);
     }
+
+    @Override
+    public void putAll(Map<String, String> tags) {
+        managedWay.putAll(tags);
+    }
+
+    @Override
+    public void remove(String key) {
+        managedWay.remove(key);
+    }
+
+    @Override
+    public void put(String key, String value) {
+        managedWay.put(key, value);
+    }
+
+    @Override
+    public String get(String key) {
+        return managedWay.get(key);
+    }
+    
+    
 }

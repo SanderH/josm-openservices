@@ -25,7 +25,7 @@ public class ManagedPrimitiveFactory {
         this.layerManager = layerManager;
     }
 
-    public ManagedPrimitive<?> createArea(OsmPrimitive primitive) {
+    public ManagedPrimitive createArea(OsmPrimitive primitive) {
         switch (primitive.getDisplayType()) {
         case CLOSEDWAY:
             return createSimplePolygon((Way)primitive);
@@ -38,7 +38,7 @@ public class ManagedPrimitiveFactory {
         }
     }
     
-    public ManagedPrimitive<?> createArea(Relation multiPolygon) {
+    public ManagedPrimitive createArea(Relation multiPolygon) {
         // Extract outer/inner members from multipolygon relation
         final MultiPolygonMembers mpm = new MultiPolygonMembers(multiPolygon);
         boolean incomplete = false;
@@ -57,8 +57,8 @@ public class ManagedPrimitiveFactory {
         try {
             outerRings = MultipolygonBuilder.joinWays(mpm.outers);
             innerRings = MultipolygonBuilder.joinWays(mpm.inners);
-            List<ManagedRing<?>> managedOuterRings = new ArrayList<>(outerRings.size());
-            List<ManagedRing<?>> managedInnerRings = new ArrayList<>(innerRings.size());
+            List<ManagedRing> managedOuterRings = new ArrayList<>(outerRings.size());
+            List<ManagedRing> managedInnerRings = new ArrayList<>(innerRings.size());
             for (JoinedPolygon outer : outerRings) {
                 managedOuterRings.add(createRing(outer.ways, outer.reversed));
             }
@@ -95,7 +95,7 @@ public class ManagedPrimitiveFactory {
                 ManagedNode odsNode = createNode(osmNode);
                 odsNodes.add(odsNode);
             }
-            odsWay = new ManagedWayImpl(layerManager, osmWay);
+            odsWay = new SimpleManagedWay(layerManager, osmWay);
             odsWay.setNodes(odsNodes);
 //            int i=0;
 //            for (ManagedNode odsNode : odsNodes) {
@@ -136,7 +136,7 @@ public class ManagedPrimitiveFactory {
         return managedRing;
     }
     
-    public ManagedRing<?> createRing(List<Way> ways, List<Boolean> reversed) {
+    public ManagedRing createRing(List<Way> ways, List<Boolean> reversed) {
         assert ways.size() == reversed.size();
         if (ways.size() == 1) {
             return createRing(ways.get(0));
@@ -153,8 +153,10 @@ public class ManagedPrimitiveFactory {
     
     public void update(ManagedWay odsWay) {
 //        Set<ManagedNode> oldNodes = new HashSet<>(odsWay.getNodes());
-        Way osmWay = odsWay.getPrimitive();
-        setWayNodes(odsWay, osmWay);
+        if (odsWay instanceof SimpleManagedWay) {
+            Way osmWay = ((SimpleManagedWay)odsWay).getWay();
+            setWayNodes(odsWay, osmWay);
+        }
 //        oldNodes.removeAll(odsWay.getNodes());
 //        for (ManagedNode odsNode : oldNodes) {
 //            odsNode.removeReferrer(odsWay);

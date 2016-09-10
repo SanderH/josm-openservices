@@ -53,6 +53,7 @@ public class BuildingMatcher implements Matcher<Building> {
     }
 
     private void processOpenDataBuilding(Building odBuilding) {
+        if (odBuilding.getMatch() != null) return;
         Long id = (Long) odBuilding.getReferenceId();
         Match<Building> match = buildingMatches.get(id);
         if (match != null) {
@@ -75,6 +76,9 @@ public class BuildingMatcher implements Matcher<Building> {
     }
 
     private void processOsmBuilding(Building osmBuilding) {
+        if (osmBuilding.getMatch() != null) {
+            return;
+        }
         Object id = osmBuilding.getReferenceId();
         if (id == null) {
             unidentifiedOsmBuildings.add(osmBuilding);
@@ -108,7 +112,7 @@ public class BuildingMatcher implements Matcher<Building> {
             }
         }
         for (Building building: unmatchedOpenDataBuildings) {
-            ManagedPrimitive<?> primitive = building.getPrimitive();
+            ManagedPrimitive primitive = building.getPrimitive();
             if (primitive != null) {
                 primitive.put(ODS.KEY.IDMATCH, "false");
                 primitive.put(ODS.KEY.STATUS, building.getStatus().toString());

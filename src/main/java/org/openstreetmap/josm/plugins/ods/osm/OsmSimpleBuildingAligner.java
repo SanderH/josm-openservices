@@ -1,13 +1,24 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import static org.openstreetmap.josm.plugins.ods.entities.actual.Building.IsBuilding;
 import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 /**
- * TODO Incomplete class. Either finish or remove this class
- * The WayAligner aligns two closed OSM ways according to a given tolerance.
+ * Align an Osm building to its surroundings. This implementation is restricted
+ * to a simple building represented by a closed way.
+ * The buildings will be aligned according to a given tolerance.
  * A point in the second ring that is within 'tolerance' distance from a point
  * from the first ring, will get the coordinates of that point.
  * A lineSegment from either of the rings, that is within 'tolerance'
@@ -17,9 +28,13 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
  * @author gertjan
  *
  */
-@Deprecated
-public class WayAligner {
-    private Way way1;
+public class OsmSimpleBuildingAligner {
+    private Way way;
+    private List<Issue> issues = new LinkedList<>();
+    private Set<Node> specialNodes = new HashSet<>();
+    private Set<Node> connectedNodes = new HashSet<>();
+    private Map<OsmPrimitive, ConnectedBuilding> connectedBuildings = new HashMap<>();
+    private Set<OsmPrimitive> otherConnections = new HashSet<>();
     private Way way2;
     private ManagedRing ring2;
     private NodeDWithin dWithin;
@@ -28,15 +43,22 @@ public class WayAligner {
     private NodeIterator it2;
     private SegmentMatcher matcher;
 
-    public WayAligner(Way way1, Way way2,
+    public OsmSimpleBuildingAligner(Way way,
             NodeDWithin dWithin, boolean undoable) {
+        this.way = way;
         this.dWithin = dWithin;
         this.undoable = undoable;
         this.matcher = new SegmentMatcher(dWithin);
     }
     
     public void run() {
-        it1 = new NodeIterator(way1, 0, false);
+        if (!way.isClosed() || way.isIncomplete()) {
+            issues.add(Issue.UnclosedWay);
+            return;
+        }
+        analyzeConnections();
+        if (hasIssues()) return;
+        it1 = new NodeIterator(way, 0, false);
 //        it2 = new NodeIterator(way2, 0, false);
 //        while (it1.hasNextNode()) {
 //            it2.reset();
@@ -61,6 +83,40 @@ public class WayAligner {
 //        }
     }
 
+    private void analyzeConnections() {
+        for (Node node: way.getNodes()) {
+            // Check for tagged nodes
+            if (node.hasKeys()) {
+                specialNodes.add(node);
+            }
+            if (!node.getReferrers().isEmpty()) {
+                connectedNodes.add(node);
+            }
+            for (OsmPrimitive referrer : node.getReferrers()) {
+                if (referrer == way) continue;
+                if (IsBuilding.test(referrer)) {
+                    if (! connectedBuildings.containsKey(referrer)) {
+                        ConnectedBuilding cb = new ConnectedBuilding(node, referrer);
+                        connectedBuildings.put(referrer, cb);
+                    }
+                }
+                else {
+                    otherConnections.add(referrer);
+                }
+            }
+        }
+        if (!specialNodes.isEmpty()) {
+            issues.add(Issue.SpecialNodes);
+        }
+        if (!otherConnections.isEmpty()) {
+            issues.add(Issue.OtherConnections);
+        }
+    }
+
+    private boolean hasIssues() {
+        return !issues.isEmpty();
+    }
+    
     private void alignEdge(MatchType matchStart, MatchType matchEnd) {
         alignSegmentStart(matchStart);
         while(matchEnd != MatchType.NoMatch) {
@@ -232,10 +288,42 @@ public class WayAligner {
              !match(it.peekNext(), n); 
     }
     
+    private class ConnectedBuilding {
+        private Node firstNode;
+        private OsmPrimitive osm;
+        public ConnectedBuilding(Node firstNode, OsmPrimitive osm) {
+            super();
+            this.firstNode = firstNode;
+            this.osm = osm;
+        }
+        public Node getFirstNode() {
+            return firstNode;
+        }
+        public OsmPrimitive getPrimitive() {
+            return osm;
+        }
+        @Override
+        public int hashCode() {
+            return osm.hashCode();
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (!(obj instanceof ConnectedBuilding)) return false;
+            return osm.equals(((ConnectedBuilding)obj).getPrimitive());
+        }
+        
+    }
     enum MatchTypeV2 {
         NoMatch,
         NodeToNode,
         NodeToSegment,
         SegmentToNode
+    }
+    
+    enum Issue {
+        UnclosedWay,
+        SpecialNodes,
+        OtherConnections
     }
 }

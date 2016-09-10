@@ -55,7 +55,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
     
     @Override
     public boolean check(ManagedNode node1, ManagedNode node2) {
-        return check(node1.getPrimitive(), node2.getPrimitive());
+        return check(node1.getNode(), node2.getNode());
     }
 
     @Override
@@ -81,7 +81,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
     
     @Override
     public boolean check(ManagedNode n, ManagedNode node1, ManagedNode node2) {
-        return check(n.getPrimitive(), node1.getPrimitive(), node2.getPrimitive());
+        return check(n.getNode(), node1.getNode(), node2.getNode());
     }
 
     @Override
