@@ -96,7 +96,7 @@ public class WFSHost extends GtHost {
             connectionParameters.put(TIMEOUT.key, timeout);
         }
         connectionParameters.put(BUFFER_SIZE.key, 1000);
-        connectionParameters.put(PROTOCOL.key, false);
+        connectionParameters.put(PROTOCOL.key, true);
         DataStore ds;
         try {
             ds = DataStoreFinder.getDataStore(connectionParameters);
