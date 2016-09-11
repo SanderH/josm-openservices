@@ -12,9 +12,9 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.osm.visitor.paint.relations.Multipolygon;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ComplexManagedRing.RingMember;
-import org.openstreetmap.josm.tools.Geometry.MultiPolygonMembers;
 import org.openstreetmap.josm.tools.I18n;
 
 public class ManagedPrimitiveFactory {
@@ -40,12 +40,12 @@ public class ManagedPrimitiveFactory {
     
     public ManagedPrimitive createArea(Relation multiPolygon) {
         // Extract outer/inner members from multipolygon relation
-        final MultiPolygonMembers mpm = new MultiPolygonMembers(multiPolygon);
+        final Multipolygon mpm = new Multipolygon(multiPolygon);
         boolean incomplete = false;
-        for (Way way : mpm.outers) {
+        for (Way way : mpm.getOuterWays()) {
             incomplete |= way.isIncomplete();
         }
-        for (Way way : mpm.inners) {
+        for (Way way : mpm.getInnerWays()) {
             incomplete |= way.isIncomplete();
         }
         if (incomplete) {
@@ -55,8 +55,8 @@ public class ManagedPrimitiveFactory {
         final List<MultipolygonBuilder.JoinedPolygon> outerRings;
         final List<MultipolygonBuilder.JoinedPolygon> innerRings;
         try {
-            outerRings = MultipolygonBuilder.joinWays(mpm.outers);
-            innerRings = MultipolygonBuilder.joinWays(mpm.inners);
+            outerRings = MultipolygonBuilder.joinWays(mpm.getOuterWays());
+            innerRings = MultipolygonBuilder.joinWays(mpm.getInnerWays());
             List<ManagedRing> managedOuterRings = new ArrayList<>(outerRings.size());
             List<ManagedRing> managedInnerRings = new ArrayList<>(innerRings.size());
             for (JoinedPolygon outer : outerRings) {
