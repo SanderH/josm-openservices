@@ -1,6 +1,10 @@
-package org.openstreetmap.josm.plugins.ods.osm;
+package org.openstreetmap.josm.plugins.ods.osm.alignment;
 
+import java.util.List;
+
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 /**
@@ -41,4 +45,12 @@ public interface NodeDWithin {
     public boolean check(ManagedNode node, ManagedNode node2);
 
     public boolean check(ManagedNode n, ManagedNode node1, ManagedNode node2);
+    
+    public BBox getBBox(OsmPrimitive osm);
+
+    public BBox getBBox(Node node1, Node node2);
+
+    public List<Node> nearByNodes(Node node1, Node node2);
+
+    public List<Node> nearByNodes(WaySegment waySegment);
 }

@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.io.IllegalDataException;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeIterator;
 import org.openstreetmap.josm.plugins.ods.test.TestData;
 
 public class NodeIteratorTest {

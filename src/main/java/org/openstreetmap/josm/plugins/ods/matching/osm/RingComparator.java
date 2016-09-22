@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.matching.osm;
 
-import org.openstreetmap.josm.plugins.ods.osm.NodeDWithin;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeDWithin;
 import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;

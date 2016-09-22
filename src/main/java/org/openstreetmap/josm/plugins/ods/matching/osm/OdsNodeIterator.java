@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openstreetmap.josm.plugins.ods.osm.NodeDWithin;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeDWithin;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 

@@ -1,7 +1,13 @@
-package org.openstreetmap.josm.plugins.ods.osm;
+package org.openstreetmap.josm.plugins.ods.osm.alignment;
+
+import java.util.Iterator;
+import java.util.List;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 /**
@@ -17,7 +23,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
 
     private final double maxDy; // Maximum delta y in degrees
     private final double maxDxFixed; // Fixed maximum delta x in degrees
-    private final double limitDx; 
+//    private final double limitDx; 
     private final boolean fixedLatitude; // The latitude and thus maxDx are fixed
     
     /**
@@ -32,7 +38,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
     public NodeDWithinLatLon(double tolerance) {
         maxDy = 360 * tolerance / EARTH_CIRCUMFERENCE;
         maxDxFixed = 0; // The value is never used.
-        limitDx = getMaxDx(85.06);
+//        limitDx = getMaxDx(85.06);
         fixedLatitude = false;
     }
 
@@ -48,7 +54,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
     public NodeDWithinLatLon(double tolerance, double latitude) {
         maxDy = 360 * tolerance / EARTH_CIRCUMFERENCE;
         maxDxFixed = getMaxDx(latitude);
-        limitDx = 0;
+//        limitDx = 0;
         fixedLatitude = true;
     }
 
@@ -89,24 +95,29 @@ public class NodeDWithinLatLon implements NodeDWithin {
         
         if (check(n, node1) || check(n, node2)) return true;
         
+        BBox bbox = getBBox(node1, node2);
+        if (!bbox.bounds(n.getCoor())) {
+            return false;
+        }
+
+//        if (Math.max(ll1.lat(), ll2.lat()) + maxDy < ll.lat()) return false;
+//        if (Math.min(ll1.lat(), ll2.lat()) - maxDy > ll.lat()) return false;
+//        if (!fixedLatitude) {
+//            if (Math.max(ll1.lon(), ll2.lon()) + limitDx < ll.lon()) return false;
+//            if (Math.min(ll1.lon(), ll2.lon()) - limitDx > ll.lon()) return false;
+//        }
+//        double maxDx = getMaxDx(ll.lat());
+//        if (Math.max(ll1.lon(), ll2.lon()) + maxDx < ll.lon()) return false;
+//        if (Math.min(ll1.lon(), ll2.lon()) - maxDx > ll.lon()) return false;
+
         LatLon ll1 = node1.getCoor();
         LatLon ll2 = node2.getCoor();
         LatLon ll = n.getCoor();
 
-        if (Math.max(ll1.lat(), ll2.lat()) + maxDy < ll.lat()) return false;
-        if (Math.min(ll1.lat(), ll2.lat()) - maxDy > ll.lat()) return false;
-        if (!fixedLatitude) {
-            if (Math.max(ll1.lon(), ll2.lon()) + limitDx < ll.lon()) return false;
-            if (Math.min(ll1.lon(), ll2.lon()) - limitDx > ll.lon()) return false;
-        }
-        double maxDx = getMaxDx(ll.lat());
-        if (Math.max(ll1.lon(), ll2.lon()) + maxDx < ll.lon()) return false;
-        if (Math.min(ll1.lon(), ll2.lon()) - maxDx > ll.lon()) return false;
-
         double ldx = ll2.lon() - ll1.lon(); // dx for the line segment
         double ldy = ll2.lat() - ll1.lat(); // dy for the line segment
 
-        // Segment with 0 length
+        // WaySegment with 0 length
         if (ldx == 0 && ldy == 0) return false;
         if (ldx == 0) {
             // Special case: vertical line. Because we already checked the bounding box we can safely return true.
@@ -123,7 +134,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
         // If the distance to the original y
         // value is larger than maxDy we can return false;
         if (Math.abs(projectedY - ll.lat()) > maxDy) return false;
-        return Math.abs(projectedX - ll.lon()) <= maxDx;
+        return Math.abs(projectedX - ll.lon()) <= getMaxDx(ll.lat());
     }
 
     /**
@@ -133,6 +144,61 @@ public class NodeDWithinLatLon implements NodeDWithin {
      * @return
      */
     private double getMaxDx(double lat) {
+        if (fixedLatitude) {
+            return maxDxFixed;
+        }
         return maxDy / Math.cos(Math.toRadians(lat));
     }
+
+    @Override
+    public BBox getBBox(OsmPrimitive osm) {
+        BBox bbox = osm.getBBox();
+        return getBBox(bbox.getTopLeft(), bbox.getBottomRight());
+    }
+
+    @Override
+    public BBox getBBox(Node node1, Node node2) {
+        return getBBox(node1.getCoor(), node2.getCoor());
+    }
+    
+    private BBox getBBox(LatLon ll1, LatLon ll2) {
+        double avgLat = (ll1.lat() + ll2.lat()) / 2;
+        double maxDx = getMaxDx(avgLat);
+        double minLat = Math.min(ll1.lat(), ll2.lat()) - maxDy;
+        double maxLat = Math.max(ll1.lat(), ll2.lat()) + maxDy;
+        double minLon = Math.min(ll1.lon(), ll2.lon()) - maxDx;
+        double maxLon = Math.max(ll1.lon(), ll2.lon()) + maxDx;
+        return new BBox(minLon, minLat, maxLon, maxLat);
+    }
+    
+    /**
+     * Find nodes that are within dist distance of the line between node1 and node2
+     * not including either node1 or node2
+     */
+    @Override
+    public List<Node> nearByNodes(Node node1, Node node2) {
+        assert node1.getDataSet() == node2.getDataSet();
+        DataSet dataSet = node1.getDataSet();
+        BBox bbox = getBBox(node1, node2);
+        List<Node> nodes = dataSet.searchNodes(bbox);
+        nodes.remove(node1);
+        nodes.remove(node2);
+        if (!nodes.isEmpty()) {
+            Iterator<Node> it = nodes.iterator();
+            while (it.hasNext()) {
+                Node node = it.next();
+                if (!check(node, node1, node2)) {
+                    it.remove();
+                }
+            }
+        }
+        return nodes;
+    }
+
+    @Override
+    public List<Node> nearByNodes(WaySegment waySegment) {
+        return nearByNodes(waySegment.getNode1(), waySegment.getNode2());
+    }
+
+    
 }

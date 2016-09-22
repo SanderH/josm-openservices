@@ -12,6 +12,8 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeDWithin;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeDWithinLatLon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedOgcMultiPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;

@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.coor.EastNorth;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeIterator;
 
 @Deprecated
 public class SegmentMatcher_Old {
@@ -17,7 +18,7 @@ public class SegmentMatcher_Old {
 
     /**
      * Check if the first segments of the provided iterator are overlap with respect
-     * to the tolerance of this Segment matcher.
+     * to the tolerance of this WaySegment matcher.
      * The algorithm is optimized for the cases where there is no match as this will
      * be the majority of the cases; 
      * 

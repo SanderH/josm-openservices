@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version='0.6' upload='false' generator='JOSM'>
+  <node id='-742' visible='true' lat='52.25386669531' lon='6.15718090012' />
+  <node id='-744' visible='true' lat='52.25385270662' lon='6.15720344648' />
+  <node id='-746' visible='true' lat='52.2538339449' lon='6.15723569344' />
+  <node id='-748' visible='true' lat='52.25373912234' lon='6.15710575743' />
+  <node id='-750' visible='true' lat='52.25372833968' lon='6.15712045066' />
+  <node id='-752' visible='true' lat='52.25372380475' lon='6.15711293225' />
+  <node id='-754' visible='true' lat='52.25371875589' lon='6.15712082668' />
+  <node id='-756' visible='true' lat='52.25373444565' lon='6.15714756266' />
+  <node id='-758' visible='true' lat='52.25371258485' lon='6.15701130331' />
+  <node id='-760' visible='true' lat='52.2537420909' lon='6.15706538718' />
+  <node id='-762' visible='true' lat='52.25377706349' lon='6.15701577288' />
+  <node id='-764' visible='true' lat='52.25380361784' lon='6.15706075481' />
+  <node id='-766' visible='true' lat='52.2538031009' lon='6.1570614635' />
+  <node id='-768' visible='true' lat='52.25386786639' lon='6.15717911898' />
+  <node id='-770' visible='true' lat='52.25356078549' lon='6.15695183755' />
+  <node id='-772' visible='true' lat='52.25359137628' lon='6.15701876939' />
+  <node id='-774' visible='true' lat='52.25361989085' lon='6.15706224728' />
+  <node id='-776' visible='true' lat='52.25362155512' lon='6.15706478046' />
+  <node id='-778' visible='true' lat='52.25364383674' lon='6.15703029516' />
+  <node id='-780' visible='true' lat='52.25364787223' lon='6.15703721908' />
+  <node id='-782' visible='true' lat='52.25365392771' lon='6.15702795075' />
+  <node id='-784' visible='true' lat='52.25365602491' lon='6.15703163377' />
+  <node id='-786' visible='true' lat='52.25367444384' lon='6.15706162427' />
+  <node id='-788' visible='true' lat='52.2536790141' lon='6.15705544973' />
+  <node id='-790' visible='true' lat='52.2537133388' lon='6.15711488937' />
+  <node id='-792' visible='true' lat='52.25371036632' lon='6.15712000779' />
+  <node id='-794' visible='true' lat='52.25369350365' lon='6.15714910947' />
+  <node id='-796' visible='true' lat='52.25369285821' lon='6.157150226' />
+  <node id='-798' visible='true' lat='52.25369137661' lon='6.15715276332' />
+  <node id='-800' visible='true' lat='52.25368941315' lon='6.15715614174' />
+  <node id='-802' visible='true' lat='52.25370908989' lon='6.15718896602' />
+  <node id='-804' visible='true' lat='52.25373001546' lon='6.15715431079' />
+  <node id='-806' visible='true' lat='52.25373602181' lon='6.15716361213' />
+  <node id='-808' visible='true' lat='52.25371534139' lon='6.1571992675' />
+  <node id='-810' visible='true' lat='52.25374493215' lon='6.1572431011' />
+  <node id='-812' visible='true' lat='52.25372273349' lon='6.15728139565' />
+  <node id='-814' visible='true' lat='52.25372259113' lon='6.1572811735' />
+  <node id='-816' visible='true' lat='52.2537199154' lon='6.15728626776' />
+  <node id='-818' visible='true' lat='52.25371191172' lon='6.15729794813' />
+  <node id='-820' visible='true' lat='52.25367849788' lon='6.15735661075' />
+  <node id='-822' visible='true' lat='52.25363658104' lon='6.15728986326' />
+  <node id='-824' visible='true' lat='52.25363276511' lon='6.1572961387' />
+  <node id='-826' visible='true' lat='52.25357736577' lon='6.15721151019' />
+  <node id='-828' visible='true' lat='52.25357313912' lon='6.15721736844' />
+  <node id='-830' visible='true' lat='52.25354993328' lon='6.15717163911' />
+  <node id='-832' visible='true' lat='52.25355620772' lon='6.15716187666' />
+  <node id='-834' visible='true' lat='52.25355295011' lon='6.15715558132' />
+  <node id='-836' visible='true' lat='52.25355480017' lon='6.15715167371' />
+  <node id='-838' visible='true' lat='52.2535514353' lon='6.15714528864' />
+  <node id='-840' visible='true' lat='52.25355265074' lon='6.15714359616' />
+  <node id='-842' visible='true' lat='52.2535622387' lon='6.15713017112' />
+  <node id='-844' visible='true' lat='52.25356687384' lon='6.15713886286' />
+  <node id='-846' visible='true' lat='52.25357121101' lon='6.15713259644' />
+  <node id='-848' visible='true' lat='52.25359541934' lon='6.15709761732' />
+  <node id='-850' visible='true' lat='52.25357976069' lon='6.15706748423' />
+  <node id='-852' visible='true' lat='52.25357392002' lon='6.15707551139' />
+  <node id='-854' visible='true' lat='52.25353150526' lon='6.15699825493' />
+  <node id='-863' action='modify' visible='true' lat='52.28903570449' lon='6.82522960476' />
+  <node id='-864' action='modify' visible='true' lat='52.28901820449' lon='6.82520980476' />
+  <node id='-865' action='modify' visible='true' lat='52.28902500449' lon='6.82519390476' />
+  <node id='-866' action='modify' visible='true' lat='52.28900050449' lon='6.82516600476' />
+  <node id='-867' action='modify' visible='true' lat='52.28905570449' lon='6.82503640476' />
+  <node id='-868' action='modify' visible='true' lat='52.28905590449' lon='6.82503660476' />
+  <node id='-869' action='modify' visible='true' lat='52.28904190449' lon='6.82506920476' />
+  <node id='-870' action='modify' visible='true' lat='52.28908380449' lon='6.82511690476' />
+  <node id='-871' action='modify' visible='true' lat='52.28897600449' lon='6.82513800476' />
+  <node id='-872' action='modify' visible='true' lat='52.28896920449' lon='6.82515390476' />
+  <node id='-873' action='modify' visible='true' lat='52.28895170449' lon='6.82513400476' />
+  <node id='-874' action='modify' visible='true' lat='52.28901130449' lon='6.82499420476' />
+  <node id='-875' action='modify' visible='true' lat='52.28901370449' lon='6.82498880476' />
+  <node id='-930' action='modify' visible='true' lat='52.28899140449' lon='6.82511410476'>
+    <tag k='addr:city' v='Hengelo' />
+    <tag k='addr:housenumber' v='49' />
+    <tag k='addr:postcode' v='7558TD' />
+    <tag k='addr:street' v='Beppie Nooystraat' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='match' />
+    <tag k='|ODS:statusMatch' v='no_match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </node>
+  <node id='-931' action='modify' visible='true' lat='52.28903220449' lon='6.82516230476'>
+    <tag k='addr:city' v='Hengelo' />
+    <tag k='addr:housenumber' v='51' />
+    <tag k='addr:postcode' v='7558TD' />
+    <tag k='addr:street' v='Beppie Nooystraat' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='match' />
+    <tag k='|ODS:statusMatch' v='no_match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </node>
+  <node id='-1433' action='modify' visible='true' lat='52.29001050449' lon='6.83095930476'>
+    <tag k='addr:city' v='Hengelo' />
+    <tag k='addr:housenumber' v='121' />
+    <tag k='addr:postcode' v='7558TL' />
+    <tag k='addr:street' v='Eduard Verkadestraat' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='match' />
+    <tag k='|ODS:statusMatch' v='no_match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </node>
+  <node id='-1436' action='modify' visible='true' lat='52.29005160449' lon='6.83102820476' />
+  <node id='-1437' action='modify' visible='true' lat='52.29008440449' lon='6.83106310476' />
+  <node id='-1438' action='modify' visible='true' lat='52.29007210449' lon='6.83109390476' />
+  <node id='-1439' action='modify' visible='true' lat='52.29004840449' lon='6.83106860476' />
+  <node id='-1440' action='modify' visible='true' lat='52.29005460449' lon='6.83105310476' />
+  <node id='-1441' action='modify' visible='true' lat='52.28996940449' lon='6.83096200476' />
+  <node id='-1442' action='modify' visible='true' lat='52.28997830449' lon='6.83094000476' />
+  <node id='-1443' action='modify' visible='true' lat='52.28998590449' lon='6.83094820476' />
+  <node id='-1444' action='modify' visible='true' lat='52.29000370449' lon='6.83090380476' />
+  <node id='-1445' action='modify' visible='true' lat='52.29007200449' lon='6.83097740476' />
+  <node id='-1446' action='modify' visible='true' lat='52.29008450449' lon='6.83106320476' />
+  <node id='-1447' action='modify' visible='true' lat='52.29010810449' lon='6.83108850476' />
+  <node id='-1448' action='modify' visible='true' lat='52.29009570449' lon='6.83111920476' />
+  <node id='-1449' action='modify' visible='true' lat='52.29007220449' lon='6.83109390476' />
+  <node id='-1811' action='modify' visible='true' lat='52.29025570449' lon='6.83031350476'>
+    <tag k='addr:city' v='Hengelo' />
+    <tag k='addr:housenumber' v='105' />
+    <tag k='addr:postcode' v='7558TK' />
+    <tag k='addr:street' v='Eduard Verkadestraat' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='match' />
+    <tag k='|ODS:statusMatch' v='no_match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </node>
+  <node id='-1813' action='modify' visible='true' lat='52.29024570449' lon='6.83040810476' />
+  <node id='-1814' action='modify' visible='true' lat='52.29021460449' lon='6.83037470476' />
+  <node id='-1815' action='modify' visible='true' lat='52.29019310449' lon='6.83042820476' />
+  <node id='-1816' action='modify' visible='true' lat='52.29017410449' lon='6.83040820476' />
+  <node id='-1817' action='modify' visible='true' lat='52.29018990449' lon='6.83036930476' />
+  <node id='-1818' action='modify' visible='true' lat='52.29019930449' lon='6.83037940476' />
+  <node id='-1819' action='modify' visible='true' lat='52.29020520449' lon='6.83036460476' />
+  <node id='-1820' action='modify' visible='true' lat='52.29025520449' lon='6.83024060476' />
+  <node id='-1821' action='modify' visible='true' lat='52.29026850449' lon='6.83025490476' />
+  <node id='-1822' action='modify' visible='true' lat='52.29026350449' lon='6.83026720476' />
+  <node id='-1823' action='modify' visible='true' lat='52.29029070449' lon='6.83029640476' />
+  <node id='-1824' action='modify' visible='true' lat='52.29019300449' lon='6.83042820476' />
+  <node id='-1825' action='modify' visible='true' lat='52.29017760449' lon='6.83046640476' />
+  <node id='-1826' action='modify' visible='true' lat='52.29015880449' lon='6.83044620476' />
+  <way id='-856' action='modify' visible='true'>
+    <nd ref='-768' />
+    <nd ref='-766' />
+    <nd ref='-764' />
+    <nd ref='-762' />
+    <nd ref='-760' />
+    <nd ref='-758' />
+    <nd ref='-788' />
+    <nd ref='-790' />
+    <nd ref='-800' />
+    <nd ref='-802' />
+    <nd ref='-804' />
+    <nd ref='-756' />
+    <nd ref='-754' />
+    <nd ref='-752' />
+    <nd ref='-750' />
+    <nd ref='-748' />
+    <nd ref='-746' />
+    <nd ref='-744' />
+    <nd ref='-742' />
+    <nd ref='-768' />
+    <tag k='building' v='retail' />
+    <tag k='ref:bag' v='150100000002076' />
+    <tag k='ref:test' v='deventer2' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2014-10-25' />
+  </way>
+  <way id='-858' action='modify' visible='true'>
+    <nd ref='-854' />
+    <nd ref='-852' />
+    <nd ref='-850' />
+    <nd ref='-848' />
+    <nd ref='-846' />
+    <nd ref='-844' />
+    <nd ref='-842' />
+    <nd ref='-840' />
+    <nd ref='-838' />
+    <nd ref='-836' />
+    <nd ref='-834' />
+    <nd ref='-832' />
+    <nd ref='-830' />
+    <nd ref='-828' />
+    <nd ref='-826' />
+    <nd ref='-824' />
+    <nd ref='-822' />
+    <nd ref='-820' />
+    <nd ref='-818' />
+    <nd ref='-816' />
+    <nd ref='-814' />
+    <nd ref='-812' />
+    <nd ref='-810' />
+    <nd ref='-808' />
+    <nd ref='-806' />
+    <nd ref='-804' />
+    <nd ref='-802' />
+    <nd ref='-800' />
+    <nd ref='-798' />
+    <nd ref='-796' />
+    <nd ref='-794' />
+    <nd ref='-792' />
+    <nd ref='-790' />
+    <nd ref='-788' />
+    <nd ref='-786' />
+    <nd ref='-784' />
+    <nd ref='-782' />
+    <nd ref='-780' />
+    <nd ref='-778' />
+    <nd ref='-776' />
+    <nd ref='-774' />
+    <nd ref='-772' />
+    <nd ref='-770' />
+    <nd ref='-854' />
+    <tag k='building' v='house' />
+    <tag k='ref:bag' v='150100000001561' />
+    <tag k='ref:test' v='deventer1' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2014-10-25' />
+  </way>
+  <way id='-861' action='modify' visible='true'>
+    <nd ref='-863' />
+    <nd ref='-864' />
+    <nd ref='-865' />
+    <nd ref='-866' />
+    <nd ref='-867' />
+    <nd ref='-868' />
+    <nd ref='-869' />
+    <nd ref='-870' />
+    <nd ref='-863' />
+    <tag k='building' v='house' />
+    <tag k='ref:bag' v='164100000051081' />
+    <tag k='ref:test' v='Beppie Nooystraat 51' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='start_date' v='1981' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='comparable' />
+    <tag k='|ODS:statusMatch' v='match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </way>
+  <way id='-862' action='modify' visible='true'>
+    <nd ref='-866' />
+    <nd ref='-871' />
+    <nd ref='-872' />
+    <nd ref='-873' />
+    <nd ref='-874' />
+    <nd ref='-875' />
+    <nd ref='-867' />
+    <nd ref='-866' />
+    <tag k='building' v='house' />
+    <tag k='ref:bag' v='164100000051082' />
+    <tag k='ref:test' v='Beppie Nooystraat 49' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='start_date' v='1981' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='comparable' />
+    <tag k='|ODS:statusMatch' v='match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </way>
+  <way id='-1434' action='modify' visible='true'>
+    <nd ref='-1436' />
+    <nd ref='-1437' />
+    <nd ref='-1438' />
+    <nd ref='-1439' />
+    <nd ref='-1440' />
+    <nd ref='-1441' />
+    <nd ref='-1442' />
+    <nd ref='-1443' />
+    <nd ref='-1444' />
+    <nd ref='-1445' />
+    <nd ref='-1436' />
+    <tag k='building' v='house' />
+    <tag k='ref:bag' v='164100000001869' />
+    <tag k='ref:test' v='Eduard Verkadestraat 121' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='start_date' v='1981' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='no_match' />
+    <tag k='|ODS:statusMatch' v='match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </way>
+  <way id='-1435' action='modify' visible='true'>
+    <nd ref='-1446' />
+    <nd ref='-1447' />
+    <nd ref='-1448' />
+    <nd ref='-1438' />
+    <nd ref='-1449' />
+    <nd ref='-1446' />
+    <tag k='building' v='yes' />
+    <tag k='ref:bag' v='164100000084181' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='start_date' v='1981' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='comparable' />
+    <tag k='|ODS:statusMatch' v='match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </way>
+  <way id='-1810' action='modify' visible='true'>
+    <nd ref='-1813' />
+    <nd ref='-1814' />
+    <nd ref='-1815' />
+    <nd ref='-1816' />
+    <nd ref='-1817' />
+    <nd ref='-1818' />
+    <nd ref='-1819' />
+    <nd ref='-1820' />
+    <nd ref='-1821' />
+    <nd ref='-1822' />
+    <nd ref='-1823' />
+    <nd ref='-1813' />
+    <tag k='building' v='house' />
+    <tag k='ref:bag' v='164100000037803' />
+    <tag k='ref:test' v='Eduard Verkadestraat 105' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='start_date' v='1981' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='no_match' />
+    <tag k='|ODS:statusMatch' v='match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </way>
+  <way id='-1812' action='modify' visible='true'>
+    <nd ref='-1816' />
+    <nd ref='-1824' />
+    <nd ref='-1815' />
+    <nd ref='-1825' />
+    <nd ref='-1826' />
+    <nd ref='-1816' />
+    <tag k='building' v='yes' />
+    <tag k='ref:bag' v='164100000082980' />
+    <tag k='source' v='BAG' />
+    <tag k='source:date' v='2016-09-11' />
+    <tag k='start_date' v='1981' />
+    <tag k='|ODS' v='true' />
+    <tag k='|ODS:geometryMatch' v='comparable' />
+    <tag k='|ODS:statusMatch' v='match' />
+    <tag k='|ODS:tagMatch' v='match' />
+  </way>
+</osm>

@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeIterator;
 
 /**
  * The SmallSegmentRemer removes segments shorter than a given tolerance.

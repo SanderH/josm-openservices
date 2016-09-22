@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.osm;
+package org.openstreetmap.josm.plugins.ods.osm.alignment;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,6 +15,7 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
 
+@Deprecated
 public class NodeIterator {
     private Way way;
     private List<Node> nodes;
@@ -114,7 +115,9 @@ public class NodeIterator {
         return null;
     }
     
-    
+    public WaySegment peekSegment() {
+        return new WaySegment(way, getIndex());
+    }
     /**
      * Insert the given node to list of nodes after the current index;
      * 
