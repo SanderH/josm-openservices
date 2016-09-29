@@ -7,7 +7,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public interface OsmEntityBuilder<T extends Entity> {
+public interface OsmEntityBuilder {
 //    public void initialize();
     
     public OsmLayerManager getLayerManager();
@@ -27,8 +27,9 @@ public interface OsmEntityBuilder<T extends Entity> {
      * the recognizes() method first. 
      * 
      * @param primitive
+     * @return 
      */
-    public void buildOsmEntity(OsmPrimitive primitive);
+    public Entity buildOsmEntity(OsmPrimitive primitive);
     
     /**
      * Update the ods Entity for the passed osm primitive if such

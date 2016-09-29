@@ -3,18 +3,17 @@ package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
-import com.vividsolutions.jts.geom.Point;
-
 public class AddressNodeGroup {
-    private Point geometry;
+    private LatLon coord;
     private List<AddressNode> addressNodes = new ArrayList<>();
     private Building building;
     
     public AddressNodeGroup(AddressNode addressNode) {
-        geometry = addressNode.getGeometry();
+        coord = addressNode.getPrimitive().getCenter();
         addressNodes.add(addressNode);
         building = addressNode.getBuilding();
     }
@@ -27,8 +26,8 @@ public class AddressNodeGroup {
         return addressNodes;
     }
 
-    public Point getGeometry() {
-        return geometry;
+    public LatLon getCoords() {
+        return coord;
     }
     
     public Building getBuilding() {

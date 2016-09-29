@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
-public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder<T> {
+public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder {
     private OsmLayerManager layerManager;
 //    private Class<T> baseType;
     private Predicate<OsmPrimitive> recognizer;
@@ -107,7 +107,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         if (entity == null) {
             return;
         }
-        updateGeometry(entity, way);
+//        updateGeometry(entity, way);
         Match<?> match = entity.getMatch();
         if (match != null && match.isSimple()) {
             match.analyze();

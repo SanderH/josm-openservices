@@ -77,19 +77,19 @@ public class ManagedPrimitiveFactoryTest {
     }
     
 
-    @Test
-    public void testCreateRingNode() {
-        Way way = testData.getWay("inktpotInner1");
-        assert way.isClosed();
-        Node node = testData.getNode("inktpotInner1Node6");
-        ManagedRing mr = factory.createRing(way);
-        Iterator<ManagedNode> it = mr.getNodeIterator();
-        for (int i = 0; i < 6; i++) {
-            it.next();
-        }
-        ManagedNode mn = factory.createNode(node);
-        assertSame("Related nodes shoul be equal", it.next(), mn);
-    }
+//    @Test
+//    public void testCreateRingNode() {
+//        Way way = testData.getWay("inktpotInner1");
+//        assert way.isClosed();
+//        Node node = testData.getNode("inktpotInner1Node6");
+//        ManagedRing mr = factory.createRing(way);
+//        Iterator<ManagedNode> it = mr.getNodeIterator();
+//        for (int i = 0; i < 6; i++) {
+//            it.next();
+//        }
+//        ManagedNode mn = factory.createNode(node);
+//        assertSame("Related nodes should be equal", it.next(), mn);
+//    }
     
     @Test
     public void testCreateArea_type() {

@@ -175,7 +175,14 @@ public class MainDownloader {
                 try {
                     future.get();
                 } catch (ExecutionException e) {
-                    messages.add(e.getCause().getMessage());
+                    if (e.getCause() instanceof NullPointerException) {
+                        messages.add(I18n.tr("A null pointer exception occurred. This is allways a programming error. " +
+                            "Please look at the log file for more details"));
+                        Main.error(e.getCause());
+                    }
+                    else {
+                        messages.add(e.getCause().getMessage());
+                    }
                 }
             }
             if (!messages.isEmpty()) {

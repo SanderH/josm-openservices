@@ -9,19 +9,22 @@ import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.matching.OsmBuildingToAddressNodesMatcher;
 
 public class OsmEntitiesBuilder {
     private final OdsModule module;
     private final OsmLayerManager layerManager;
-    private final OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
+//    private final OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
+    private final OsmBuildingToAddressNodesMatcher buildingToNodeMatcher;
 
     public OsmEntitiesBuilder(OdsModule module, OsmLayerManager layerManager) {
         super();
         this.module = module;
         this.layerManager = layerManager;
-        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(layerManager);
+//        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(layerManager);
+        this.buildingToNodeMatcher = new OsmBuildingToAddressNodesMatcher(module);
     }
     
     /**
@@ -41,22 +44,23 @@ public class OsmEntitiesBuilder {
      * @param osmPrimitives
      */
     public void build(Collection<? extends OsmPrimitive> osmPrimitives) {
-        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
+        List<OsmEntityBuilder> entityBuilders = module.getEntityBuilders();
 //        for (OsmEntityBuilder<?> builder : entityBuilders) {
 //            builder.initialize();
 //        }
         for (OsmPrimitive primitive : osmPrimitives) {
             if (!primitive.isIncomplete() && primitive.isTagged()) {
-                for (OsmEntityBuilder<?> builder : entityBuilders) {
+                for (OsmEntityBuilder builder : entityBuilders) {
                     if (builder.recognizes(primitive)) {
-                        builder.buildOsmEntity(primitive);
+                        Entity entity = builder.buildOsmEntity(primitive);
+                        layerManager.getRepository().add(entity);
                     }
                 }
             }
         }
-        Iterable<AddressNode> iterable = layerManager.getRepository().getAll(AddressNode.class);
+        Iterable<Building> iterable = layerManager.getRepository().getAll(Building.class);
         // TODO This code is specific for buildings and should be handled in a more generic way
-        iterable.forEach(nodeToBuildingMatcher::match);
+        iterable.forEach(buildingToNodeMatcher::match);
     }
     
     /**
@@ -66,11 +70,11 @@ public class OsmEntitiesBuilder {
      */
     public void tagsChanged(TagsChangedEvent event) {
         OsmPrimitive primitive = event.getPrimitive();
-        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
+        List<OsmEntityBuilder> entityBuilders = module.getEntityBuilders();
 //        for (OsmEntityBuilder<?> builder : entityBuilders) {
 //            builder.initialize();
 //        }
-        for (OsmEntityBuilder<?> builder : entityBuilders) {
+        for (OsmEntityBuilder builder : entityBuilders) {
             if (builder.recognizes(primitive)) {
                 builder.updateTags(primitive, primitive.getKeys());
             }
@@ -79,8 +83,8 @@ public class OsmEntitiesBuilder {
 
     public void wayNodesChanged(WayNodesChangedEvent event) {
         Way osmWay = event.getChangedWay();
-        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
-        for (OsmEntityBuilder<?> builder : entityBuilders) {
+        List<OsmEntityBuilder> entityBuilders = module.getEntityBuilders();
+        for (OsmEntityBuilder builder : entityBuilders) {
             if (builder.recognizes(osmWay)) {
                 builder.updateGeometry(osmWay);
             }
@@ -93,8 +97,8 @@ public class OsmEntitiesBuilder {
      * @param osmWay
      */
     public void updatedGeometry(Way osmWay) {
-        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
-        for (OsmEntityBuilder<?> builder : entityBuilders) {
+        List<OsmEntityBuilder> entityBuilders = module.getEntityBuilders();
+        for (OsmEntityBuilder builder : entityBuilders) {
             if (builder.recognizes(osmWay)) {
                 builder.updateGeometry(osmWay);
             }

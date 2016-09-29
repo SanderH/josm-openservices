@@ -139,9 +139,9 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     @Override
     public void wayNodesChanged(WayNodesChangedEvent event) {
-        if (event.getChangedWay().isModified()) {
+//        if (event.getChangedWay().isModified()) {
             wayNodesChangedCache.add(event);
-        }
+//        }
     }
 
     @Override

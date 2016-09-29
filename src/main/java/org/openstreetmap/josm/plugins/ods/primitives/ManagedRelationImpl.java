@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -7,31 +8,21 @@ import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
-import org.openstreetmap.josm.data.osm.RelationData;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 public class ManagedRelationImpl extends AbstractManagedPrimitive implements ManagedRelation {
     private List<ManagedRelationMember> members;
-    private long uniqueId = (new RelationData()).getUniqueId();
-    private Envelope envelope = new Envelope();
     private BBox bbox = null;
     
     public ManagedRelationImpl(LayerManager layerManager, List<ManagedRelationMember> members, Map<String, String> keys) {
         super(layerManager, keys);
         this.members = members;
+        updateBBox();
     }
 
-    @Override
-    public Long getUniqueId() {
-        return uniqueId;
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        return envelope;
+    private void updateBBox() {
+        this.bbox = calculateBBox();
     }
 
     @Override
@@ -92,5 +83,14 @@ public class ManagedRelationImpl extends AbstractManagedPrimitive implements Man
         // In general a relation has no area.
         // Area relations should be implemented as ManagedRing or ManagedPolygon
         return 0;
+    }
+
+    protected BBox calculateBBox() {
+        Iterator<ManagedRelationMember> it = getMembers().iterator();
+        BBox _bbox = it.next().getPrimitive().getBBox();
+        while (it.hasNext()) {
+            _bbox.add(it.next().getPrimitive().getBBox());
+        }
+        return _bbox;
     }
 }

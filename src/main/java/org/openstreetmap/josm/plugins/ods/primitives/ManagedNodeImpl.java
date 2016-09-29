@@ -8,14 +8,10 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class ManagedNodeImpl extends AbstractManagedPrimitive implements ManagedNode {
     private NodeMatch nodeMatch;
-    private Envelope envelope;
     
     public ManagedNodeImpl(LayerManager layerManager, Node primitive) {
         super(layerManager, primitive);
@@ -54,20 +50,19 @@ public class ManagedNodeImpl extends AbstractManagedPrimitive implements Managed
     }
 
     @Override
-    public Envelope getEnvelope() {
-        if (envelope == null) {
-            envelope = GeoUtil.toEnvelope(getCoor());
-        }
-        return envelope;
-    }
-
-    @Override
     public BBox getBBox() {
         if (getPrimitive() == null) {
             return null;
         }
         return getPrimitive().getBBox();
     }
+
+    
+    @Override
+    public LatLon getCenter() {
+        return getCoor();
+    }
+
 
     @Override
     public LatLon getCoor() {

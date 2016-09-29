@@ -6,10 +6,9 @@ import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.PLANNED;
 
 import java.util.Objects;
 
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-
-import com.vividsolutions.jts.geom.Point;
 
 public class BuildingMatch extends MatchImpl<Building> {
     /**
@@ -74,8 +73,8 @@ public class BuildingMatch extends MatchImpl<Building> {
     }
     
     private MatchStatus compareCentroids() {
-        Point osmCentroid = getOsmEntity().getGeometry().getCentroid();
-        Point odCentroid = getOpenDataEntity().getGeometry().getCentroid();
+        LatLon osmCentroid = getOsmEntity().getPrimitive().getCenter();
+        LatLon odCentroid = getOpenDataEntity().getPrimitive().getCenter();
         double centroidDistance = osmCentroid.distance(odCentroid);
         if (centroidDistance == 0) {
             return MatchStatus.MATCH;

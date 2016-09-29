@@ -7,12 +7,11 @@ import java.util.Map;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.tools.Geometry;
 import org.openstreetmap.josm.tools.I18n;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * A ManagedRing implementation that is based on a single closed ManagedWay;
@@ -39,11 +38,6 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
-    public Envelope getEnvelope() {
-        return managedWay.getEnvelope();
-    }
-
-    @Override
     public BBox getBBox() {
         return managedWay.getBBox();
     }
@@ -67,12 +61,18 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
+    public boolean contains(ManagedNode mNode) {
+        return Geometry.nodeInsidePolygon(mNode.getNode(),
+            managedWay.getNodes());
+    }
+
+    @Override
     public int getNodesCount() {
         return managedWay.getNodesCount() - 1;
     }
 
     @Override
-    public Iterator<ManagedNode> getNodeIterator() {
+    public Iterator<Node> getNodeIterator() {
         return new RingNodeIterator();
     }
     
@@ -87,8 +87,8 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
         if (ring.getNodesCount() < 3) {
             throw new IllegalArgumentException("Way must be closed to check orientation.");
         }
-        Iterator<ManagedNode> nodeIterator = ring.getNodeIterator();
-        ManagedNode first = nodeIterator.next();
+        Iterator<Node> nodeIterator = ring.getNodeIterator();
+        Node first = nodeIterator.next();
         LatLon coorPrev = first.getCoor();
         LatLon coorCurr;
         while (nodeIterator.hasNext()) {
@@ -103,8 +103,8 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
         return area2 < 0;
     }
     
-    private class RingNodeIterator implements Iterator<ManagedNode> {
-        private ListIterator<ManagedNode> iterator;
+    private class RingNodeIterator implements Iterator<Node> {
+        private ListIterator<Node> iterator;
 
         RingNodeIterator() {
             this.iterator = managedWay.getNodes().listIterator();
@@ -116,7 +116,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
         }
 
         @Override
-        public ManagedNode next() {
+        public Node next() {
             if (iterator.nextIndex() >= managedWay.getNodesCount()) {
                 throw new IndexOutOfBoundsException();
             }

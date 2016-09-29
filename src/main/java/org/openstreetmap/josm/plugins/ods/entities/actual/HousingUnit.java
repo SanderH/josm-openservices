@@ -47,10 +47,10 @@ public interface HousingUnit extends Entity {
     
     public BuildingType getType();
 
-    public void setGeometry(Point point);
-    
-    @Override
-    public Point getGeometry();
+//    public void setGeometry(Point point);
+//    
+//    @Override
+//    public Point getGeometry();
     
     @Override
     public Class<HousingUnit> getBaseType();

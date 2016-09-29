@@ -8,9 +8,6 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class SimpleManagedWay extends AbstractManagedPrimitive implements ManagedWay {
     private List<ManagedNode> nodes;
@@ -35,11 +32,11 @@ public class SimpleManagedWay extends AbstractManagedPrimitive implements Manage
 //            this.nodes.set(0, this.nodes.get(last));
 //        }
 //    }
-    
-    @Override
-    public void setNodes(List<ManagedNode> nodes) {
-        this.nodes = nodes;
-    }
+//    
+//    @Override
+//    public void setNodes(List<ManagedNode> nodes) {
+//        this.nodes = nodes;
+//    }
     
     public Way getWay() {
         return (Way) getPrimitive();
@@ -72,13 +69,8 @@ public class SimpleManagedWay extends AbstractManagedPrimitive implements Manage
 
     
     @Override
-    public List<ManagedNode> getNodes() {
-        return nodes;
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        return GeoUtil.toEnvelope(getBBox());
+    public List<Node> getNodes() {
+        return getWay().getNodes();
     }
 
     @Override
@@ -108,8 +100,13 @@ public class SimpleManagedWay extends AbstractManagedPrimitive implements Manage
     }
 
     @Override
-    public ManagedNode getNode(int index) {
-        return nodes.get(index);
+    public boolean contains(ManagedNode mNode) {
+        return false;
+    }
+
+    @Override
+    public Node getNode(int index) {
+        return getWay().getNode(index);
     }
     
     private BBox createBBox() {

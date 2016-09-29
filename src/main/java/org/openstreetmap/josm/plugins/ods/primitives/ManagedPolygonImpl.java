@@ -12,8 +12,7 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-
-import com.vividsolutions.jts.geom.Envelope;
+import org.openstreetmap.josm.tools.Geometry;
 
 public class ManagedPolygonImpl extends AbstractManagedPrimitive implements ManagedPolygon {
     private Relation relation;
@@ -33,11 +32,6 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive implements Mana
     }
 
     @Override
-    public Envelope getEnvelope() {
-       return exteriorRing.getEnvelope();
-    }
-
-    @Override
     public BBox getBBox() {
         return exteriorRing.getBBox();
     }
@@ -54,6 +48,11 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive implements Mana
     @Override
     public Relation getPrimitive() {
         return relation;
+    }
+
+    @Override
+    public boolean contains(ManagedNode mNode) {
+        return Geometry.isNodeInsideMultiPolygon(mNode.getNode(), relation, null);
     }
 
     @Override

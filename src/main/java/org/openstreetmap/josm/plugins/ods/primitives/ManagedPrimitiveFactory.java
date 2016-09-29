@@ -90,13 +90,7 @@ public class ManagedPrimitiveFactory {
         assert osmWay.getDisplayType() == OsmPrimitiveType.CLOSEDWAY;
         ManagedWay odsWay = (ManagedWay) layerManager.getManagedPrimitive(osmWay);
         if (odsWay == null) {
-            List<ManagedNode> odsNodes = new ArrayList<>(osmWay.getNodesCount());
-            for (Node osmNode : osmWay.getNodes()) {
-                ManagedNode odsNode = createNode(osmNode);
-                odsNodes.add(odsNode);
-            }
             odsWay = new SimpleManagedWay(layerManager, osmWay);
-            odsWay.setNodes(odsNodes);
 //            int i=0;
 //            for (ManagedNode odsNode : odsNodes) {
 //                odsNode.addReferrer(odsWay);
@@ -153,24 +147,13 @@ public class ManagedPrimitiveFactory {
     
     public void update(ManagedWay odsWay) {
 //        Set<ManagedNode> oldNodes = new HashSet<>(odsWay.getNodes());
-        if (odsWay instanceof SimpleManagedWay) {
-            Way osmWay = ((SimpleManagedWay)odsWay).getWay();
-            setWayNodes(odsWay, osmWay);
-        }
+//        if (odsWay instanceof SimpleManagedWay) {
+//            Way osmWay = ((SimpleManagedWay)odsWay).getWay();
+//            setWayNodes(odsWay, osmWay);
+//        }
 //        oldNodes.removeAll(odsWay.getNodes());
 //        for (ManagedNode odsNode : oldNodes) {
 //            odsNode.removeReferrer(odsWay);
 //        }
-    }
-    
-    public void setWayNodes(ManagedWay odsWay, Way osmWay) {
-        List<ManagedNode> newNodes = new ArrayList<>(osmWay.getNodesCount());
-//        int i = 0;
-        for (Node osmNode : osmWay.getNodes()) {
-            ManagedNode odsNode = createNode(osmNode);
-            newNodes.add(odsNode);
-//            odsNode.addReferrer(new NodeReferrer(odsWay, i++));
-        }
-        odsWay.setNodes(newNodes);
     }
 }

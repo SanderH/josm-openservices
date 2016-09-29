@@ -1,8 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual;
 
+import java.util.Set;
+
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -12,20 +15,40 @@ public interface AddressNode extends Entity {
 
     public Address getAddress();
 
-//	public Object getBuildingRef();
+    @Override
+    public ManagedNode getPrimitive();
 
     public void setHousingUnit(HousingUnit housingUnit);
 
     public HousingUnit getHousingUnit();
 
-    public void setBuilding(Building building);
+    /**
+     * Add a building to this address node.
+     * An address node is typically contained in exactly 1 building,
+     * but there may be exceptions. Therefore there is a possibility to 
+     * add multiple buildings. 
+     * @param building
+     */
+    public void addBuilding(Building building);
 
+    /**
+     * Get this address node's building.
+     * @return The building to which this address node belongs.
+     *     null if there are 0 or more than 1 buildings
+     */
     public Building getBuilding();
 
-    public void setGeometry(Point point);
+    /**
+     * Get this address node's buildings in case the address is
+     * contained in more than 1 building.
+     * @return A set of buildings or null if there is not more than 1
+     */
+    public Set<Building> getBuildings();
     
-    @Override
-    public Point getGeometry();
+//    public void setGeometry(Point point);
+//    
+//    @Override
+//    public Point getGeometry();
     
     @Override
     public Class<AddressNode> getBaseType();

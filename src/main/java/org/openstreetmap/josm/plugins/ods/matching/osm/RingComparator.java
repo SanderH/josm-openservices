@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.matching.osm;
 
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeDWithin;
 import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
@@ -11,6 +12,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
+@Deprecated
 public class RingComparator {
     private ManagedRing odRing;
     private ManagedRing osmRing;
@@ -37,8 +39,8 @@ public class RingComparator {
             // Start searching at the start of the Osm way
             itOsm.reset();
             while (nodeMatch == null && itOsm.hasNextNode()) {
-                ManagedNode odNode = itOd.peek();
-                ManagedNode osmNode = itOsm.peek();
+                Node odNode = itOd.peek();
+                Node osmNode = itOsm.peek();
                 if (dWithin.check(odNode, osmNode)) {
                     nodeMatch = odNode.getMatch();
                     // Make sure we don't create a new nodeMatch if we already have one.

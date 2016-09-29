@@ -8,16 +8,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeGroup;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.Point;
 
 /**
  * This enricher finds overlapping nodes in the data and distributes them, so
@@ -29,12 +26,10 @@ import com.vividsolutions.jts.geom.Point;
  * 
  */
 public class DistributeAddressNodes implements Consumer<Building> {
-    private GeoUtil geoUtil;
     private Comparator<? super AddressNode> comparator = new DefaultNodeComparator();
 
-    public DistributeAddressNodes(GeoUtil geoUtil) {
+    public DistributeAddressNodes() {
         super();
-        this.geoUtil = geoUtil;
     }
 
     public void setComparator(Comparator<? super AddressNode> comparator) {
@@ -55,14 +50,15 @@ public class DistributeAddressNodes implements Consumer<Building> {
      * 
      * @param newEntities
      */
-    private static Map<Point, AddressNodeGroup> buildGroups(Building building) {
-        Map<Point, AddressNodeGroup> groups = new HashMap<>();
+    private static Map<LatLon, AddressNodeGroup> buildGroups(Building building) {
+        Map<LatLon, AddressNodeGroup> groups = new HashMap<>();
         for (HousingUnit housingUnit : building.getHousingUnits()) {
             for (AddressNode addressNode : housingUnit.getAddressNodes()) {
-                AddressNodeGroup group = groups.get(addressNode.getGeometry());
+                LatLon coord = addressNode.getPrimitive().getCenter();
+                AddressNodeGroup group = groups.get(coord);
                 if (group == null) {
                     group = new AddressNodeGroup(addressNode);
-                    groups.put(addressNode.getGeometry(), group);
+                    groups.put(coord, group);
                 } else {
                     group.addAddressNode(addressNode);
                 }
@@ -74,22 +70,20 @@ public class DistributeAddressNodes implements Consumer<Building> {
     private void distribute(AddressNodeGroup group, boolean withUndo) {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes, comparator);
-        if (group.getBuilding().getGeometry().isEmpty()) {
-            // Happens rarely,
-            // for now return to prevent null pointer Exception
-            return;
-        }
-        Point center = group.getBuilding().getGeometry().getCentroid();
-        LineSegment ls = new LineSegment(group.getGeometry().getCoordinate(),
-                center.getCoordinate());
-        double angle = ls.angle();
-        double dx = Math.cos(angle) * 2e-7;
-        double dy = Math.sin(angle) * 2e-7;
-        double x = group.getGeometry().getX();
-        double y = group.getGeometry().getY();
+//        if (group.getBuilding().getGeometry().isEmpty()) {
+//            // Happens rarely,
+//            // for now return to prevent null pointer Exception
+//            return;
+//        }
+        LatLon center = group.getBuilding().getPrimitive().getCenter();
+        double angle = group.getCoords().bearing(center);
+        double dx = Math.sin(angle) * 2e-7;
+        double dy = Math.cos(angle) * 2e-7;
+        double x = group.getCoords().getX();
+        double y = group.getCoords().getY();
         for (AddressNode node : nodes) {
-            Point point = geoUtil.toPoint(new Coordinate(x, y));
-            node.setGeometry(point);
+            LatLon coord = new LatLon(y, x);
+            node.getPrimitive().getNode().setCoor(coord);
             x = x + dx;
             y = y + dy;
         }

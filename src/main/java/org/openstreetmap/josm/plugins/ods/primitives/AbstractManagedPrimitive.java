@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.NodeData;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
@@ -68,6 +69,12 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
         return primitive;
     }
 
+    
+    @Override
+    public boolean contains(ManagedNode mNode) {
+        return false;
+    }
+
     @Override
     public Map<String, String> getKeys() {
         OsmPrimitive osm = getPrimitive();
@@ -120,6 +127,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
         return entity;
     }
 
+    
 //    @Override
 //    public Map<String, String> getKeys() {
 //        if (getPrimitive() != null) {
@@ -137,6 +145,11 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
 //            this.keys = keys;
 //        }
 //    }
+
+    @Override
+    public LatLon getCenter() {
+        return getBBox().getCenter();
+    }
 
     @Override
     public void put(String key, String value) {

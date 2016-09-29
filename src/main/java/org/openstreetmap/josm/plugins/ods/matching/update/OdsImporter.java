@@ -20,7 +20,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.opendata.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 

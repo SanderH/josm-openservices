@@ -17,6 +17,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
  * @author gertjan
  *
  */
+@Deprecated
 public class BuildingNeighboursEnricher implements Consumer<Building> {
     private final GeoIndex<Building> geoIndex;
     

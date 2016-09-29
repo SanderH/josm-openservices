@@ -7,12 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * TODO the relation between this class an managedRelationImpl is crappy.
@@ -21,24 +20,12 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements ManagedOgcMultiPolygon {
     private Collection<ManagedPolygon> managedPolygons;
-    private Envelope envelope;
     private Double area = null;
     
     public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon> managedPolygons,
             Map<String, String> keys) {
         super(getLayerManager(managedPolygons), createRelationMembers(managedPolygons), keys);
         this.managedPolygons = managedPolygons;
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        if (envelope == null) {
-            envelope = new Envelope();
-            for (ManagedPolygon pg : managedPolygons) {
-                envelope = envelope.intersection(pg.getEnvelope());
-            }
-        }
-        return envelope;
     }
 
     @Override
@@ -95,4 +82,14 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         }
         return area;
     }
+    
+//    @Override
+//    protected BBox calculateBBox() {
+//        Iterator<ManagedPolygon> it = managedPolygons.iterator();
+//        BBox bbox = it.next().getBBox();
+//        while (it.hasNext()) {
+//            bbox.add(it.next().getBBox());
+//        }
+//        return bbox;
+//    }
 }

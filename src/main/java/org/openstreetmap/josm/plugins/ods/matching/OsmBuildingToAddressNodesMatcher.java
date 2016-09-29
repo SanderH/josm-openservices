@@ -2,9 +2,15 @@ package org.openstreetmap.josm.plugins.ods.matching;
 
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.data.osm.BBox;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.plugins.ods.AbstractLayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * <p>Try to find a matching address nodes for every Building. 
@@ -18,8 +24,8 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
  *
  */
 public class OsmBuildingToAddressNodesMatcher {
-    @SuppressWarnings("unused")
     private OdsModule module;
+    private DataSet dataSet;
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
     public OsmBuildingToAddressNodesMatcher(OdsModule module) {
@@ -38,47 +44,30 @@ public class OsmBuildingToAddressNodesMatcher {
      * @param building
      */
     public void match(Building building) {
-        // TODO Reimplement this functionality
-//        OsmAddressNodeStore addressNodeStore = (OsmAddressNodeStore)module
-//                .getOsmLayerManager().getEntityStore(AddressNode.class);
-//        GeoIndex<AddressNode> geoIndex = addressNodeStore.getGeoIndex();
-//        if (building.getAddressNodes().size() == 0) {
-//            List<AddressNode> addressNodes = geoIndex.intersection(building.getGeometry());
-//            if (addressNodes.size() > 0) {
-//                for (AddressNode node : addressNodes) {
-//                    building.getAddressNodes().add(node);
-//                    node.setBuilding(building);
-//                }
-//            }
-//        }
+        ManagedPrimitive mPrimitive = building.getPrimitive();
+        BBox bbox = building.getPrimitive().getBBox();
+        for (Node node : getDataSet().searchNodes(bbox)) {
+            ManagedNode mNode = (ManagedNode) getLayerManager().getManagedPrimitive(node);
+            if (mNode != null && mPrimitive.contains(mNode)) {
+                if (mNode.getEntity() instanceof AddressNode) {
+                    AddressNode addressNode = (AddressNode) mNode.getEntity();
+                    addressNode.addBuilding(building);
+                    building.getAddressNodes().add(addressNode);
+                }
+            }
+        }
     }
-    
-//    /**
-//     * Find a matching building for an address.
-//     * Iterate over buildings to find the building
-//     * 
-//     * @param addressNode
-//     */
-//    public void match(AddressNode addressNode) {
-//        OsmBuildingStore buildings = (OsmBuildingStore)module
-//                .getOsmLayerManager().getEntityStore(Building.class);
-//        if (addressNode.getBuilding() == null) {
-//            Iterator<Building> iterator = buildings.iterator();
-//            boolean found = false;
-//            while (iterator.hasNext() && !found) {
-//                Building building = iterator.next();
-//                if (building.getGeometry().covers(addressNode.getGeometry())) {
-//                    addressNode.setBuilding(building);
-//                    building.getAddressNodes().add(addressNode);
-//                    found = true;
-//                }
-//            }
-//            if (!found) {
-//                reportUnmatched(addressNode);
-//            }
-//        }
-//    }
-    
+   
+    private DataSet getDataSet() {
+        if (dataSet == null) {
+            dataSet = getLayerManager().getOsmDataLayer().data;
+        }
+        return dataSet;
+    }
+    private AbstractLayerManager getLayerManager() {
+        return module.getOsmLayerManager();
+    }
+
     private void reportUnmatched(AddressNode addressNode) {
         if (unmatchedAddressNodeHandler != null) {
             unmatchedAddressNodeHandler.accept(addressNode);

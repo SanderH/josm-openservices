@@ -9,8 +9,6 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 
-import com.vividsolutions.jts.geom.Point;
-
 public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
     private List<AddressNode> addressNodes = new LinkedList<>();
     private BuildingType type;
@@ -86,13 +84,13 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
         return HousingUnit.class;
     }
 
-    @Override
-    public void setGeometry(Point point) {
-        super.setGeometry(point);
-    }
-
-    @Override
-    public Point getGeometry() {
-        return (Point) super.getGeometry();
-    }
+//    @Override
+//    public void setGeometry(Point point) {
+//        super.setGeometry(point);
+//    }
+//
+//    @Override
+//    public Point getGeometry() {
+//        return (Point) super.getGeometry();
+//    }
 }

@@ -122,6 +122,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
                 cancel();
                 throw new ExecutionException(String.join("\n",  messages), null);
             }
+            executor.shutdownNow();
         } catch (InterruptedException e) {
             // TODO do we need this?
             for (Future<Void> future : futures) {

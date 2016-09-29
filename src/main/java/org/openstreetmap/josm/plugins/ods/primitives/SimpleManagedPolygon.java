@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 
 /**
@@ -20,6 +21,13 @@ public class SimpleManagedPolygon extends SimpleManagedRing implements ManagedPo
             Map<String, String> tags) {
         super(exteriorWay);
     }
+    
+    @Override
+    public OsmPrimitive getPrimitive() {
+        return managedWay.getPrimitive();
+    }
+
+
 
     @Override
     public ManagedRing getExteriorRing() {

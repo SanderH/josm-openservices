@@ -8,10 +8,9 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * A Managed ring that is constructed from a collection of ManagedWays.
@@ -23,7 +22,6 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
     private boolean clockWise;
     final List<RingMember> members;
     private int nodesCount;
-    private Envelope envelope;
 
     public ComplexManagedRing(LayerManager layerManager, List<RingMember> members) {
         this(layerManager, members, new HashMap<>());
@@ -36,18 +34,6 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
         for (RingMember member : members) {
             nodesCount += member.getManagedWay().getNodesCount() - 1;
         }
-    }
-
-
-    @Override
-    public Envelope getEnvelope() {
-        if (envelope == null) {
-            envelope = new Envelope();
-            for (RingMember member : members) {
-                envelope = envelope.intersection(member.getManagedWay().getEnvelope());
-            }
-        }
-        return envelope;
     }
 
     @Override
@@ -66,13 +52,13 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
     }
 
     @Override
-    public Iterator<ManagedNode> getNodeIterator() {
+    public Iterator<Node> getNodeIterator() {
         return new RingNodeIterator();
     }
 
-    private class RingNodeIterator implements Iterator<ManagedNode> {
+    private class RingNodeIterator implements Iterator<Node> {
         private Iterator<RingMember> memberIterator;
-        private Iterator<ManagedNode> memberNodeIterator;
+        private Iterator<Node> memberNodeIterator;
         
         public RingNodeIterator () {
             memberIterator = members.iterator();
@@ -88,7 +74,7 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
         }
 
         @Override
-        public ManagedNode next() {
+        public Node next() {
             if (!memberNodeIterator.hasNext()) {
                 nextMember();
             }
@@ -119,7 +105,7 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
             return reversed;
         }
         
-        public Iterator<ManagedNode> nodeIterator() {
+        public Iterator<Node> nodeIterator() {
             return new MemberNodeIterator(this);
         }
     }
@@ -133,10 +119,10 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
      * @author Gertjan Idema <mail@gertjanidema.nl>
      *
      */
-    private static class MemberNodeIterator implements Iterator<ManagedNode> {
+    private static class MemberNodeIterator implements Iterator<Node> {
         private final boolean reversed;
         private final int nodesCount;
-        private final ListIterator<ManagedNode> iterator;
+        private final ListIterator<Node> iterator;
 
         public MemberNodeIterator(RingMember member) {
             super();
@@ -160,7 +146,7 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
         }
 
         @Override
-        public ManagedNode next() {
+        public Node next() {
             if (!hasNext()) {
                 throw new IndexOutOfBoundsException();
             }
@@ -182,6 +168,4 @@ public class ComplexManagedRing extends AbstractManagedPrimitive implements Mana
         // TODO Implement this, or at least report an unsupported type
         throw new UnsupportedOperationException();
     }
-    
-    
 }

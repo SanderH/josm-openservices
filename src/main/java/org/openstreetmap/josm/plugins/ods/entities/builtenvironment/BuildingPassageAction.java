@@ -4,21 +4,29 @@ import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.actions.JosmAction;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.SplitWayAction;
+import org.openstreetmap.josm.command.AddCommand;
+import org.openstreetmap.josm.command.ChangeNodesCommand;
+import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.Notification;
-import org.openstreetmap.josm.plugins.ods.crs.UnclosedWayException;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
+import org.openstreetmap.josm.tools.Geometry;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * Creates a building passage for a highway crossing a building
@@ -26,23 +34,18 @@ import com.vividsolutions.jts.geom.LinearRing;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  * 
  */
-public class BuildingPassageAction extends JosmAction {
+public class BuildingPassageAction extends OdsAction {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final GeoUtil geoUtil = GeoUtil.getInstance();
-
 
     /**
      * Constructs a new {@code CombineWayAction}.
      */
-    public BuildingPassageAction() {
-        super(
-                tr("Building passage"),
-                null,
-                tr("Create a tunnel=building_building passage for a highway crossing a building."),
-                null, true);
+    public BuildingPassageAction(OdsModule module) {
+        super(module, tr("Building passage"),
+            tr("Create a tunnel=building_building passage for a highway crossing a building."));
         putValue("help", ht("/Action/BuildingPassage"));
     }
 
@@ -198,7 +201,7 @@ public class BuildingPassageAction extends JosmAction {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        DataSet dataSet = getLayerManager().getEditDataSet();
+        DataSet dataSet = Main.getLayerManager().getEditDataSet();
         if (dataSet == null) return;
         Collection<OsmPrimitive> selection = dataSet.getSelected();
         BuildingHighwayPair pair = getPair(selection);
@@ -208,44 +211,66 @@ public class BuildingPassageAction extends JosmAction {
                     .setDuration(Notification.TIME_SHORT).show();
             return;
         }
-        LinearRing building;
-        LineString highway = geoUtil.toLineString(pair.getHighway());
-        try {
-            building = geoUtil.toLinearRing(pair.getBuilding());
-        } catch (UnclosedWayException e) {
-            new Notification(tr("The building ring is not closed."))
-                .setIcon(JOptionPane.INFORMATION_MESSAGE)
-                .setDuration(Notification.TIME_SHORT).show();
-            return;
-        }
-        
-        Geometry intersection = building.intersection(highway);
-        if (!intersection.getGeometryType().equals("MultiPoint") || intersection.getNumGeometries() != 2) {
+        List<Command> cmds = new LinkedList<>();
+        Set<Node> nodes = Geometry.addIntersections(pair.getWays(), false, cmds);
+        if (nodes.size() != 2) {
             new Notification(tr("The building and the highway should intersect at exactly 2 point."))
             .setIcon(JOptionPane.INFORMATION_MESSAGE)
             .setDuration(Notification.TIME_SHORT).show();
             return;
         }
-        intersection.toString();
-    }
-
-    @Override
-    protected void updateEnabledState() {
-        DataSet dataSet = getLayerManager().getEditDataSet();
-        if (dataSet == null) {
-            setEnabled(false);
-            return;
+        Command intersectionsCommand = new SequenceCommand(I18n.tr("Split way"), cmds);
+        intersectionsCommand.executeCommand();
+        cmds.clear();
+        final Way highway = pair.getHighway();
+        final List<List<Node>> wayChunks = SplitWayAction.buildSplitChunks(highway, new ArrayList<>(nodes));
+        assert wayChunks.size() == 3;
+        final List<Node> passageChunk = wayChunks.get(1);
+        final List<Node> longChunk;
+        final List<Node> shortChunk;
+        if (wayChunks.get(0).size() > wayChunks.get(2).size()) {
+            longChunk = wayChunks.get(0);
+            shortChunk = wayChunks.get(2);
         }
-        Collection<OsmPrimitive> selection = dataSet.getSelected();
-        updateEnabledState(selection);
+        else {
+            longChunk = wayChunks.get(2);
+            shortChunk = wayChunks.get(0);
+        }
+        // Add a command to update the existing highway
+        cmds.add(new ChangeNodesCommand(highway, longChunk));
+        Way shortWay = new Way();
+        shortWay.setNodes(shortChunk);
+        shortWay.setKeys(highway.getKeys());
+        Way passageWay = new Way();
+        passageWay.setNodes(passageChunk);
+        passageWay.setKeys(highway.getKeys());
+        passageWay.put("tunnel", "building_passage");
+        cmds.add(new AddCommand(shortWay));
+        cmds.add(new AddCommand(passageWay));
+        // Undo the intersections command, so we can add it to the combined command
+        intersectionsCommand.undoCommand();
+        cmds.add(0, intersectionsCommand);
+        Command cmd = new SequenceCommand(I18n.tr("Add building passage"), cmds);
+        Main.main.undoRedo.add(cmd);
     }
 
-    @Override
-    protected void updateEnabledState(
-            Collection<? extends OsmPrimitive> selection) {
-        BuildingHighwayPair pair = getPair(selection);
-        setEnabled(pair != null);
-    }
+//    @Override
+//    protected void updateEnabledState() {
+//        DataSet dataSet = Main.getLayerManager().getEditDataSet();
+//        if (dataSet == null) {
+//            setEnabled(false);
+//            return;
+//        }
+//        Collection<OsmPrimitive> selection = dataSet.getSelected();
+//        updateEnabledState(selection);
+//    }
+//
+//    @Override
+//    protected void updateEnabledState(
+//            Collection<? extends OsmPrimitive> selection) {
+//        BuildingHighwayPair pair = getPair(selection);
+//        setEnabled(pair != null);
+//    }
 
     /**
      * Get the selected building and highway.
@@ -266,6 +291,9 @@ public class BuildingPassageAction extends JosmAction {
             if (osm instanceof Way) {
                 if (osm.hasKey("building")) {
                     building = (Way) osm;
+                    if (!building.isClosed()) {
+                        building = null;
+                    }
                 }
                 if (osm.hasKey("highway")) {
                     highway = (Way) osm;
@@ -285,21 +313,24 @@ public class BuildingPassageAction extends JosmAction {
      *
      */
     private class BuildingHighwayPair {
-        private Way building;
-        private Way highway;
+        private final ArrayList<Way> ways = new ArrayList<>(2);
 
         public BuildingHighwayPair(Way building, Way highway) {
             super();
-            this.building = building;
-            this.highway = highway;
+            ways.add(building);
+            ways.add(highway);
         }
 
         public Way getBuilding() {
-            return building;
+            return ways.get(0);
         }
 
         public Way getHighway() {
-            return highway;
+            return ways.get(1);
+        }
+
+        public List<Way> getWays() {
+            return ways;
         }
     }
 }

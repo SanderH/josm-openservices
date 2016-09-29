@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.osm.alignment.NodeDWithin;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedRing;
 
 public class OdsNodeIterator {
     private ManagedRing ring;
-    private List<ManagedNode> nodes;
+    private List<Node> nodes;
     private int index;
 //    private boolean closed;
     private boolean reversed;
@@ -22,7 +22,7 @@ public class OdsNodeIterator {
         this.index = startIndex;
         this.reversed = !ring.isClockWise();
         this.nodes = new ArrayList<>(ring.getNodesCount());
-        Iterator<? extends ManagedNode> it = ring.getNodeIterator();
+        Iterator<Node> it = ring.getNodeIterator();
         while (it.hasNext() ) {
             nodes.add(it.next());
         }
@@ -81,7 +81,7 @@ public class OdsNodeIterator {
         return index > n - 1;
     }
     
-    public ManagedNode next() {
+    public Node next() {
         if(hasNextNode()) {
             index = (reversed ? index - 1 : index + 1);
             return nodes.get(index);
@@ -89,7 +89,7 @@ public class OdsNodeIterator {
         return null;
     }
     
-    public ManagedNode previous() {
+    public Node previous() {
         if(hasPreviousNode()) {
             index = (reversed ? index + 1 : index - 1);
             return nodes.get(index);
@@ -97,18 +97,18 @@ public class OdsNodeIterator {
         return null;
     }
     
-    public ManagedNode peek() {
+    public Node peek() {
         return nodes.get(index);
     }
     
-    public ManagedNode peekNext() {
+    public Node peekNext() {
         if (hasNextNode()) {
             return (reversed ? nodes.get(index - 1) : nodes.get(index + 1));
         }
         return null;
     }
     
-    public ManagedNode peekPrevious() {
+    public Node peekPrevious() {
         if (hasPreviousNode()) {
             return (reversed ? nodes.get(index + 1) : nodes.get(index - 1));
         }
@@ -183,15 +183,15 @@ public class OdsNodeIterator {
         return null;
     }
 
-    protected ManagedNode getNode(int idx) {
+    protected Node getNode(int idx) {
         return nodes.get(idx);
     }
 
-    public boolean dWithin(NodeDWithin dWithin, ManagedNode n) {
+    public boolean dWithin(NodeDWithin dWithin, Node n) {
         return dWithin.check(peek(), n);
     }
 
-    public boolean dSegmentWithin(NodeDWithin dWithin, ManagedNode n) {
+    public boolean dSegmentWithin(NodeDWithin dWithin, Node n) {
         return dWithin.check(n, peek(), peekNext());
     }
 
@@ -318,10 +318,10 @@ public class OdsNodeIterator {
      * @return
      */
     public Double angle() {
-        Double x1 = this.peek().getNode().getEastNorth().east();
-        Double y1 = this.peek().getNode().getEastNorth().north();
-        Double x2 = this.peekNext().getNode().getEastNorth().east();
-        Double y2 = this.peekNext().getNode().getEastNorth().north();
+        Double x1 = this.peek().getEastNorth().east();
+        Double y1 = this.peek().getEastNorth().north();
+        Double x2 = this.peekNext().getEastNorth().east();
+        Double y2 = this.peekNext().getEastNorth().north();
         return Math.atan2(y1 - y2, x1 - x2);
     }    
 }

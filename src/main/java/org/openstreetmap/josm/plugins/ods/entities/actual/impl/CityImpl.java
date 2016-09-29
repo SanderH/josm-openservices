@@ -21,25 +21,25 @@ public class CityImpl extends AbstractEntity implements City {
         return name;
     }
 
-    @Override
-    public void setGeometry(Geometry geometry) {
-        switch (geometry.getGeometryType()) {
-        case "MultiPolygon":
-            multiPolygon = (MultiPolygon) geometry;
-            break;
-        case "Polygon":
-            multiPolygon = geometry.getFactory().createMultiPolygon(
-                new Polygon[] {(Polygon) geometry});
-            break;
-        default:
-            // TODO intercept this exception or accept null?
-        }
-    }
+//    @Override
+//    public void setGeometry(Geometry geometry) {
+//        switch (geometry.getGeometryType()) {
+//        case "MultiPolygon":
+//            multiPolygon = (MultiPolygon) geometry;
+//            break;
+//        case "Polygon":
+//            multiPolygon = geometry.getFactory().createMultiPolygon(
+//                new Polygon[] {(Polygon) geometry});
+//            break;
+//        default:
+//            // TODO intercept this exception or accept null?
+//        }
+//    }
 
-    @Override
-    public MultiPolygon getGeometry() {
-        return multiPolygon;
-    }
+//    @Override
+//    public MultiPolygon getGeometry() {
+//        return multiPolygon;
+//    }
 
     @Override
     public boolean isIncomplete() {

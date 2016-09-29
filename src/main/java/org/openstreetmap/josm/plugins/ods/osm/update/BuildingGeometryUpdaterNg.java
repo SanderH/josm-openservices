@@ -20,7 +20,6 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
-import org.openstreetmap.josm.plugins.ods.opendata.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /*

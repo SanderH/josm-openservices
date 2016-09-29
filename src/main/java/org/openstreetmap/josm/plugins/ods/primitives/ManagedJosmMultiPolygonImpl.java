@@ -7,8 +7,6 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
@@ -16,7 +14,6 @@ import com.vividsolutions.jts.geom.Envelope;
 public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive implements ManagedJosmMultiPolygon {
     private Collection<ManagedRing> outerRings;
     private Collection<ManagedRing> innerRings;
-    private Envelope envelope;
     private double area;
     private boolean incomplete = false;
     
@@ -45,17 +42,6 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive implem
     @Override
     public Collection<ManagedRing> innerRings() {
         return innerRings;
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        if (envelope == null) {
-            envelope = new Envelope();
-            for (ManagedRing ring : outerRings) {
-                envelope = envelope.intersection(ring.getEnvelope());
-            }
-        }
-        return envelope;
     }
 
     

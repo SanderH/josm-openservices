@@ -1,17 +1,21 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
-
-import com.vividsolutions.jts.geom.Point;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
 public class AddressNodeImpl extends AbstractEntity implements AddressNode {
     private Address address;
     private HousingUnit housingUnit;
     private Building building;
+    private Set<Building> buildings;
     
     public AddressNodeImpl() {
         super();
@@ -33,6 +37,22 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
     }
 
     @Override
+    public EntityStatus getStatus() {
+        if (getBuilding() == null) {
+            return EntityStatus.UNKNOWN;
+        }
+        EntityStatus status = super.getStatus();
+        if (status == EntityStatus.CONSTRUCTION &&
+                getBuilding().getStatus() == EntityStatus.PLANNED) {
+            return EntityStatus.PLANNED;
+        }
+        if (getBuilding().getStatus() == EntityStatus.REMOVAL_DUE) {
+            return EntityStatus.REMOVAL_DUE;
+        }
+        return status;
+    }
+
+    @Override
     public boolean isIncomplete() {
         return getBuilding() == null || getBuilding().isIncomplete();
     }
@@ -49,8 +69,23 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
     }
 
     @Override
-    public void setBuilding(Building building) {
-        this.building = building;
+    public void addBuilding(Building b) {
+        if (building == null) {
+            if (buildings != null) {
+                buildings.add(b);
+            }
+            else {
+                building = b;
+            }
+        }
+        else {
+            if (!building.equals(b)) {
+                this.buildings = new HashSet<>();
+                this.buildings.add(building);
+                this.buildings.add(b);
+                this.building = null;
+            }
+        }
     }
 
     @Override
@@ -63,16 +98,26 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
         }
         return null;
     }
-
+    
     @Override
-    public void setGeometry(Point point) {
-        super.setGeometry(point);
+    public Set<Building> getBuildings() {
+        return buildings;
     }
 
     @Override
-    public Point getGeometry() {
-        return (Point) super.getGeometry();
+    public ManagedNode getPrimitive() {
+        return (ManagedNode) super.getPrimitive();
     }
+    
+//    @Override
+//    public void setGeometry(Point point) {
+//        super.setGeometry(point);
+//    }
+//
+//    @Override
+//    public Point getGeometry() {
+//        return (Point) super.getGeometry();
+//    }
     
     @Override
     public String toString() {

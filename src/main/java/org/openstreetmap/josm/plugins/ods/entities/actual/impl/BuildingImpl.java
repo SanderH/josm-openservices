@@ -13,6 +13,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class BuildingImpl extends AbstractEntity implements Building {
     private Address address;
@@ -47,6 +48,10 @@ public class BuildingImpl extends AbstractEntity implements Building {
     @Override
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
+        ManagedPrimitive mPrimitive = this.getPrimitive();
+        if (mPrimitive != null) {
+            mPrimitive.putAll(buildingType.getTags());
+        }
     }
 
     @Override

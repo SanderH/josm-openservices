@@ -21,6 +21,7 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
  * @author gertjan
  *
  */
+@Deprecated
 public class OsmAddressNodeToBuildingMatcher {
     private final GeoRepository repository;
 //    private Consumer<AddressNode> unmatchedAddressNodeHandler;
@@ -50,7 +51,7 @@ public class OsmAddressNodeToBuildingMatcher {
             }
             if (buildings.size() == 1) {
                 Building building = buildings.get(0);
-                addressNode.setBuilding(building);
+                addressNode.addBuilding(building);
                 building.getAddressNodes().add(addressNode);
                 return;
             }
@@ -66,7 +67,7 @@ public class OsmAddressNodeToBuildingMatcher {
             }
             if (bagBuildings.size() == 1) {
                 Building building = bagBuildings.get(0);
-                addressNode.setBuilding(building);
+                addressNode.addBuilding(building);
                 building.getAddressNodes().add(addressNode);
                 return;
             }

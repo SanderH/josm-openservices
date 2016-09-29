@@ -45,7 +45,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
     private OdsModulePlugin plugin;
     
     private final List<OdsAction> actions = new LinkedList<>();
-    private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
+    private final List<OsmEntityBuilder> entityBuilders = new LinkedList<>();
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private OpenDataLayerManager openDataLayerManager;
@@ -132,11 +132,11 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         }
     }
 
-    protected void addOsmEntityBuilder(OsmEntityBuilder<?> entityBuilder) {
+    protected void addOsmEntityBuilder(OsmEntityBuilder entityBuilder) {
         this.entityBuilders.add(entityBuilder);
     }
     
-    public List<OsmEntityBuilder<?>> getEntityBuilders() {
+    public List<OsmEntityBuilder> getEntityBuilders() {
         return entityBuilders;
     }
 

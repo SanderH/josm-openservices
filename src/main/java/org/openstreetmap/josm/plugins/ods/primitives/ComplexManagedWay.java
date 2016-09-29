@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,17 +12,15 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class ComplexManagedWay extends AbstractManagedPrimitive implements ManagedWay {
-    private List<ManagedNode> nodes;
+    private List<Node> nodes;
     private List<DirectedWay> ways = new LinkedList<>();
     private BBox bbox;
 
-    public ComplexManagedWay(LayerManager layerManager, Way way) {
-        super(layerManager, way);
+    public ComplexManagedWay(LayerManager layerManager, List<Way> ways) {
+        super(layerManager);
+        updateNodeList();
 //        this.nodes = new ArrayList<>(nodes);
 //        int last = nodes.size() - 1;
 //        if (this.nodes.get(0).getCoor().equals(this.nodes.get(last).getCoor())) {
@@ -38,12 +37,12 @@ public class ComplexManagedWay extends AbstractManagedPrimitive implements Manag
 //            this.nodes.set(0, this.nodes.get(last));
 //        }
 //    }
-    
-    @Override
-    public void setNodes(List<ManagedNode> nodes) {
-        this.nodes = nodes;
-    }
-    
+//    
+//    @Override
+//    public void setNodes(List<ManagedNode> nodes) {
+//        this.nodes = nodes;
+//    }
+//    
 //    private void findAdjacentWays() {
 //        for (ManagedNode node : nodes) {
 //            for (NodeReferrer referrer : node.getReferrers()) {
@@ -71,13 +70,8 @@ public class ComplexManagedWay extends AbstractManagedPrimitive implements Manag
 
     
     @Override
-    public List<ManagedNode> getNodes() {
+    public List<Node> getNodes() {
         return nodes;
-    }
-
-    @Override
-    public Envelope getEnvelope() {
-        return GeoUtil.toEnvelope(getBBox());
     }
 
     @Override
@@ -119,8 +113,23 @@ public class ComplexManagedWay extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
-    public ManagedNode getNode(int index) {
+    public Node getNode(int index) {
         return nodes.get(index);
+    }
+    
+    private synchronized void updateNodeList() {
+        int nodeCount = 0;
+        for (DirectedWay way : ways) {
+            nodeCount += way.getNodesCount();
+        }
+        this.nodes = new ArrayList<>(nodeCount);
+        Iterator<DirectedWay> it = ways.iterator();
+        nodes.addAll(it.next().getNodes());
+        while (it.hasNext()) {
+            // remove the last node
+            nodes.remove(nodes.size() -1);
+            nodes.addAll(it.next().getNodes());
+        }
     }
     
     private BBox createBBox() {
@@ -129,7 +138,7 @@ public class ComplexManagedWay extends AbstractManagedPrimitive implements Manag
         double minLon = -180;
         double maxLon = 180;
         
-        for (ManagedNode node : nodes) {
+        for (Node node : nodes) {
             LatLon latLon = node.getCoor();
             minLat = Math.min(minLat, latLon.lat());
             minLon = Math.min(minLon, latLon.lon());
@@ -181,7 +190,6 @@ public class ComplexManagedWay extends AbstractManagedPrimitive implements Manag
         // A line has no area. Closed ways should be wrapped in a ManagedRing
         return 0;
     }
-    
     private class DirectedWay {
         private final Way way;
         private final Node firstNode;
@@ -196,8 +204,25 @@ public class ComplexManagedWay extends AbstractManagedPrimitive implements Manag
             this.lastNode = way.getNode(way.getNodesCount() - 1);
         }
 
+        public int getNodesCount() {
+            return way.getNodesCount();
+        }
+
         public Way getWay() {
             return way;
+        }
+
+        public List<Node> getNodes() {
+            List<Node> result = new ArrayList<>(way.getNodesCount());
+            if (direction == Direction.BACKWARD) {
+                for (int i = way.getNodesCount() - 1; i >= 0; i--) {
+                    result.add(way.getNode(i));
+                }
+            }
+            else {
+                result.addAll(getNodes());
+            }
+            return result;
         }
 
         public Direction getDirection() {
