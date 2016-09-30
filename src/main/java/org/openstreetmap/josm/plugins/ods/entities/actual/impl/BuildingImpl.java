@@ -8,6 +8,7 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Addressable;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
@@ -55,6 +56,11 @@ public class BuildingImpl extends AbstractEntity implements Building {
     }
 
     @Override
+    public Building getBuilding() {
+        return this;
+    }
+
+    @Override
     public City getCity() {
         return city;
     }
@@ -85,6 +91,18 @@ public class BuildingImpl extends AbstractEntity implements Building {
         return addressNodes;
     }
     
+    
+    
+    @Override
+    public List<? extends Addressable> getAddressables() {
+        if (getAddress() == null) {
+            return getAddressNodes();
+        }
+        LinkedList<Addressable> result = new LinkedList<>(getAddressNodes());
+        result.add(this);
+        return result;
+    }
+
     @Override
     public Set<Building> getNeighbours() {
         return neighbours;

@@ -21,7 +21,7 @@ public class BuildingMatch extends MatchImpl<Building> {
     private MatchStatus statusMatch;
     
     public BuildingMatch(Building osmBuilding, Building openDataBuilding) {
-        super(osmBuilding, openDataBuilding);
+        super(osmBuilding, openDataBuilding, osmBuilding.getReferenceId());
     }
     
     @Override

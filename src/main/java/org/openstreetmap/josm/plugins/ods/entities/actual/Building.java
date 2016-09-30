@@ -7,20 +7,12 @@ import java.util.function.Predicate;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 //import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
-public interface Building extends Entity {
+public interface Building extends Addressable {
 
     public City getCity();
-
-    /**
-     * Return the address information associated with this building.
-     * 
-     * @return null if no address is associated with the building
-     */
-    public Address getAddress();
 
     /**
      * Return the address nodes associated with this building.
@@ -29,7 +21,9 @@ public interface Building extends Entity {
      *         building.
      */
     public List<AddressNode> getAddressNodes();
-    
+
+    public List<? extends Addressable> getAddressables();
+
     public List<HousingUnit> getHousingUnits();
     
     public void addHousingUnit(HousingUnit housingUnit);
@@ -53,8 +47,6 @@ public interface Building extends Entity {
 
     @Override
     public void setIncomplete(boolean incomplete);
-    
-    public void setAddress(Address address);
     
     public final static Predicate<OsmPrimitive> IsBuilding = new Predicate<OsmPrimitive>() {
         @Override
@@ -84,4 +76,5 @@ public interface Building extends Entity {
             return Building.IsBuilding.test(osm);
         }
     };
+
 }

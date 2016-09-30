@@ -4,16 +4,9 @@ import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
-import com.vividsolutions.jts.geom.Point;
-
-public interface AddressNode extends Entity {
-
-    public void setAddress(Address address);
-
-    public Address getAddress();
+public interface AddressNode extends Addressable {
 
     @Override
     public ManagedNode getPrimitive();

@@ -9,28 +9,16 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public abstract class MatchImpl<E extends Entity> implements Match<E> {
+    // TODO rename to key
     private Object id;
     private Class<E> baseType;
     private List<E> osmEntities = new LinkedList<>();
     private List<E> openDataEntities = new LinkedList<>();
     
     @SuppressWarnings("unchecked")
-    public MatchImpl(E osmEntity, E openDataEntity) {
+    public MatchImpl(E osmEntity, E openDataEntity, Object key) {
         baseType = (Class<E>) osmEntity.getBaseType();
-        if (osmEntity != null && osmEntity.getReferenceId() != null) {
-            id = osmEntity.getReferenceId();
-            if (openDataEntity != null) {
-                assert openDataEntity.getReferenceId().equals(id);
-            }
-        }
-        else {
-            if (openDataEntity.getReferenceId() != null) {
-                id = openDataEntity.getReferenceId();
-            }
-        }
-        if (id == null) {
-            id = Match.generateUniqueId();
-        }
+        this.id = key;
         addOsmEntity(osmEntity);
         addOpenDataEntity(openDataEntity);
         osmEntity.setMatch(this);
