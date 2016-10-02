@@ -37,6 +37,12 @@ public class AddressableMatcher implements Matcher<Addressable> {
         osmRepository = module.getOsmLayerManager().getRepository();
     }
 
+    
+    @Override
+    public Class<Addressable> getType() {
+        return Addressable.class;
+    }
+
     @Override
     public void run() {
         matchBuildingAddressables();
@@ -49,13 +55,14 @@ public class AddressableMatcher implements Matcher<Addressable> {
     private void matchBuildingAddressables() {
         Repository repository = module.getOpenDataLayerManager().getRepository();
         for (Building building : repository.getAll(Building.class)) {
-            if (building.getMatch() != null && building.getMatch().isSimple()) {
-                matchAddresses(building.getMatch());
+            Match<Building> match = building.getMatch(Building.class);
+            if (match != null && match.isSimple()) {
+                matchAddresses(match);
             }
         }
     }
     
-    private void matchAddresses(BuildingMatch match) {
+    private void matchAddresses(Match<Building> match) {
         Building odBuilding = match.getOpenDataEntity();
         Building osmBuilding = match.getOsmEntity();
         Map<AddressKey, Addressable> nodes1 = new HashMap<>();
@@ -85,19 +92,19 @@ public class AddressableMatcher implements Matcher<Addressable> {
     }
 
     private void matchOtherAddressables() {
-        unmatchedOpenDataAddressables.clear();
-        for (Addressable addressable : odRepository.getAll(Addressable.class)) {
-            if (addressable.getMatch() == null) {
-                unmatchedOpenDataAddressables.add(addressable);
-            }
-        }
-        unmatchedOsmAddressables.clear();
-        for (Addressable addressable : osmRepository.getAll(Addressable.class)) {
-            if (addressable.getMatch() == null) {
-                unmatchedOsmAddressables.add(addressable);
-            }
-        }
-        analyze();
+//        unmatchedOpenDataAddressables.clear();
+//        for (Addressable addressable : odRepository.getAll(Addressable.class)) {
+//            if (addressable.getMatch() == null) {
+//                unmatchedOpenDataAddressables.add(addressable);
+//            }
+//        }
+//        unmatchedOsmAddressables.clear();
+//        for (Addressable addressable : osmRepository.getAll(Addressable.class)) {
+//            if (addressable.getMatch() == null) {
+//                unmatchedOsmAddressables.add(addressable);
+//            }
+//        }
+//        analyze();
     }
 
 //    private void processOpenDataAddressable(Addressable odAddressable) {
@@ -196,6 +203,7 @@ public class AddressableMatcher implements Matcher<Addressable> {
             if (!(obj instanceof AddressKey)) return false;
             AddressKey key = (AddressKey) obj;
             return Objects.equals(houseNumber, key.houseNumber)
+                    && Objects.equals(houseLetter, key.houseLetter)
                     && Objects.equals(postcode, key.postcode)
                     && Objects.equals(houseNumberExtra, key.houseNumberExtra);
         }

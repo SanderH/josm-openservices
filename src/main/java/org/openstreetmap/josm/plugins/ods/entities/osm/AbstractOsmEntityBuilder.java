@@ -90,10 +90,11 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
             return;
         }
         updateTags(entity, newTags);
-        Match<?> match = entity.getMatch();
-        if (match != null && match.isSimple()) {
-            match.analyze();
-            match.updateMatchTags();
+        for (Match<?> match : entity.getMatches()) {
+            if (match != null && match.isSimple()) {
+                match.analyze();
+                match.updateMatchTags();
+            }
         }
     }
 
@@ -108,10 +109,11 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
             return;
         }
 //        updateGeometry(entity, way);
-        Match<?> match = entity.getMatch();
-        if (match != null && match.isSimple()) {
-            match.analyze();
-            match.updateMatchTags();
+        for (Match<?> match : entity.getMatches()) {
+            if (match != null && match.isSimple()) {
+                match.analyze();
+                match.updateMatchTags();
+            }
         }
     }
 

@@ -24,8 +24,8 @@ public abstract class AbstractEntity implements Entity {
     private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
     private ManagedPrimitive primitive;
-    private Match<? extends Entity> match;
     private Map<String, Issue> issues = null;
+    private Map<Class<? extends Entity>, Match<? extends Entity>> matches = new HashMap<>();
 
     @Override
     public void setPrimaryId(Object primaryId) {
@@ -133,13 +133,19 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public Match<? extends Entity> getMatch() {
-        return match;
+    public Collection<Match<? extends Entity>> getMatches() {
+        return matches.values();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <E extends Entity> Match<E> getMatch(Class<E> role) {
+        return (Match<E>) matches.get(role);
     }
 
     @Override
-    public <E extends Entity> void setMatch(Match<E> match) {
-        this.match = match;
+    public <E extends Entity> void addMatch(Match<E> match, Class<E> role) {
+        this.matches.put(role,  match);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class OdsImporter {
             ManagedPrimitive managedPrimitive = layerManager.getManagedPrimitive(primitive);
             if (managedPrimitive != null) {
                 Entity entity = managedPrimitive.getEntity();
-                if (entity != null && entity.getMatch() == null 
+                if (entity != null && entity.getMatch(entity.getBaseType()) == null 
                         && importFilter.test(entity)) {
                     entitiesToImport.add(entity);
                 }

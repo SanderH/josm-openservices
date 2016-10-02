@@ -14,15 +14,17 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     private Class<E> baseType;
     private List<E> osmEntities = new LinkedList<>();
     private List<E> openDataEntities = new LinkedList<>();
+    private Class<E> role;
     
     @SuppressWarnings("unchecked")
-    public MatchImpl(E osmEntity, E openDataEntity, Object key) {
+    public MatchImpl(E osmEntity, E openDataEntity, Class<E> role, Object key) {
         baseType = (Class<E>) osmEntity.getBaseType();
         this.id = key;
         addOsmEntity(osmEntity);
         addOpenDataEntity(openDataEntity);
-        osmEntity.setMatch(this);
-        openDataEntity.setMatch(this);
+        this.role = role;
+        osmEntity.addMatch(this, role);
+        openDataEntity.addMatch(this, role);
     }
 
     @Override
@@ -66,7 +68,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         // TODO Do we need a thread safe solution here?
         if (! osmEntities.contains(entity)) {
             osmEntities.add(entity);
-            entity.setMatch(this);
+            entity.addMatch(this, role);
         }
     }
 
@@ -74,7 +76,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     public <E2 extends E> void addOpenDataEntity(E2 entity) {
         if (!openDataEntities.contains(entity)) {
             openDataEntities.add(entity);
-            entity.setMatch(this);
+            entity.addMatch(this, role);
         }
     }
 

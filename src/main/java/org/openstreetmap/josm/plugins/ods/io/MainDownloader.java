@@ -37,8 +37,6 @@ public class MainDownloader {
 
     private List<LayerDownloader> enabledDownloaders;
     
-    private List<Matcher<?>> matchers = new LinkedList<>();
-    
     private ExecutorService executor;
 
 //    private Status status = new Status();
@@ -57,10 +55,6 @@ public class MainDownloader {
         this.osmLayerDownloader = osmLayerDownloader;
     }
 
-    public void addMatcher(Matcher<?> matcher) {
-        matchers.add(matcher);
-    }
-    
     public OdsModule getModule() {
         return module;
     }
@@ -86,9 +80,6 @@ public class MainDownloader {
             }
             if (!messages.isEmpty()) {
                 throw new OdsException("", messages);
-            }
-            for (Matcher<?> matcher : matchers) {
-                matcher.initialize();
             }
         }
         initialized = true;
@@ -161,7 +152,7 @@ public class MainDownloader {
      */
     protected void process(DownloadResponse response) throws ExecutionException, InterruptedException {
         runTasks(Downloader.getProcessTasks(enabledDownloaders));
-        for (Matcher<?> matcher : matchers) {
+        for (Matcher<?> matcher : getModule().getMatcherManager().getMatchers()) {
             matcher.run();
         }
     }

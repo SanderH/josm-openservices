@@ -13,13 +13,12 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class BuildingImpl extends AbstractEntity implements Building {
     private Address address;
     private List<HousingUnit> housingUnits = new LinkedList<>();
-    private List<AddressNode> addressNodes = new LinkedList<>();
+    private Set<AddressNode> addressNodes = new HashSet<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
     private Set<Building> neighbours = new HashSet<>();
@@ -87,18 +86,16 @@ public class BuildingImpl extends AbstractEntity implements Building {
     }
 
     @Override
-    public List<AddressNode> getAddressNodes() {
+    public Set<AddressNode> getAddressNodes() {
         return addressNodes;
     }
     
-    
-    
     @Override
-    public List<? extends Addressable> getAddressables() {
+    public Set<? extends Addressable> getAddressables() {
         if (getAddress() == null) {
             return getAddressNodes();
         }
-        LinkedList<Addressable> result = new LinkedList<>(getAddressNodes());
+        Set<Addressable> result = new HashSet<>(getAddressNodes());
         result.add(this);
         return result;
     }
@@ -108,15 +105,17 @@ public class BuildingImpl extends AbstractEntity implements Building {
         return neighbours;
     }
 
-    @Override
-    public BuildingMatch getMatch() {
-        return (BuildingMatch) super.getMatch();
-    }
-
+//    
+//    @Override
+//    public BuildingMatch getMatch() {
+//        return (BuildingMatch) super.getMatch();
+//    }
+//
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Building ").append(getReferenceId());
+        sb.append("Building ");
+        sb.append(getReferenceId() == null ? "without id" : getReferenceId());
         if (address != null) {
             sb.append("\n").append(address.getFullHouseNumber());
         }

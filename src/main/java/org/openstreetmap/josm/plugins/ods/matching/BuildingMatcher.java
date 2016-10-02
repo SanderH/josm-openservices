@@ -37,6 +37,12 @@ public class BuildingMatcher implements Matcher<Building> {
 //        osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
     }
 
+    
+    @Override
+    public Class<Building> getType() {
+        return Building.class;
+    }
+
     @Override
     public void run() {
         unmatchedOpenDataBuildings.clear();
@@ -53,12 +59,12 @@ public class BuildingMatcher implements Matcher<Building> {
     }
 
     private void processOpenDataBuilding(Building odBuilding) {
-        if (odBuilding.getMatch() != null) return;
+        if (odBuilding.getMatch(Building.class) != null) return;
         Long id = (Long) odBuilding.getReferenceId();
         Match<Building> match = buildingMatches.get(id);
         if (match != null) {
             match.addOpenDataEntity(odBuilding);
-            odBuilding.setMatch(match);
+            odBuilding.addMatch(match, Building.class);
             return;
         }
         Iterator<Building> osmBuildings = osmRepository.query(Building.class, "referenceId", id).iterator();
@@ -66,7 +72,7 @@ public class BuildingMatcher implements Matcher<Building> {
             match = new BuildingMatch(osmBuildings.next(), odBuilding);
             while (osmBuildings.hasNext()) {
                 Building osmBuilding = osmBuildings.next();
-                osmBuilding.setMatch(match);
+                osmBuilding.addMatch(match, Building.class);
                 match.addOsmEntity(osmBuilding);
             }
             buildingMatches.put(id, match);
@@ -76,7 +82,7 @@ public class BuildingMatcher implements Matcher<Building> {
     }
 
     private void processOsmBuilding(Building osmBuilding) {
-        if (osmBuilding.getMatch() != null) {
+        if (osmBuilding.getMatch(Building.class) != null) {
             return;
         }
         Object id = osmBuilding.getReferenceId();

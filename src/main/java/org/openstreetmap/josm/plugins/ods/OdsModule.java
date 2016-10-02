@@ -51,7 +51,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
     private OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
     private OsmLayerManager osmLayerManager;
-    private MatcherManager matcherManager;
+    private final MatcherManager matcherManager = new MatcherManager(this);
 
     String osmQuery;
     private boolean initialized = false;
@@ -218,7 +218,6 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
             polygonDataLayer = new PolygonLayerManager(this);
             polygonDataLayer.activate();
         }
-        this.matcherManager = new MatcherManager(this);
         active = true;
         JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
         for (OdsAction action : getActions()) {

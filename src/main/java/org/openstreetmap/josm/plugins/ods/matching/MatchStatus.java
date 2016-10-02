@@ -3,9 +3,12 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.Objects;
 
 public enum MatchStatus {
-    NO_MATCH, COMPARABLE, MATCH;
+    NO_MATCH, COMPARABLE, MATCH, UNKNOWN;
     
     public static MatchStatus combine(MatchStatus... msArr) {
+        for (MatchStatus ms : msArr) {
+            if (ms.equals(UNKNOWN)) return UNKNOWN;
+        }
         for (MatchStatus ms : msArr) {
             if (ms.equals(NO_MATCH)) return NO_MATCH;
         }

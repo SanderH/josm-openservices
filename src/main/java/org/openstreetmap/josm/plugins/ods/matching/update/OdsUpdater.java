@@ -35,8 +35,11 @@ public class OdsUpdater {
             ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(primitive);
             if (mPrimitive != null) {
                 Entity entity = mPrimitive.getEntity();
-                if (entity != null && entity.getMatch() != null && entity.getMatch().isSimple()) {
-                    updateableMatches.add(entity.getMatch());
+                if (entity != null) {
+                    Match<?> match = entity.getMatch(entity.getBaseType());
+                    if (match != null && match.isSimple()) {
+                        updateableMatches.add(match);
+                    }
                 }
             }
         }

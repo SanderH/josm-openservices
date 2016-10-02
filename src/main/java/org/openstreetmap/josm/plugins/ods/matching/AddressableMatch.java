@@ -1,7 +1,14 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Addressable;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 public class AddressableMatch extends MatchImpl<Addressable> {
     private MatchStatus houseNumberMatch;
@@ -11,17 +18,44 @@ public class AddressableMatch extends MatchImpl<Addressable> {
     private MatchStatus cityMatch;
 
     public AddressableMatch(Addressable a1, Addressable a2, Object key) {
-        super(a1, a2, key);
+        super(a1, a2, Addressable.class, key);
     }
 
     @Override
     public MatchStatus getGeometryMatch() {
-        // If the addressNodes are in the same building, we don't look at
-        // their exact location
-        return MatchStatus.match(getOsmEntity().getBuilding().getReferenceId(),
+        if (this.isSimple()) {
+            Building osmBuilding = getOsmEntity().getBuilding();
+            Building odBuilding = getOpenDataEntity().getBuilding();
+            if (osmBuilding != null && odBuilding != null) {
+                if (osmBuilding.getReferenceId() == null) {
+                    return UNKNOWN;
+                }
+            }
+            return MatchStatus.match(osmBuilding.getReferenceId(), odBuilding.getReferenceId());
+        }
+        if (getOpenDataEntity() == null) {
+            return UNKNOWN;
+        }
+        List<? extends Addressable> addressables = getOsmEntities();
+        if (addressables == null) {
+            return UNKNOWN;
+        }
+        Set<Object> keys = new HashSet<>();
+        for (Addressable addressable : addressables) {
+            Buil
+            if (address
+        }
+        if (getOsmEntity().g.g
+        if (this.isSimple()) {
+            return MatchStatus.match(.getReferenceId(),
                 getOpenDataEntity().getBuilding().getReferenceId());
+        }
+        
     }
 
+    private Set<Object> getBuildingIds(List<? extends Addressable> addressables) {
+        
+    }
     @Override
     public MatchStatus getStatusMatch() {
         return MatchStatus.match(getOsmEntity().getStatus(), getOpenDataEntity().getStatus());

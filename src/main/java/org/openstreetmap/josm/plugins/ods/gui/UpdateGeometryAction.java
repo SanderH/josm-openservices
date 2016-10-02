@@ -50,7 +50,7 @@ public class UpdateGeometryAction extends OdsAction {
             if (mPrimitive != null) {
                 Entity entity = mPrimitive.getEntity();
                 if (entity != null && entity.getBaseType() == Building.class) {
-                    match = ((Building)entity).getMatch();
+                    match = ((Building)entity).getMatch(Building.class);
                 }
             }
         }

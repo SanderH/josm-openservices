@@ -7,8 +7,6 @@ import java.util.function.Predicate;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
-//import org.openstreetmap.josm.plugins.ods.entities.EntityType;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 public interface Building extends Addressable {
 
@@ -20,9 +18,9 @@ public interface Building extends Addressable {
      * @return empty collection if no address nodes are associated with this
      *         building.
      */
-    public List<AddressNode> getAddressNodes();
+    public Set<AddressNode> getAddressNodes();
 
-    public List<? extends Addressable> getAddressables();
+    public Set<? extends Addressable> getAddressables();
 
     public List<HousingUnit> getHousingUnits();
     
@@ -36,9 +34,9 @@ public interface Building extends Addressable {
 
     public BuildingType getBuildingType();
 
-    @Override
-    public BuildingMatch getMatch();
-
+//    @Override
+//    public BuildingMatch getMatch(Class<);
+//
     @Override
     public Class<Building> getBaseType();
     

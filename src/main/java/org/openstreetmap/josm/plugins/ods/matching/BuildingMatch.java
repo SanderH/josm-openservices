@@ -21,7 +21,7 @@ public class BuildingMatch extends MatchImpl<Building> {
     private MatchStatus statusMatch;
     
     public BuildingMatch(Building osmBuilding, Building openDataBuilding) {
-        super(osmBuilding, openDataBuilding, osmBuilding.getReferenceId());
+        super(osmBuilding, openDataBuilding, Building.class, osmBuilding.getReferenceId());
     }
     
     @Override
@@ -55,9 +55,7 @@ public class BuildingMatch extends MatchImpl<Building> {
     }
     
     private MatchStatus compareAreas() {
-//        double osmArea = getOsmEntity().getGeometry().getArea();
         double osmArea = getOsmEntity().getPrimitive().getArea();
-//        double odArea = getOpenDataEntity().getGeometry().getArea();
         double odArea = getOpenDataEntity().getPrimitive().getArea();
         if (osmArea == 0.0 || odArea == 0.0) {
             areaMatch = MatchStatus.NO_MATCH;
