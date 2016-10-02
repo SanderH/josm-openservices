@@ -1,10 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.issues.Issue;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
@@ -22,6 +25,7 @@ public abstract class AbstractEntity implements Entity {
     private Map<String, String> otherTags = new HashMap<>();
     private ManagedPrimitive primitive;
     private Match<? extends Entity> match;
+    private Map<String, Issue> issues = null;
 
     @Override
     public void setPrimaryId(Object primaryId) {
@@ -136,5 +140,31 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public <E extends Entity> void setMatch(Match<E> match) {
         this.match = match;
+    }
+
+    @Override
+    public Collection<? extends Issue> getIssues() {
+        if (issues != null) {
+            return issues.values();
+        }
+        return Collections.emptySet();
+    }
+
+    @Override
+    public void addIssue(Issue issue) {
+        if (issues == null) {
+            issues = new HashMap<>();
+        }
+        issues.put(issue.getClass().getCanonicalName(), issue);
+    }
+
+    @Override
+    public boolean hasIssues() {
+        return issues != null;
+    }
+
+    @Override
+    public Issue getIssue(Class<? extends Issue> type) {
+        return issues.get(type.getCanonicalName());
     }
 }

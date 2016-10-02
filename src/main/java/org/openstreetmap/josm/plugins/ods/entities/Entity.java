@@ -1,9 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.issues.Issue;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
@@ -49,12 +51,17 @@ public interface Entity {
     *
     */
     public ManagedPrimitive getPrimitive();
-    
+
+    public void setPrimitive(ManagedPrimitive primitive);
+
     /**
      * The tags that are not associated with any of the entity's properties.
      */
     public void setOtherTags(Map<String, String> tags);
     public Map<String, String> getOtherTags();
     
-    public void setPrimitive(ManagedPrimitive primitive);
+    public Collection<? extends Issue> getIssues();
+    public void addIssue(Issue issue);
+    public boolean hasIssues();
+    public Issue getIssue(Class<? extends Issue> type);
 }
