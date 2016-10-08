@@ -10,7 +10,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.NameImpl;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -84,10 +83,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             // featureSource boundaries;
             featureSource = gtFeatureSource.getFeatureSource();
             query = dataSource.getQuery();
-            if (query instanceof GroupByQuery) {
-                featureSource = new GroupByFeatureSource(new NameImpl("Dummy"), featureSource, 
-                     (GroupByQuery)query);
-            }
+            featureSource = FeatureSourceFactory.createFeatureSource(featureSource, query);
             // Clone the query, so we can moderate the filter by setting the download area.
             query = new Query(query);
             FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
