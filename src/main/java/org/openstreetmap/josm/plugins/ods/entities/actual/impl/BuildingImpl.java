@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +58,11 @@ public class BuildingImpl extends AbstractEntity implements Building {
     @Override
     public Building getBuilding() {
         return this;
+    }
+
+    @Override
+    public Set<Object> getBuildingIds() {
+        return Collections.singleton(getReferenceId());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -102,6 +103,23 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
     @Override
     public Set<Building> getBuildings() {
         return buildings;
+    }
+
+    @Override
+    public Set<Object> getBuildingIds() {
+        if (building != null) {
+            return Collections.singleton(building.getReferenceId());
+        }
+        if (buildings == null) {
+            return Collections.emptySet();
+        }
+        Set<Object> result = new HashSet<>();
+        for (Building b : getBuildings()) {
+            if (b.getReferenceId() != null) {
+                result.add(b.getReferenceId());
+            }
+        }
+        return result;
     }
 
     @Override

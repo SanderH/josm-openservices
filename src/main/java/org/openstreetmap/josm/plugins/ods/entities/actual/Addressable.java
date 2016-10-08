@@ -17,7 +17,7 @@ public interface Addressable extends Entity {
     
     public Building getBuilding();
     
-    public static Set<Object> getBuildingIds(Collection<Addressable> addressables) {
+    public static Set<Object> getBuildingIds(Collection<? extends Addressable> addressables) {
         if (addressables.size() == 1) {
             return addressables.iterator().next().getBuildingIds();
         }
@@ -27,4 +27,5 @@ public interface Addressable extends Entity {
         }
         return ids;
     }
+    public Set<Object> getBuildingIds();
 }

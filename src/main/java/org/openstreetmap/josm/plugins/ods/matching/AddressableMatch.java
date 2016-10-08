@@ -1,8 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.*;
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.UNKNOWN;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,8 +29,8 @@ public class AddressableMatch extends MatchImpl<Addressable> {
                 if (osmBuilding.getReferenceId() == null) {
                     return UNKNOWN;
                 }
+                return MatchStatus.match(osmBuilding.getReferenceId(), odBuilding.getReferenceId());
             }
-            return MatchStatus.match(osmBuilding.getReferenceId(), odBuilding.getReferenceId());
         }
         if (getOpenDataEntity() == null) {
             return UNKNOWN;
@@ -40,22 +39,13 @@ public class AddressableMatch extends MatchImpl<Addressable> {
         if (addressables == null) {
             return UNKNOWN;
         }
-        Set<Object> keys = new HashSet<>();
-        for (Addressable addressable : addressables) {
-            Buil
-            if (address
+        Set<Object> keys = Addressable.getBuildingIds(addressables);
+        if (keys.size() == 1) {
+            return MatchStatus.match(getOpenDataEntity().getBuilding().getReferenceId(), keys.iterator().next());
         }
-        if (getOsmEntity().g.g
-        if (this.isSimple()) {
-            return MatchStatus.match(.getReferenceId(),
-                getOpenDataEntity().getBuilding().getReferenceId());
-        }
-        
+        return UNKNOWN;
     }
 
-    private Set<Object> getBuildingIds(List<? extends Addressable> addressables) {
-        
-    }
     @Override
     public MatchStatus getStatusMatch() {
         return MatchStatus.match(getOsmEntity().getStatus(), getOpenDataEntity().getStatus());
