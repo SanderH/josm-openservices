@@ -20,7 +20,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
@@ -95,10 +94,6 @@ public class OdsImporter {
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);
         buildImportedEntities(importedPrimitives);
-        OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
-//        for (OsmPrimitive osm : importedPrimitives) {
-//            neighbourFinder.findNeighbours(osm);
-//        }
         updateMatching();
     }
     

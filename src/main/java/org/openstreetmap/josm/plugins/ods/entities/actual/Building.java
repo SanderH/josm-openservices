@@ -26,8 +26,6 @@ public interface Building extends Addressable {
     
     public void addHousingUnit(HousingUnit housingUnit);
 
-    public Set<Building> getNeighbours();
-
     public void setStartDate(String string);
     
     public String getStartDate();

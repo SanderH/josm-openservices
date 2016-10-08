@@ -22,9 +22,7 @@ public class BuildingImpl extends AbstractEntity implements Building {
     private Set<AddressNode> addressNodes = new HashSet<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
-    private Set<Building> neighbours = new HashSet<>();
     private City city;
-    
     
     @Override
     public void setStartDate(String startDate) {
@@ -106,17 +104,6 @@ public class BuildingImpl extends AbstractEntity implements Building {
         return result;
     }
 
-    @Override
-    public Set<Building> getNeighbours() {
-        return neighbours;
-    }
-
-//    
-//    @Override
-//    public BuildingMatch getMatch() {
-//        return (BuildingMatch) super.getMatch();
-//    }
-//
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
