@@ -7,6 +7,7 @@ import static org.geotools.data.wfs.WFSDataStoreFactory.URL;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -35,7 +36,6 @@ public class WFSHost extends GtHost {
      * A large time-out in the initialization phase would cause 
      */
     private DataStore dataStore;
-    private OdsException hostException;
     private final int initTimeout;
     private final int dataTimeout;
     
@@ -74,9 +74,6 @@ public class WFSHost extends GtHost {
      */
     @Override
     public DataStore getDataStore() throws OdsException {
-        if (hostException != null) {
-            throw hostException;
-        }
         return dataStore;
     }
     
@@ -103,22 +100,22 @@ public class WFSHost extends GtHost {
         } catch (UnknownHostException e) {
             String msg = I18n.tr("Host {0} ({1}) doesn't exist",
                     getName(), getUrl().getHost());
-            hostException = new OdsException(msg);
+            OdsException hostException = new OdsException(msg);
             throw hostException;
-        } catch (SocketTimeoutException e) {
+        } catch (SocketException|SocketTimeoutException e) {
             String msg = I18n.tr("Host {0} ({1}) timed out when trying to open the datastore",
                     getName(), getUrl().toString());
-            hostException = new OdsException(msg);
+            OdsException hostException = new OdsException(msg);
             throw hostException;
         } catch (FileNotFoundException e) {
             String msg = I18n.tr("No dataStore for Host {0} could be found at this url: {1}",
                     getName(), getUrl().toString());
-            hostException = new OdsException(msg);
+            OdsException hostException = new OdsException(msg);
             throw hostException;
         } catch (IOException e) {
             String msg = I18n.tr("No dataStore for Host {0} ({1}) could be created",
                     getName(), getUrl().toString());
-            hostException = new OdsException(msg);
+            OdsException hostException = new OdsException(msg);
             throw hostException;
         }
         return ds;
