@@ -176,10 +176,12 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         for (SimpleFeature feature : downloadedFeatures) {
             entityMapper.mapAndConsume(feature, repository::add);
             if (Thread.currentThread().isInterrupted()) {
-                downloadedFeatures.clear();
-                repository.clear();
+                break;
             }
         }
+        // Clean-up
+        downloadedFeatures.clear();
+        repository.clear();
     }
 
     public OdsDataSource getDataSource() {
