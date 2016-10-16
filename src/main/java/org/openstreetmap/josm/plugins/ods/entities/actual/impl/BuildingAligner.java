@@ -11,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.osm.alignment.OsmWayAligner;
 public class BuildingAligner extends OsmWayAligner {
 
     public BuildingAligner(Collection<Way> ways) {
-        this(ways, new NodeDWithinLatLon(0,05));
+        this(ways, new NodeDWithinLatLon(0.05));
     }
     
     public BuildingAligner(Collection<Way> ways, NodeDWithin dWithin) {
