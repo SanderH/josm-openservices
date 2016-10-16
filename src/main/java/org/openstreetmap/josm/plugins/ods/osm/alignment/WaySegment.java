@@ -4,8 +4,8 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
 
 public class WaySegment {
-    private static Way way;
-    private static int index;
+    private final Way way;
+    private final int index;
 
     public WaySegment(Way way, int index) {
         super();
@@ -25,7 +25,7 @@ public class WaySegment {
         return index == 0;
     }
     
-    public boolean isPartOfWay(Way way) {
+    public boolean isPartOfWay() {
         if (! (getNode1().getReferrers().contains(way) &&
                 getNode2().getReferrers().contains(way))) {
             return false;
