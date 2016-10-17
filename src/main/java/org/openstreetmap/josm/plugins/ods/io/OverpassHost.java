@@ -8,7 +8,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
-import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -80,10 +79,11 @@ public class OverpassHost implements OsmHost {
     private static String getBBox(LinearRing ring) {
         StringBuilder sb = new StringBuilder(1000);
         sb.append("poly:\"");
-        Coordinate[] coords = ring.getCoordinates();
-        for (Coordinate coord : coords) {
+        for (Coordinate coord : ring.getCoordinates()) {
             sb.append(formatCoordinate(coord.y, coord.x));
         }
+        // Remove the last space
+        sb.setLength(sb.length() -1);
         sb.append("\"");
         return sb.toString();
     }
