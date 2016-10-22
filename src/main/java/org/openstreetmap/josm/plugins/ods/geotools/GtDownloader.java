@@ -96,6 +96,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                  filter = ff.and(filter, dataFilter);
             }
             query.setFilter(filter);
+            query.setCoordinateSystem(featureSource.getSchema().getCoordinateReferenceSystem());
             if (properties != null) {
                 query.setProperties(properties);
             }
