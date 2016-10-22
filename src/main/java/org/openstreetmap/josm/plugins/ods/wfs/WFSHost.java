@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.wfs;
 
 import static org.geotools.data.wfs.WFSDataStoreFactory.BUFFER_SIZE;
+import static org.geotools.data.wfs.WFSDataStoreFactory.MAXFEATURES;
 import static org.geotools.data.wfs.WFSDataStoreFactory.PROTOCOL;
 import static org.geotools.data.wfs.WFSDataStoreFactory.TIMEOUT;
 import static org.geotools.data.wfs.WFSDataStoreFactory.URL;
@@ -94,6 +95,7 @@ public class WFSHost extends GtHost {
         }
         connectionParameters.put(BUFFER_SIZE.key, 1000);
         connectionParameters.put(PROTOCOL.key, true);
+        connectionParameters.put(MAXFEATURES.key, super.getMaxFeatures());
         DataStore ds;
         try {
             ds = DataStoreFinder.getDataStore(connectionParameters);
