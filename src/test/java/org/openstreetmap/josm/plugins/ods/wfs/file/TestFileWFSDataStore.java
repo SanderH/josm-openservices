@@ -6,12 +6,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.wfs.v1_1_0.DefaultWFSStrategy;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
+import org.geotools.data.wfs.internal.v2_0.StrictWFS_2_0_Strategy;
 import org.junit.Test;
 
 public class TestFileWFSDataStore {
-    private static WFSStrategy strategy = new DefaultWFSStrategy();
+    private static org.geotools.data.wfs.internal.WFSStrategy strategy = new StrictWFS_2_0_Strategy();
 
     @Test
     public void test() throws IOException {

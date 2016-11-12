@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.geotools.data.wfs.v1_1_0.DefaultWFSStrategy;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.v2_0.StrictWFS_2_0_Strategy;
 import org.openstreetmap.josm.plugins.ods.wfs.file.FileWFSDataStore;
 
 /**
@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.ods.wfs.file.FileWFSDataStore;
  *
  */
 public class TestDataLoader {
-    private static WFSStrategy strategy= new DefaultWFSStrategy();
+    private static WFSStrategy strategy= new StrictWFS_2_0_Strategy();
     private static Map<File, TestData> cache = new HashMap<>();
     
     public static TestData loadTestData(File dir, String[] features) throws IOException {

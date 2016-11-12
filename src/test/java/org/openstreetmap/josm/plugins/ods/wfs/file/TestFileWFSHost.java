@@ -9,10 +9,8 @@ import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import org.geotools.data.wfs.v1_1_0.DefaultWFSStrategy;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
-//import org.geotools.data.wfs.internal.WFSStrategy;
-//import org.geotools.data.wfs.internal.v2_0.StrictWFS_2_0_Strategy;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.v2_0.StrictWFS_2_0_Strategy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -25,8 +23,7 @@ public class TestFileWFSHost {
     @BeforeClass
     public static void beforeClass() throws IOException {
         Logger.getGlobal().setLevel(Level.FINEST);
-//        WFSStrategy strategy = new StrictWFS_2_0_Strategy();
-        WFSStrategy strategy = new DefaultWFSStrategy();
+        WFSStrategy strategy = new StrictWFS_2_0_Strategy();
         File testDir = new File(TestFileWFSHost.class.getResource("inktpot_1_1_0").getPath());
         host = new FileWFSHost(strategy, testDir);
     }

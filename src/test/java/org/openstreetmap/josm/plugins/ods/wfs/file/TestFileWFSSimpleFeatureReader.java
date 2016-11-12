@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.geotools.data.wfs.v1_1_0.DefaultWFSStrategy;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.v2_0.StrictWFS_2_0_Strategy;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
@@ -22,13 +22,15 @@ public class TestFileWFSSimpleFeatureReader {
     @Test
     public void test() throws IOException {
         SimpleFeatureType featureType = getVerblijfsObjectFeatureType();
-        WFSStrategy strategy = new DefaultWFSStrategy();
+        WFSStrategy strategy = new StrictWFS_2_0_Strategy();
         File file = new File(getClass().getResource("inktpot_1_1_0/verblijfsobject.xml").getFile());
-        FileWFSSimpleFeatureReader reader = 
-            new FileWFSSimpleFeatureReader(strategy, file, featureType);
-        SimpleFeature feature = reader.next();
-        assertEquals("3511EV", feature.getAttribute("postcode"));
-        reader.close();
+        try (
+            FileWFSSimpleFeatureReader reader = 
+                new FileWFSSimpleFeatureReader(strategy, file, featureType);
+        ) {
+            SimpleFeature feature = reader.next();
+            assertEquals("3511EV", feature.getAttribute("postcode"));
+        }
     }
     
     private static SimpleFeatureType getVerblijfsObjectFeatureType() {

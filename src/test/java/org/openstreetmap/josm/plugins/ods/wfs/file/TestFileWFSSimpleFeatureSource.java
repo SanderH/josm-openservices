@@ -8,13 +8,13 @@ import java.io.IOException;
 
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.wfs.v1_1_0.DefaultWFSStrategy;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.v2_0.StrictWFS_2_0_Strategy;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 
 public class TestFileWFSSimpleFeatureSource {
-    private static WFSStrategy strategy = new DefaultWFSStrategy();
+    private static WFSStrategy strategy = new StrictWFS_2_0_Strategy();
 
     @Test
     public void test() throws IOException {

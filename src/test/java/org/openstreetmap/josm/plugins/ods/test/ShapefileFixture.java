@@ -105,11 +105,12 @@ public class ShapefileFixture {
              Main.toolbar = new ToolbarPreferences();
          }
          if (Main.main == null) {
-             new MainApplication();
+             @SuppressWarnings("unused")
+            MainApplication application = new MainApplication();
          }
-         if (Main.map == null) {
-             Main.main.createMapFrame(null, null);
-         }
+//         if (Main.map == null) {
+//             Main.getLayerManager()...main.createMapFrame(null, null);
+//         }
      }
  }
 }
