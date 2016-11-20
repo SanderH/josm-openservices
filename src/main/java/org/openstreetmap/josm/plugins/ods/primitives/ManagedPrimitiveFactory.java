@@ -87,7 +87,6 @@ public class ManagedPrimitiveFactory {
     }
 
     public ManagedWay createWay(Way osmWay, boolean register) {
-        assert osmWay.getDisplayType() == OsmPrimitiveType.CLOSEDWAY;
         ManagedWay odsWay = (ManagedWay) layerManager.getManagedPrimitive(osmWay);
         if (odsWay == null) {
             odsWay = new SimpleManagedWay(layerManager, osmWay);
