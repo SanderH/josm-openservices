@@ -31,8 +31,9 @@ public class BuildingMatcher implements Matcher<Building> {
     
     @Override
     public void initialize() throws OdsException {
-        odRepository = module.getOpenDataLayerManager().getRepository();
-        osmRepository = module.getOsmLayerManager().getRepository();
+        // No action required
+//        odRepository = module.getOpenDataLayerManager().getRepository();
+//        osmRepository = module.getOsmLayerManager().getRepository();
 //        odBuildingStore = module.getOpenDataLayerManager().getEntityStore(Building.class);
 //        osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
     }

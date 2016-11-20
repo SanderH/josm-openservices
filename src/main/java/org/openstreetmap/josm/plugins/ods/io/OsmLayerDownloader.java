@@ -118,8 +118,9 @@ public class OsmLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public void prepare() {
+    public PrepareResponse prepare() {
         // Nothing to prepare
+        return null;
     }
 
 

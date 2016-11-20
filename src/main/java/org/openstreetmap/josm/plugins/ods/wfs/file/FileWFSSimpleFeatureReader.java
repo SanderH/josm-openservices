@@ -9,9 +9,9 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 
 import org.geotools.data.FeatureReader;
-import org.geotools.data.wfs.WFSDataStore;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
-import org.geotools.data.wfs.v1_1_0.parsers.XmlSimpleFeatureParser;
+import org.geotools.data.wfs.impl.WFSDataAccessFactory;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.parsers.XmlSimpleFeatureParser;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
@@ -39,8 +39,7 @@ public class FileWFSSimpleFeatureReader implements FeatureReader<SimpleFeatureTy
         try {
             is = new FileInputStream(file);
             parser = new XmlSimpleFeatureParser(is, featureType,
-                qName, WFSDataStore.AXIS_ORDER_COMPLIANT, 
-                strategy.getNamespaceURIMappings());
+                qName, WFSDataAccessFactory.AXIS_ORDER_COMPLIANT);
             next = parser.parse();
         }
         catch (IOException e) {

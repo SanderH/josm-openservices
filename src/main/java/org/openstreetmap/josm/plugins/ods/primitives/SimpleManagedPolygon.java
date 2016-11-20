@@ -22,12 +22,16 @@ public class SimpleManagedPolygon extends SimpleManagedRing implements ManagedPo
         super(exteriorWay);
     }
     
+
+    @Override
+    public void setPrimitive(OsmPrimitive primitive) {
+        managedWay.setPrimitive(primitive);
+    }
+
     @Override
     public OsmPrimitive getPrimitive() {
         return managedWay.getPrimitive();
     }
-
-
 
     @Override
     public ManagedRing getExteriorRing() {

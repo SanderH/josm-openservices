@@ -1,10 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.wfs;
 
-import static org.geotools.data.wfs.WFSDataStoreFactory.BUFFER_SIZE;
-import static org.geotools.data.wfs.WFSDataStoreFactory.MAXFEATURES;
-import static org.geotools.data.wfs.WFSDataStoreFactory.PROTOCOL;
-import static org.geotools.data.wfs.WFSDataStoreFactory.TIMEOUT;
-import static org.geotools.data.wfs.WFSDataStoreFactory.URL;
+import static org.geotools.data.wfs.impl.WFSDataAccessFactory.BUFFER_SIZE;
+import static org.geotools.data.wfs.impl.WFSDataAccessFactory.MAXFEATURES;
+import static org.geotools.data.wfs.impl.WFSDataAccessFactory.PROTOCOL;
+import static org.geotools.data.wfs.impl.WFSDataAccessFactory.TIMEOUT;
+import static org.geotools.data.wfs.impl.WFSDataAccessFactory.URL;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,15 +14,26 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
+import org.geotools.data.wfs.WFSServiceInfo;
+import org.geotools.data.wfs.internal.WFSGetCapabilities;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.exceptions.UnavailableHostException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
 import org.openstreetmap.josm.tools.I18n;
+
+import net.opengis.ows11.CapabilitiesBaseType;
+import net.opengis.ows11.DomainType;
+import net.opengis.ows11.OperationType;
+import net.opengis.ows11.OperationsMetadataType;
+import net.opengis.ows11.ValueType;
 
 /**
  * Class to represent a WFS odsFeatureSource host.
@@ -36,9 +47,10 @@ public class WFSHost extends GtHost {
      * in the data store.
      * A large time-out in the initialization phase would cause 
      */
-    private DataStore dataStore;
+    private WFSDataStore dataStore;
     private final int initTimeout;
     private final int dataTimeout;
+    private boolean supportsPaging = false;
     
     public WFSHost(String name, String urlString, Integer maxFeatures, int initTimeout, int dataTimeout) {
         super(name, urlString, maxFeatures);
@@ -46,6 +58,10 @@ public class WFSHost extends GtHost {
         this.dataTimeout = dataTimeout;
     }
     
+    public boolean isSupportsPaging() {
+        return supportsPaging;
+    }
+
     @Override
     public synchronized void initialize() throws OdsException {
         if (!isInitialized()) {
@@ -85,7 +101,7 @@ public class WFSHost extends GtHost {
      * @return the DataStore object
      * @throws OdsException 
      */
-    private DataStore createDataStore(Integer timeout) throws OdsException {
+    private WFSDataStore createDataStore(Integer timeout) throws OdsException {
         Map<String, Object> connectionParameters = new HashMap<>();
         URL capabilitiesUrl = WFSDataStoreFactory
                 .createGetCapabilitiesRequest(getUrl());
@@ -96,9 +112,18 @@ public class WFSHost extends GtHost {
         connectionParameters.put(BUFFER_SIZE.key, 1000);
         connectionParameters.put(PROTOCOL.key, true);
         connectionParameters.put(MAXFEATURES.key, super.getMaxFeatures());
-        DataStore ds;
+        WFSDataStore ds;
         try {
-            ds = DataStoreFinder.getDataStore(connectionParameters);
+            ds = (WFSDataStore) DataStoreFinder.getDataStore(connectionParameters);
+            WFSServiceInfo serviceInfo = ds.getInfo();
+            switch (serviceInfo.getVersion()) {
+            case "1.0.0":
+            case "1.1.0":
+                break;
+            case "2.0.0":
+                WFSGetCapabilities wfsCapabilities = ds.getWfsClient().getCapabilities();
+                processWFSCapabilities(wfsCapabilities);
+            }
         } catch (UnknownHostException e) {
             String msg = I18n.tr("Host {0} ({1}) doesn't exist",
                     getName(), getUrl().getHost());
@@ -121,5 +146,53 @@ public class WFSHost extends GtHost {
             throw hostException;
         }
         return ds;
+    }
+    
+    private void processWFSCapabilities(WFSGetCapabilities wfsCapabilities) {
+        CapabilitiesBaseType capabilitiesType = (CapabilitiesBaseType) wfsCapabilities.getParsedCapabilities();
+        OperationsMetadataType metaData = capabilitiesType.getOperationsMetadata();
+        processConstraints(metaData.getConstraint());
+        processOperations(metaData.getOperation());
+    }
+
+    private void processConstraints(EList<?> constraints) {
+        @SuppressWarnings("unchecked")
+        Iterator<DomainType> it = (Iterator<DomainType>) constraints.iterator();
+        while (it.hasNext()) {
+            DomainType domainType = it.next();
+            ValueType valueType = domainType.getDefaultValue();
+            String sDefault = (valueType == null ? null :valueType.getValue());
+            switch (domainType.getName()) {
+            case "ImplementsResultPaging":
+                supportsPaging = Boolean.parseBoolean(sDefault); 
+                break;
+            }
+        }
+    }
+
+    private void processOperations(EList<?> operations) {
+        @SuppressWarnings("unchecked")
+        Iterator<OperationType> it = (Iterator<OperationType>) operations.iterator();
+        while (it.hasNext()) {
+            OperationType operation = it.next();
+            switch (operation.getName()) {
+            case "GetFeature":
+                processGetFeatureConstraints(operation.getConstraint());
+                break;
+            }
+        }
+    }
+
+    private void processGetFeatureConstraints(EList<?> constraints) {
+        @SuppressWarnings("unchecked")
+        Iterator<DomainType> it = (Iterator<DomainType>) constraints.iterator();
+        while (it.hasNext()) {
+            DomainType constraint = it.next();
+            switch (constraint.getName()) {
+            case "CountDefault":
+                String sValue = constraint.getDefaultValue().getValue();
+                this.setMaxFeatures(Integer.parseInt(sValue));
+            }
+        }
     }
 }

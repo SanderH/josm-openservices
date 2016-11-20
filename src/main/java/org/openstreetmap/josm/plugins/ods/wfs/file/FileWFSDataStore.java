@@ -27,8 +27,8 @@ import org.geotools.data.Query;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
-import org.geotools.data.wfs.v1_1_0.parsers.EmfAppSchemaParser;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.parsers.EmfAppSchemaParser;
 import org.geotools.feature.NameImpl;
 //import org.geotools.data.wfs.internal.WFSStrategy;
 //import org.geotools.data.wfs.internal.parsers.EmfAppSchemaParser;
@@ -60,7 +60,7 @@ public class FileWFSDataStore implements DataStore {
     private String[] typeNames;
     private DefaultServiceInfo info;
     
-    public FileWFSDataStore(org.geotools.data.wfs.v1_1_0.WFSStrategy strategy, File dir) throws IOException {
+    public FileWFSDataStore(WFSStrategy strategy, File dir) throws IOException {
         this.strategy = strategy;
         System.setProperty("org.geotools.xml.forceSchemaImport", "true");
         this.directory = dir;
@@ -148,7 +148,7 @@ public class FileWFSDataStore implements DataStore {
             try {
                 CoordinateReferenceSystem crs = CRSUtil.getCrs(srs);
                 SimpleFeatureType type = EmfAppSchemaParser.parseSimpleFeatureType(configuration, ftt.getName(), 
-                        getDescribeFeatureTypeURL(), crs, strategy.getNamespaceURIMappings(), strategy.getFieldTypeMappings(), true);
+                        getDescribeFeatureTypeURL(), crs, strategy.getFieldTypeMappings());
                 QName qName = ftt.getName();
                 featureTypesByLocalName.put(qName.getLocalPart(), type);
                 Name name = new NameImpl(ftt.getName().getNamespaceURI(), ftt.getName().getLocalPart());

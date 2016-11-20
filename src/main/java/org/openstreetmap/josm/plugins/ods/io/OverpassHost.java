@@ -8,6 +8,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
+import org.openstreetmap.josm.io.OverpassDownloadReader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -15,22 +16,24 @@ import com.vividsolutions.jts.geom.LinearRing;
 
 public class OverpassHost implements OsmHost {
     private static final String OVERPASS_QUERY = 
-            "(node($bbox);rel(bn)->.x;way($bbox);" +
-            "node(w)->.x;rel(bw);)";
+            "(node({{bbox}});rel(bn)->.x;way({{bbox}});" +
+            "node(w)->.x;rel(bw));out meta;";
 
     @Override
     public String getHostString() {
         String host = Main.pref.get("download.overpass.server");
         if (host == null || host.isEmpty()) {
-            host = "https://overpass-api.de/api";
+            host = "https://overpass-api.de/api/";
         }
         return host;
     }
 
     @Override
     public OsmServerReader getServerReader(DownloadRequest request) throws MalformedURLException {
-        URL url = getURL(OVERPASS_QUERY, request.getBoundary());
-        return new OsmServerLocationReader(url.toString());
+//        URL url = getURL(OVERPASS_QUERY, request.getBoundary());
+//        return new OsmServerLocationReader(url.toString());
+      return new OverpassDownloadReader(request.getBoundary().getBounds(),
+              getHostString(), OVERPASS_QUERY);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class OverpassHost implements OsmHost {
         for (Coordinate coord : ring.getCoordinates()) {
             sb.append(formatCoordinate(coord.y, coord.x));
         }
-        // Remove the last space
+        // Remove the last space to fix issue #58
         sb.setLength(sb.length() -1);
         sb.append("\"");
         return sb.toString();

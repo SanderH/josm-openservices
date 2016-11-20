@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.List;
 
-import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
@@ -10,9 +9,8 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 public class SimpleManagedWay extends AbstractManagedPrimitive implements ManagedWay {
-    private List<ManagedNode> nodes;
 //    private Set<ManagedWay> adjacentWays = new HashSet<>();
-    private BBox bbox;
+//    private BBox bbox;
 
     public SimpleManagedWay(LayerManager layerManager, Way way) {
         super(layerManager, way);
@@ -75,28 +73,22 @@ public class SimpleManagedWay extends AbstractManagedPrimitive implements Manage
 
     @Override
     public BBox getBBox() {
-        if (getPrimitive() != null) {
-            return getPrimitive().getBBox();
-        }
-        if (bbox == null) {
-            bbox = createBBox();
-        }
-        return null;
+        return getWay().getBBox();
     }
 
     @Override
     public boolean isClosed() {
-        if (getPrimitive() != null) {
+//        if (getPrimitive() != null) {
             return getWay().isClosed();
-        }
-        ManagedNode startNode = nodes.get(0);
-        ManagedNode endNode = nodes.get(nodes.size() - 1);
-        return startNode == endNode;
+//        }
+//        ManagedNode startNode = nodes.get(0);
+//        ManagedNode endNode = nodes.get(nodes.size() - 1);
+//        return startNode == endNode;
     }
 
     @Override
     public int getNodesCount() {
-        return nodes.size();
+        return getWay().getNodesCount();
     }
 
     @Override
@@ -109,21 +101,21 @@ public class SimpleManagedWay extends AbstractManagedPrimitive implements Manage
         return getWay().getNode(index);
     }
     
-    private BBox createBBox() {
-        double minLat = -90;
-        double maxLat = 90;
-        double minLon = -180;
-        double maxLon = 180;
-        
-        for (ManagedNode node : nodes) {
-            LatLon latLon = node.getCoor();
-            minLat = Math.min(minLat, latLon.lat());
-            minLon = Math.min(minLon, latLon.lon());
-            maxLat = Math.max(maxLat, latLon.lat());
-            maxLon = Math.min(maxLon, latLon.lon());
-        }
-        return new BBox(minLon, minLat, maxLon, maxLat);
-    }
+//    private BBox createBBox() {
+//        double minLat = -90;
+//        double maxLat = 90;
+//        double minLon = -180;
+//        double maxLon = 180;
+//        
+//        for (ManagedNode node : nodes) {
+//            LatLon latLon = node.getCoor();
+//            minLat = Math.min(minLat, latLon.lat());
+//            minLon = Math.min(minLon, latLon.lon());
+//            maxLat = Math.max(maxLat, latLon.lat());
+//            maxLon = Math.min(maxLon, latLon.lon());
+//        }
+//        return new BBox(minLon, minLat, maxLon, maxLat);
+//    }
 
 //    @Override
 //    public Way create(DataSet dataSet) {

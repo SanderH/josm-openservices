@@ -8,6 +8,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporter;
+import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporterNg;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsUpdater;
 
 public class OdsUpdateAction extends OdsAction {
@@ -22,7 +23,7 @@ public class OdsUpdateAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        OdsImporter importer = new OdsImporter(getModule());
+        OdsImporterNg importer = new OdsImporterNg(getModule());
         OdsUpdater updater = new OdsUpdater(getModule());
 
         Layer layer = Main.getLayerManager().getActiveLayer();

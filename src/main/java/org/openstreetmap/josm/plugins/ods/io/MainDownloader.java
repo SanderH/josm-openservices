@@ -44,6 +44,8 @@ public class MainDownloader {
     public MainDownloader(OdsModule module) {
         super();
         this.module = module;
+        this.executor = Executors.newFixedThreadPool(NTHREADS);
+        Thread.currentThread().setName("Main downloader");
     }
 
     public final void setOpenDataLayerDownloader(
@@ -158,7 +160,6 @@ public class MainDownloader {
     }
 
     private void runTasks(List<Callable<Void>> tasks) throws ExecutionException, InterruptedException {
-        executor = Executors.newFixedThreadPool(NTHREADS);
         try {
             List<Future<Void>> futures = executor.invokeAll(tasks, 1, TimeUnit.MINUTES);
             List<String> messages = new LinkedList<>();

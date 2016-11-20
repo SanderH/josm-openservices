@@ -158,6 +158,9 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     public String get(String key) {
         return managedWay.get(key);
     }
-    
-    
+
+    @Override
+    public void geometryChanged() {
+        updateArea();
+    }
 }

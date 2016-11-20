@@ -60,13 +60,18 @@
       <version>16.0</version>
     </dependency>
     <dependency>
+      <groupId>org.geotools.xsd</groupId>
+      <artifactId>gt-xsd-wfs</artifactId>
+      <version>16.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-wfs</artifactId>
+      <artifactId>gt-wfs-ng</artifactId>
       <version>16.0</version>
       <exclusions>
         <exclusion>
-          <artifactId>commons-logging</artifactId>
           <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

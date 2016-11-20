@@ -41,4 +41,5 @@ public interface ManagedPrimitive {
     public BBox getBBox();
     public double getArea();
     public LatLon getCenter();
+    public void geometryChanged();
 }

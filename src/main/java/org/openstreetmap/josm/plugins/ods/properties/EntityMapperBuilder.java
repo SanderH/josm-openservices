@@ -159,7 +159,7 @@ public class EntityMapperBuilder<T1, T2> {
         PropertyHandler<T1, A1> sourceAttributeHandler = 
                 (PropertyHandler<T1, A1>) sourceType.createAttributeHandler(sourceAttr);
         if (sourceAttributeHandler == null) {
-            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in source type ''{1}''", sourceAttr, sourceType));
+            addIssue(I18n.tr("The attribute ''{0}'' doesn't exist in source type ''{1}''", sourceAttr, sourceType.toString()));
         }
         @SuppressWarnings("unchecked")
         PropertyHandler<T2, A2> targetAttributeHandler = 

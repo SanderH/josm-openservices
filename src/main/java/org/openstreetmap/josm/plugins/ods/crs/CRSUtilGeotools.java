@@ -15,6 +15,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.tools.I18n;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -56,6 +57,15 @@ public class CRSUtilGeotools extends CRSUtil {
         }
     }
 
+    @Override
+    public Coordinate toOsm(Coordinate source, CoordinateReferenceSystem crs) {
+        MathTransform transform = getToOsmTransform(crs);
+        try {
+            return JTS.transform(source, null, transform);
+        } catch (TransformException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public Geometry fromOsm(Geometry geometry, CoordinateReferenceSystem crs)

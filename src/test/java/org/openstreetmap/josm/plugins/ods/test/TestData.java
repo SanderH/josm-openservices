@@ -13,7 +13,6 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.IllegalDataException;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 
 public class TestData {
     private final static String DEFAULT_TEST_DATA = "testdata.osm";

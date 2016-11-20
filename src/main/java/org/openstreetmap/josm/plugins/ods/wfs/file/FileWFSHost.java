@@ -15,8 +15,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.data.DataSourceException;
-import org.geotools.data.wfs.v1_1_0.WFSStrategy;
-import org.geotools.data.wfs.v1_1_0.parsers.EmfAppSchemaParser;
+import org.geotools.data.wfs.internal.WFSStrategy;
+import org.geotools.data.wfs.internal.parsers.EmfAppSchemaParser;
 //import org.geotools.data.wfs.internal.WFSStrategy;
 //import org.geotools.data.wfs.internal.parsers.EmfAppSchemaParser;
 import org.geotools.xml.Configuration;
@@ -149,7 +149,7 @@ public class FileWFSHost extends AbstractHost {
             }
             String srs = ftt.getDefaultSRS();
             CoordinateReferenceSystem crs = CRSUtil.getCrs(srs);
-            type = EmfAppSchemaParser.parseSimpleFeatureType(configuration, typeName, schemaLocation, crs, strategy.getNamespaceURIMappings(), strategy.getFieldTypeMappings(), true);
+            type = EmfAppSchemaParser.parseSimpleFeatureType(configuration, typeName, schemaLocation, crs, strategy.getFieldTypeMappings());
         }
         return type;
     }

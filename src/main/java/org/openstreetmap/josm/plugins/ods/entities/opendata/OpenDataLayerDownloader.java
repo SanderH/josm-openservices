@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,11 +15,13 @@ import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.io.DefaultPrepareResponse;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
+import org.openstreetmap.josm.plugins.ods.io.PrepareResponse;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.osm.LayerUpdater;
 
@@ -86,8 +89,9 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public void prepare() throws ExecutionException {
+    public PrepareResponse prepare() throws ExecutionException {
         runTasks(Downloader.getPrepareTasks(downloaders));
+        return new DefaultPrepareResponse();
     }
     
     @Override
@@ -114,12 +118,14 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
             for (Future<Void> future : futures) {
                 try {
                     future.get();
-                } catch (ExecutionException e) {
-                    messages.add(e.getCause().getMessage());
+                } catch (CancellationException e1) {
+                    // Canceled. No further action required.
+                } catch (ExecutionException e2) {
+                    messages.add(e2.getCause().getMessage());
                 }
             }
             if (!messages.isEmpty()) {
-                cancel();
+//                cancel();
                 throw new ExecutionException(String.join("\n",  messages), null);
             }
             executor.shutdownNow();

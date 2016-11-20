@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.osm.alignment;
 import static org.openstreetmap.josm.plugins.ods.entities.actual.Building.IsBuilding;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,12 +59,17 @@ public class OsmWayAligner {
     }
     
     public void run() {
-        for (Way way : ways) {
-            align(way);
-        }
-        findNeighbourWays();
-        for (Way way : neighbourWays) {
-            align(way);
+        dataset.beginUpdate();
+        try {
+            for (Way way : ways) {
+                align(way);
+            }
+            findNeighbourWays();
+            for (Way way : neighbourWays) {
+                align(way);
+            }
+        } finally {
+            dataset.endUpdate();
         }
     }
     
@@ -92,6 +98,9 @@ public class OsmWayAligner {
             List<Node> nearByNodes = dWithin.nearByNodes(segment);
             boolean wayLengthChanged = false;
             if (!nearByNodes.isEmpty()) {
+                if (nearByNodes.size() > 1) {
+                    sortNodes(nearByNodes, segment);
+                }
                 int cachedWayLength = way.getNodesCount();
                 for (Node nearByNode : nearByNodes) {
                     if (!nearByNode.isDeleted() && isRelevantNode.test(nearByNode)) {
@@ -108,7 +117,53 @@ public class OsmWayAligner {
         }
     }
 
-    
+    /**
+     * Sort a list of nodes in the direction of a segment.
+     * The x coordinates are used for comparison, unless the segment is vertical, in which case the Y coordinate will be used.
+     * 
+     * @param nodes The nodes to sort
+     * @param segment The segment
+     * @return
+     */
+    private void sortNodes(List<Node> nodes, WaySegment segment) {
+        Comparator<Node> comparator = new DirectionalNodeComparator(segment);
+        nodes.sort(comparator);
+    }
+
+    private class DirectionalNodeComparator implements Comparator<Node> {
+        private Comparator<Double> lonComparator;
+        private Comparator<Double> latComparator;
+        
+        public DirectionalNodeComparator(WaySegment segment) {
+            int lonSignum = Integer.signum(Double.compare(segment.getNode2().getCoor().lon(), segment.getNode1().getCoor().lon()));
+            lonComparator = new SignumDoubleComparator(lonSignum);
+            int latSignum = Integer.signum(Double.compare(segment.getNode2().getCoor().lat(), segment.getNode1().getCoor().lat()));
+            latComparator = new SignumDoubleComparator(latSignum);
+        }
+
+        @Override
+        public int compare(Node n1, Node n2) {
+            int result = lonComparator.compare(n1.getCoor().lon(), n2.getCoor().lon());
+            if (result == 0) {
+                result = latComparator.compare(n1.getCoor().lat(), n2.getCoor().lat());
+            }
+            return result;
+        }
+        
+        private class SignumDoubleComparator implements Comparator<Double> {
+            final int signum;
+            
+            public SignumDoubleComparator(int signum) {
+                this.signum = signum;
+            }
+
+            @Override
+            public int compare(Double d1, Double d2) {
+                return signum * Double.compare(d1, d2);
+            }
+        }
+    }
+
     private void analyzeConnections(Way way) {
         for (Node node: way.getNodes()) {
             // Check for tagged nodes

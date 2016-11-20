@@ -3,8 +3,10 @@ package org.openstreetmap.josm.plugins.ods.deamons;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openstreetmap.josm.actions.MergeNodesAction;
@@ -38,8 +40,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
     private List<DataSetListener> childListeners = new LinkedList<>();
     private List<PrimitivesAddedEvent> primitivesAddedCache = new LinkedList<>();
     private List<WayNodesChangedEvent> wayNodesChangedCache = new LinkedList<>();
-    private List<NodeMovedEvent> nodesMovedCache = new LinkedList<>();
-    
+    private Map<Node, NodeMovedEvent> nodesMovedCache = new HashMap<>();
     
     public OsmLayerListener(OsmLayerManager layerManager) {
         super();
@@ -53,7 +54,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             // continue processing
             try {
-                Thread.sleep(25);
+                Thread.sleep(200);
                 realRun();
             } catch (InterruptedException e) {
                 // good practice
@@ -101,9 +102,10 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     private void processNodesMovedEvents() {
         // Take a snapshot from the event cache and clear the cache
+        if (nodesMovedCache.isEmpty()) return;
         Collection<NodeMovedEvent> events;
         synchronized (this) {
-            events = new ArrayList<>(nodesMovedCache);
+            events = new ArrayList<>(nodesMovedCache.values());
             nodesMovedCache.clear();
         }
         // pass the new events to the child listeners
@@ -133,7 +135,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     @Override
     public void nodeMoved(NodeMovedEvent event) {
-        nodesMovedCache.add(event);
+        nodesMovedCache.put(event.getNode(), event);
         
     }
 
@@ -158,6 +160,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     @Override
     public void dataChanged(DataChangedEvent event) {
+        int i=7;
         // TODO Auto-generated method stub
         
     }
@@ -219,7 +222,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             nodes.remove(newNode);
             if (nodes.size() == 1) {
                 Node targetNode = nodes.get(0);
-                if (!targetNode.hasKeys()) {
+                if (!targetNode.hasKeys() && !targetNode.isDeleted()) {
                     Command cmd = MergeNodesAction.mergeNodes(layerManager.getOsmDataLayer(),
                         Collections.singleton(newNode), targetNode, targetNode);
                     // TODO Do we need an Undo option for this command?

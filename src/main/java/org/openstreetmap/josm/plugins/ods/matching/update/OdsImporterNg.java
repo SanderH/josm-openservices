@@ -1,19 +1,24 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.openstreetmap.josm.command.AddPrimitivesCommand;
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.command.AddCommand;
+import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
-import org.openstreetmap.josm.data.osm.PrimitiveData;
-import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
@@ -32,7 +37,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OdsImporter {
+public class OdsImporterNg {
     private final OdsModule module;
     // TODO Make the importfilter(s) configurable
     private final ImportFilter importFilter = new DefaultImportFilter();
@@ -40,7 +45,7 @@ public class OdsImporter {
     // Observer pattern
 //    private final BuildingAligner buildingAligner;
     
-    public OdsImporter(OdsModule module) {
+    public OdsImporterNg(OdsModule module) {
         super();
         this.module = module;
 //        this.buildingAligner=new BuildingAligner(module, 
@@ -49,14 +54,14 @@ public class OdsImporter {
 
     public void doImport(Collection<OsmPrimitive> primitives) {
         LayerManager layerManager = module.getOpenDataLayerManager();
-        Set<Entity> entitiesToImport = new HashSet<>();
+        Set<OsmPrimitive> primitivesToImport = new HashSet<>();
         for (OsmPrimitive primitive : primitives) {
             ManagedPrimitive managedPrimitive = layerManager.getManagedPrimitive(primitive);
             if (managedPrimitive != null) {
                 Entity entity = managedPrimitive.getEntity();
                 if (entity != null && entity.getMatch(entity.getBaseType()) == null 
                         && importFilter.test(entity)) {
-                    entitiesToImport.add(entity);
+                    primitivesToImport.add(primitive);
                 }
             }
 //            for (OsmPrimitive referrer : primitive.getReferrers()) {
@@ -69,14 +74,12 @@ public class OdsImporter {
 //                }
 //            }
         }
-        importEntities(entitiesToImport);
+        importPrimitives(primitivesToImport);
     }
     
-    private void importEntities(Set<Entity> entitiesToImport) {
-        Set<ManagedPrimitive> primitivesToImport = new HashSet<>();
-        PrimitiveDataBuilder builder = new PrimitiveDataBuilder();
-        for (Entity entity : entitiesToImport) {
-            ManagedPrimitive primitive = entity.getPrimitive();
+    private void importPrimitives(Set<OsmPrimitive> primitives) {
+        PrimitiveDataBuilder builder = new PrimitiveDataBuilder(module);
+        for (OsmPrimitive primitive : primitives) {
 //            if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
 //                Relation relation = (Relation) primitive;
 //                for (OsmPrimitive member : relation.getMemberPrimitives()) {
@@ -84,14 +87,13 @@ public class OdsImporter {
 //                    builder.addPrimitive(member);
 //                }
 //            }
-            if (primitive != null) {
-                primitivesToImport.add(primitive);
-                builder.addPrimitive(primitive);
-            }
+            builder.addPrimitive(primitive);
         }
-        AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData, null,
-            module.getOsmLayerManager().getOsmDataLayer());
-        cmd.executeCommand();
+        Command cmd = builder.getCommand();
+        Main.main.undoRedo.add(builder.getCommand());
+//        AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData, null,
+//            module.getOsmLayerManager().getOsmDataLayer());
+//        cmd.executeCommand();
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);
         buildImportedEntities(importedPrimitives);
@@ -142,39 +144,84 @@ public class OdsImporter {
     }
     
     private class PrimitiveDataBuilder {
-        List<PrimitiveData> primitiveData = new LinkedList<>();
+        private final OsmDataLayer layer;
+        private final Map<Node, Node> nodeMap = new HashMap<>();
+//        private List<PrimitiveData> primitiveData = new LinkedList<>();
+        private List<Command> commands = new LinkedList<>();
         
-        public PrimitiveDataBuilder() {
-            // TODO Auto-generated constructor stub
+        public PrimitiveDataBuilder(OdsModule module) {
+            this.layer = module.getOsmLayerManager().getOsmDataLayer();
         }
 
-        public void addPrimitive(ManagedPrimitive managedPrimitive) {
-            OsmPrimitive primitive = managedPrimitive.getPrimitive();
-            primitiveData.add(primitive.save());
-            if (primitive.getType() == OsmPrimitiveType.WAY) {
-                for (Node node :((Way)primitive).getNodes()) {
-                    addPrimitive(node);
-                }
-            }
-            else if (primitive.getType() == OsmPrimitiveType.RELATION) {
-                for (OsmPrimitive osm : ((Relation)primitive).getMemberPrimitives()) {
-                    addPrimitive(osm);
-                }
+//        public void addPrimitive(ManagedPrimitive managedPrimitive) {
+//            OsmPrimitive primitive = managedPrimitive.getPrimitive();
+//            primitiveData.add(primitive.save());
+//            if (primitive.getType() == OsmPrimitiveType.WAY) {
+//                for (Node node :((Way)primitive).getNodes()) {
+//                    addPrimitive(node);
+//                }
+//            }
+//            else if (primitive.getType() == OsmPrimitiveType.RELATION) {
+//                for (OsmPrimitive osm : ((Relation)primitive).getMemberPrimitives()) {
+//                    addPrimitive(osm);
+//                }
+//            }
+//        }
+        
+        public void addPrimitive(OsmPrimitive primitive) {
+            switch (primitive.getType()) {
+            case NODE:
+                addNode((Node) primitive);
+                break;
+            case WAY:
+                addWay((Way) primitive);
+                break;
+            case RELATION:
+                break;
+            default:
+                break;
             }
         }
         
-        public void addPrimitive(OsmPrimitive primitive) {
-            primitiveData.add(primitive.save());
-            if (primitive.getType() == OsmPrimitiveType.WAY) {
-                for (Node node :((Way)primitive).getNodes()) {
-                    addPrimitive(node);
+        public void addWay(Way odWay) {
+            List<Node> nodes = new ArrayList<>(odWay.getNodesCount());
+            for (Node odNode : odWay.getNodes()) {
+                nodes.add(getNode(odNode, true));
+            }
+            Way newWay = new Way();
+            newWay.setKeys(odWay.getKeys());
+            newWay.setNodes(nodes);
+            commands.add(new AddCommand(layer, newWay));
+        }
+        
+        public void addNode(Node odNode) {
+            getNode(odNode, false);
+        }
+        
+        private Node getNode(Node odNode, boolean merge) {
+            Node node = null;
+            if (merge) {
+                node = nodeMap.get(odNode);
+                if (node == null) {
+                    List<Node> nodes = layer.data.searchNodes(odNode.getBBox());
+                    if (!nodes.isEmpty()) {
+                        node = nodes.get(0);
+                    }
                 }
             }
-            else if (primitive.getType() == OsmPrimitiveType.RELATION) {
-                for (OsmPrimitive osm : ((Relation)primitive).getMemberPrimitives()) {
-                    addPrimitive(osm);
+            if (node == null) {
+                node = new Node();
+                node.load(odNode.save());
+                commands.add(new AddCommand(layer, node));
+                if (merge) {
+                    nodeMap.put(odNode, node);
                 }
             }
+            return node;
+        }
+        
+        Command getCommand() {
+            return new SequenceCommand("Import objects", commands);
         }
     }
 }

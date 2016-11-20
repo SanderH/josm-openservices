@@ -163,6 +163,11 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     }
 
     @Override
+    public void geometryChanged() {
+        //
+    }
+
+    @Override
     public String get(String key) {
         return getKeys().get(key);
     }

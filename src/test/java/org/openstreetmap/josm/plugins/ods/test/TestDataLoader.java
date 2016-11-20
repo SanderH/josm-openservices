@@ -22,7 +22,7 @@ import org.openstreetmap.josm.io.OsmReader;
 public class TestDataLoader {
     private static Map<URL, DataSet> cache = new HashMap<>();
     
-    public static TestLayerManager loadTestData(Class<?> clazz, String name) throws IOException, IllegalDataException {
+    public static TestLayerManager loadTestData(Class<?> clazz, String name) {
         URL url = clazz.getResource(name);
         DataSet dataSet = loadTestData(url);
         File file = new File(url.getFile());

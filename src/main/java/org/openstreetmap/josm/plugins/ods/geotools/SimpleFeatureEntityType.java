@@ -26,5 +26,10 @@ public class SimpleFeatureEntityType implements EntityType<SimpleFeature> {
         }
         return new FeaturePropertyHandlerFactory().createPropertyHandler(featureType, descriptor.getType().getBinding(), attributeName);
     }
+
+    @Override
+    public String toString() {
+        return featureType.getTypeName();
+    }
  
 }

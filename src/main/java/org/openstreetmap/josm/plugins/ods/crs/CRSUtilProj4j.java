@@ -12,6 +12,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.tools.I18n;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -137,5 +138,11 @@ public class CRSUtilProj4j extends CRSUtil {
         } catch (MismatchedDimensionException e) {
             throw new CRSException(I18n.tr(e.getMessage()));
         }
+    }
+
+    @Override
+    public Coordinate toOsm(Coordinate coord, CoordinateReferenceSystem crs) {
+        JTSCoordinateTransform transform = getToOsmTransform(crs);
+        return transform.transform(coord);
     }
 }

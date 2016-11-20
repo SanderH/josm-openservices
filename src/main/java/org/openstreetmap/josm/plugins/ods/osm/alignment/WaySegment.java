@@ -25,12 +25,12 @@ public class WaySegment {
         return index == 0;
     }
     
-    public boolean isPartOfWay() {
-        if (! (getNode1().getReferrers().contains(way) &&
-                getNode2().getReferrers().contains(way))) {
+    public boolean isPartOfWay(Way w) {
+        if (! (getNode1().getReferrers().contains(w) &&
+                getNode2().getReferrers().contains(w))) {
             return false;
         }
-        return way.getNeighbours(getNode1()).contains(getNode2());
+        return w.getNeighbours(getNode1()).contains(getNode2());
     }
 
 }

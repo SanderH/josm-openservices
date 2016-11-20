@@ -4,22 +4,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
-import org.openstreetmap.josm.plugins.ods.osm.update.BuildingGeometryUpdaterNg;
+import org.openstreetmap.josm.plugins.ods.osm.update.BuildingGeometryUpdater;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class BuildingUpdater implements EntityUpdater {
-    private final BuildingGeometryUpdaterNg geometryUpdater;
+    private final OdsModule module;
     
     public BuildingUpdater(OdsModule module) {
         super();
-        this.geometryUpdater = new BuildingGeometryUpdaterNg(module);
+        this.module = module;
     }
 
+    @Override
     public void update(List<Match<?>> matches) {
         List<Match<Building>> geometryUpdateNeeded = new LinkedList<>();
         for (Match<?> match : matches) {
@@ -39,10 +41,15 @@ public class BuildingUpdater implements EntityUpdater {
                 }
             }
         }
-//        geometryUpdater.updateGeometries(geometryUpdateNeeded);
+        if (!geometryUpdateNeeded.isEmpty()) {
+            BuildingGeometryUpdater geometryUpdater = new BuildingGeometryUpdater(
+                module, geometryUpdateNeeded);
+            geometryUpdater.run();
+        }
+        updateMatching();
     }
 
-    private void updateAttributes(Building odBuilding, Building osmBuilding) {
+    private static void updateAttributes(Building odBuilding, Building osmBuilding) {
         ManagedPrimitive osmPrimitive = osmBuilding.getPrimitive();
         osmBuilding.setSourceDate(odBuilding.getSourceDate());
         osmPrimitive.put("source:date", odBuilding.getPrimitive().get("source:date"));
@@ -65,6 +72,13 @@ public class BuildingUpdater implements EntityUpdater {
             osmBuilding.setStatus(odBuilding.getStatus());
             // TODO Do we need this.
             localPrimitive.getPrimitive().setModified(true);
+        }
+    }
+    
+    private void updateMatching() {
+        // TODO only update matching for modified objects
+        for (Matcher<?> matcher : module.getMatcherManager().getMatchers()) {
+            matcher.run();
         }
     }
 }

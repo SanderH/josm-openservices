@@ -14,6 +14,8 @@ import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.tools.I18n;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
@@ -119,4 +121,13 @@ public abstract class CRSUtil {
 
     public abstract Geometry fromOsm(Geometry geometry, CoordinateReferenceSystem crs)
             throws CRSException;
+
+    public Envelope toOsm(Envelope envelope,
+            CoordinateReferenceSystem crs) {
+        Coordinate p1 = new Coordinate(envelope.getMinX(), envelope.getMinY());
+        Coordinate p2 = new Coordinate(envelope.getMaxX(), envelope.getMaxY());
+        return new Envelope(toOsm(p1, crs), toOsm(p2, crs));
+    }
+
+    public abstract Coordinate toOsm(Coordinate p1, CoordinateReferenceSystem crs);
 }

@@ -86,6 +86,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         if (osm != null) {
             osm.put(ODS.KEY.BASE, "true");
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
+            osm.remove(ODS.KEY.IDMATCH);
             osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
             osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
             if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {

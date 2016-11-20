@@ -10,7 +10,7 @@ import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 public interface Downloader {
     public void setup(DownloadRequest request) throws OdsException;
     
-    public void prepare() throws ExecutionException;
+    public PrepareResponse prepare() throws ExecutionException;
 
     public void download() throws ExecutionException;
 
