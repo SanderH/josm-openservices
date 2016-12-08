@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.io;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -138,49 +139,52 @@ public class MainDownloader {
         }
     }
 
-    private void prepare() throws ExecutionException, InterruptedException {
+    private void prepare() throws OdsException, CancellationException, InterruptedException {
         runTasks(Downloader.getPrepareTasks(enabledDownloaders));
     }
 
-    private void download() throws ExecutionException, InterruptedException {
+    private void download() throws OdsException, CancellationException, InterruptedException {
         runTasks(Downloader.getDownloadTasks(enabledDownloaders));
     }
     
     /**
      * Run the processing tasks.
+     * @throws CancellationException 
      * @throws ExecutionException 
      * @throws InterruptedException 
      * 
      */
-    protected void process(DownloadResponse response) throws ExecutionException, InterruptedException {
+    protected void process(DownloadResponse response) throws OdsException, CancellationException, InterruptedException {
         runTasks(Downloader.getProcessTasks(enabledDownloaders));
         for (Matcher<?> matcher : getModule().getMatcherManager().getMatchers()) {
             matcher.run();
         }
     }
 
-    private void runTasks(List<Callable<Void>> tasks) throws ExecutionException, InterruptedException {
+    private void runTasks(List<Callable<Void>> tasks) throws OdsException, InterruptedException, CancellationException {
         try {
-            List<Future<Void>> futures = executor.invokeAll(tasks, 1, TimeUnit.MINUTES);
+            List<Future<Void>> futures = executor.invokeAll(tasks, 10, TimeUnit.MINUTES);
             List<String> messages = new LinkedList<>();
+            boolean cancelled = false;
             for (Future<Void> future : futures) {
                 try {
                     future.get();
-                } catch (ExecutionException e) {
-                    if (e.getCause() instanceof NullPointerException) {
+                } catch (ExecutionException executionException) {
+                    Exception e = (Exception) executionException.getCause();
+                    if (e instanceof NullPointerException) {
                         messages.add(I18n.tr("A null pointer exception occurred. This is allways a programming error. " +
                             "Please look at the log file for more details"));
-                        Main.error(e.getCause());
+                        Main.error(e);
                     }
                     else {
-                        messages.add(e.getCause().getMessage());
+                        messages.add(e.getMessage());
                     }
                 }
             }
             if (!messages.isEmpty()) {
-                throw new ExecutionException(String.join("\n",  messages), null);
+                throw new OdsException(String.join("\n",  messages));
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | CancellationException e) {
             for (Downloader dl : enabledDownloaders) {
                 dl.cancel();
             }

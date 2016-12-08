@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm-tested.jar" sourcepath="/home/gertjan/projects/josm/src"/>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/update/OdBuildingAnalyzer.java|org/openstreetmap/josm/plugins/ods/osm/update/OsmBuildingAnalyzer.java|org/openstreetmap/josm/plugins/ods/osm/BuildingSegmentSimplifier.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java|org/openstreetmap/josm/plugins/ods/geotools/GtDataSource.java|org/openstreetmap/josm/plugins/ods/matching/osm/RingComparator.java|org/openstreetmap/josm/plugins/ods/matching/OsmAddressNodeToBuildingMatcher.java|org/openstreetmap/josm/plugins/ods/entities/enrichment/BuildingNeighboursEnricher.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/BuildingSegmentSimplifier.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java|org/openstreetmap/josm/plugins/ods/matching/osm/RingComparator.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
@@ -27,6 +27,13 @@
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/gt-wfs-ng"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/main/test/resources">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>

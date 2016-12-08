@@ -3,13 +3,10 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.List;
 
 import org.geotools.data.Query;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.openstreetmap.josm.plugins.ods.entities.EntityMapperFactory;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
-import org.openstreetmap.josm.tools.I18n;
 
 /**
  * @author Gertjan Idema <mail@gertjanidema.nl>
@@ -17,7 +14,6 @@ import org.openstreetmap.josm.tools.I18n;
  */
 public class DefaultOdsDataSource implements OdsDataSource {
     private final OdsFeatureSource odsFeatureSource;
-    private List<String> requiredProperties;
     private final EntityMapperFactory entityMapperFactory;
     private SimpleEntityMapper<?, ?> entityMapper;
     
@@ -28,15 +24,9 @@ public class DefaultOdsDataSource implements OdsDataSource {
 
     public <T extends OdsFeatureSource> DefaultOdsDataSource(T odsFeatureSource, Query query, 
             EntityMapperFactory entityMapperFactory) {
-        this(odsFeatureSource, query, entityMapperFactory, null);
-    }
-    
-    public <T extends OdsFeatureSource> DefaultOdsDataSource(T odsFeatureSource, Query query, 
-            EntityMapperFactory entityMapperFactory, List<String> requiredProperties) {
         super();
         this.odsFeatureSource = odsFeatureSource;
         this.query = query;
-        this.requiredProperties = requiredProperties;
         this.entityMapperFactory = entityMapperFactory;
     }
 
@@ -45,10 +35,6 @@ public class DefaultOdsDataSource implements OdsDataSource {
         return odsFeatureSource;
     }
     
-    public List<String> getRequiredProperties() {
-        return requiredProperties;
-    }
-
     @Override
     public final SimpleEntityMapper<?, ?> getEntityMapper() {
         return entityMapper;
@@ -68,23 +54,7 @@ public class DefaultOdsDataSource implements OdsDataSource {
         if (!initialized) {
             odsFeatureSource.initialize();
             entityMapper = entityMapperFactory.create(odsFeatureSource);
-            initializePropertyNames();
             initialized = true;
-        }
-    }
-
-    void initializePropertyNames() throws OdsException {
-        if (getRequiredProperties() != null) {
-            FeatureType featureType = getOdsFeatureSource().getFeatureType();
-            for (String propertyName : getRequiredProperties()) {
-                PropertyDescriptor descriptor = featureType.getDescriptor(propertyName);
-                if (descriptor == null) {
-                    throw new OdsException(I18n.tr(
-                        "Property ''{0}'' doesn't exist for feature type ''{1}''",
-                        featureType.getName(), propertyName));
-                }
-            }
-            query.setPropertyNames(getRequiredProperties());
         }
     }
 

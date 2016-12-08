@@ -95,7 +95,7 @@ public class BuildingMatcher implements Matcher<Building> {
         try {
             l = (Long)id;
         }
-        catch (Exception e) {
+        catch (ClassCastException e) {
             unidentifiedOsmBuildings.add(osmBuilding);
             return;
         }

@@ -44,7 +44,7 @@ public abstract class GtHost extends AbstractHost {
     @Override
     public <T extends Entity> FeatureDownloader createDownloader(
             OdsModule module, OdsDataSource dataSource, Class<T> clazz) throws OdsException {
-        return new GtDownloader<>(module, dataSource, clazz);
+        return new GtDownloader<>(module, (GtDataSource)dataSource, clazz);
     }
 
     /**

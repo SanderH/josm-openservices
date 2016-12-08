@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -80,7 +79,7 @@ public class OsmLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public void download() throws ExecutionException {
+    public void download() throws OdsException {
         try {
             dataSet = parseDataSet();
             if (downloadSource == DownloadSource.OSM) {
@@ -97,22 +96,22 @@ public class OsmLayerDownloader implements LayerDownloader {
             if (e instanceof OsmApiException) {
                 switch (((OsmApiException) e).getResponseCode()) {
                 case 400:
-                    throw new ExecutionException(
+                    throw new OdsException(
                         I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."), e);
                 case 404:
-                    throw new ExecutionException(
+                    throw new OdsException(
                         I18n.tr("No OSM server could be found at this location: {0}", 
                         host.getHostString().toString()), e);
                 case 504:
-                    throw new ExecutionException(
+                    throw new OdsException(
                     I18n.tr("A timeout occurred for the OSM server at this location: {0}", 
                         host.getHostString().toString()), e);
                 default:
-                    throw new ExecutionException(I18n.tr(e.getMessage()), e);
+                    throw new OdsException(I18n.tr(e.getMessage()), e);
                 }
             }
             else if (e.getCause() instanceof UnknownHostException) {
-                throw new ExecutionException(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()), e);
+                throw new OdsException(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()), e);
             }
         }
     }

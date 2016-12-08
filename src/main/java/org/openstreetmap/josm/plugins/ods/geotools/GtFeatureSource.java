@@ -76,7 +76,7 @@ public class GtFeatureSource implements OdsFeatureSource {
             crs = featureSource.getInfo().getCRS();
             featureType = featureSource.getSchema();
         }
-        catch (Exception e) {
+        catch (IOException e) {
             String msg = I18n.tr("The feature named ''{0}'' is not accessable, " +
                 "because of a network timeout on host {1}",
             getFeatureName(),

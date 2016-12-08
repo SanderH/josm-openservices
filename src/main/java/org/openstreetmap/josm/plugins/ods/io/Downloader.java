@@ -3,18 +3,17 @@ package org.openstreetmap.josm.plugins.ods.io;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 
 public interface Downloader {
     public void setup(DownloadRequest request) throws OdsException;
     
-    public PrepareResponse prepare() throws ExecutionException;
+    public PrepareResponse prepare() throws OdsException;
 
-    public void download() throws ExecutionException;
+    public void download() throws OdsException;
 
-    public void process() throws ExecutionException;
+    public void process() throws OdsException;
 
     public void cancel();
 
@@ -23,7 +22,7 @@ public interface Downloader {
         for (final Downloader downloader : downloaders) {
             tasks.add(new Callable<Void>() {
                 @Override
-                public Void call() throws ExecutionException {
+                public Void call() throws OdsException {
                     downloader.prepare();
                     return null;
                 }
@@ -37,7 +36,7 @@ public interface Downloader {
         for (final Downloader downloader : downloaders) {
             tasks.add(new Callable<Void>() {
                 @Override
-                public Void call() throws ExecutionException {
+                public Void call() throws OdsException {
                     downloader.download();
                     return null;
                 }
@@ -51,7 +50,7 @@ public interface Downloader {
         for (final Downloader downloader : downloaders) {
             tasks.add(new Callable<Void>() {
                 @Override
-                public Void call() throws ExecutionException {
+                public Void call() throws OdsException {
                     downloader.process();
                     return null;
                 }

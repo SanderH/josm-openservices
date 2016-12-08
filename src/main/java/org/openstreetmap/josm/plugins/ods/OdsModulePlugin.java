@@ -13,7 +13,7 @@ import org.openstreetmap.josm.plugins.PluginInformation;
 public abstract class OdsModulePlugin extends Plugin {
     private OdsModule module;
     
-    public OdsModulePlugin(PluginInformation info, OdsModule module) throws Exception {
+    public OdsModulePlugin(PluginInformation info, OdsModule module) {
         super(info);
         this.module = module;
         OpenDataServicesPlugin.INSTANCE.registerModule(getModule());

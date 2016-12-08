@@ -115,6 +115,9 @@ public class WFSHost extends GtHost {
         WFSDataStore ds;
         try {
             ds = (WFSDataStore) DataStoreFinder.getDataStore(connectionParameters);
+            if (ds == null) {
+                throw new OdsException("No data store could be found");
+            }
             WFSServiceInfo serviceInfo = ds.getInfo();
             switch (serviceInfo.getVersion()) {
             case "1.0.0":
@@ -191,7 +194,7 @@ public class WFSHost extends GtHost {
             switch (constraint.getName()) {
             case "CountDefault":
                 String sValue = constraint.getDefaultValue().getValue();
-                this.setMaxFeatures(Integer.parseInt(sValue));
+//                this.setMaxFeatures(Integer.parseInt(sValue));
             }
         }
     }

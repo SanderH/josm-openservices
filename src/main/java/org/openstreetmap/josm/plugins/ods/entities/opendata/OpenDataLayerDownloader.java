@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -41,6 +42,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
     private List<Future<Void>> futures;
     private DownloadRequest request;
     private DownloadResponse response;
+    boolean cancelled = false;
 
     public OpenDataLayerDownloader(OdsModule module) {
         this.module = module;
@@ -89,19 +91,19 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public PrepareResponse prepare() throws ExecutionException {
+    public PrepareResponse prepare() throws OdsException {
         runTasks(Downloader.getPrepareTasks(downloaders));
         return new DefaultPrepareResponse();
     }
     
     @Override
-    public void download() throws ExecutionException {
+    public void download() throws OdsException {
         runTasks(Downloader.getDownloadTasks(downloaders));
         this.response = new DownloadResponse(request);
     }
     
     @Override
-    public void process() throws ExecutionException {
+    public void process() throws OdsException {
         runTasks(Downloader.getProcessTasks(downloaders));
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
@@ -110,23 +112,34 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         osmDataLayer.data.dataSources.add(ds);
     }
 
-    private void runTasks(List<Callable<Void>> tasks) throws ExecutionException {
+    private void runTasks(List<Callable<Void>> tasks) throws OdsException {
         executor = Executors.newFixedThreadPool(NTHREADS);
+        cancelled = false;
         try {
-            futures = executor.invokeAll(tasks, 1, TimeUnit.MINUTES);
+// Removed the time-out because it is handled by the MainDownloader
+//            futures = executor.invokeAll(tasks, 10, TimeUnit.MINUTES);
+            futures = executor.invokeAll(tasks);
             List<String> messages = new LinkedList<>();
             for (Future<Void> future : futures) {
                 try {
                     future.get();
                 } catch (CancellationException e1) {
-                    // Canceled. No further action required.
-                } catch (ExecutionException e2) {
-                    messages.add(e2.getCause().getMessage());
+                    cancelled = true;
+                } catch (ExecutionException executionException) {
+                    Exception e = (Exception) executionException.getCause();
+                    if (e instanceof NullPointerException) {
+                        messages.add("A null pointer exception occurred. This is allways a programming error\n" +
+                                "please check the logs.");
+                        Main.error(e);
+                    }
+                    else {
+                        messages.add(e.getMessage());
+                    }
                 }
             }
             if (!messages.isEmpty()) {
 //                cancel();
-                throw new ExecutionException(String.join("\n",  messages), null);
+                throw new OdsException(String.join("\n",  messages));
             }
             executor.shutdownNow();
         } catch (InterruptedException e) {
