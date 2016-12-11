@@ -18,7 +18,6 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder {
     private OsmLayerManager layerManager;
-//    private Class<T> baseType;
     private Predicate<OsmPrimitive> recognizer;
     private Repository repository;
     private GeoUtil geoUtil;
@@ -29,21 +28,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         this.layerManager = module.getOsmLayerManager();
         this.repository = layerManager.getRepository();
         this.recognizer = recognizer;
-//        this.baseType = baseType;
     }
-
-    
-    
-//    @Override
-//    public Class<T> getEntityClass() {
-//        return baseType;
-//    }
-
-    // TODO do we still need this method?
-//    @Override
-//    public void initialize() {
-//        // No action required
-//    }
 
     @Override
     public OsmLayerManager getLayerManager() {
@@ -125,7 +110,6 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
 
     protected void parseKeys(T entity, Map<String, String> tags) {
         entity.setReferenceId(parseReferenceId(tags));
-        entity.setSource(tags.get("source"));
         String sourceDate = tags.get("source:date");
         if (sourceDate != null) {
             try {
