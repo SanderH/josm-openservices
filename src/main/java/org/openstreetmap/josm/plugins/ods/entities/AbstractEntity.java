@@ -18,6 +18,7 @@ public abstract class AbstractEntity implements Entity {
     private Object referenceId;
     private DownloadResponse response;
     private LocalDate sourceDate;
+    private String source;
     private Geometry geometry;
     private EntityStatus status = EntityStatus.UNKNOWN;
     private boolean incomplete = true;
@@ -64,6 +65,16 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public LocalDate getSourceDate() {
         return sourceDate;
+    }
+
+    @Override
+    public void setSource(String source) {
+        this.source = source;
+    }
+    
+    @Override
+    public String getSource() {
+        return source;
     }
 
     @Override

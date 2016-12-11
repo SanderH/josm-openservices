@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.entities;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.issues.Issue;
@@ -24,6 +25,8 @@ import com.vividsolutions.jts.geom.Geometry;
 public interface Entity {
     public void setDownloadResponse(DownloadResponse response);
     public DownloadResponse getDownloadResponse();
+    public void setSource(String source);
+    public String getSource();
     public void setSourceDate(LocalDate date);
     public LocalDate getSourceDate();
     public void setIncomplete(boolean incomplete);
