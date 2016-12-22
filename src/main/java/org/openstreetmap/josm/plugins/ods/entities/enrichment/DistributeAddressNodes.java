@@ -14,7 +14,6 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeGroup;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 /**
  * This enricher finds overlapping nodes in the data and distributes them, so
@@ -103,6 +102,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
     }
     
     private static class DefaultAddressComparator implements Comparator<Address> {
+        static Comparator<String> stringComparator = new NullSafeCaseInsensitiveComparator();
 
         public DefaultAddressComparator() {
             // TODO Auto-generated constructor stub
@@ -110,11 +110,11 @@ public class DistributeAddressNodes implements Consumer<Building> {
 
         @Override
         public int compare(Address a1, Address a2) {
-            int result = Objects.compare(a1.getCityName(), a2.getCityName(), String.CASE_INSENSITIVE_ORDER);
+            int result = stringComparator.compare(a1.getCityName(), a2.getCityName());
             if (result != 0) return result;
-            result = Objects.compare(a1.getPostcode(), a2.getPostcode(), String.CASE_INSENSITIVE_ORDER);
+            result = stringComparator.compare(a1.getPostcode(), a2.getPostcode());
             if (result != 0) return result;
-            result = Objects.compare(a1.getStreetName(), a2.getStreetName(), String.CASE_INSENSITIVE_ORDER);
+            result = stringComparator.compare(a1.getStreetName(), a2.getStreetName());
             if (result != 0) return result;
             result = Integer.compare(a1.getHouseNumber(), a2.getHouseNumber());
             if (result != 0) return result;
@@ -126,7 +126,23 @@ public class DistributeAddressNodes implements Consumer<Building> {
                 result = Character.compare(a1.getHouseLetter(), a2.getHouseLetter());
             }
             if (result != 0) return result;
-            return Objects.compare(a1.getHouseNumberExtra(), a2.getHouseNumberExtra(), String.CASE_INSENSITIVE_ORDER);
+            return stringComparator.compare(a1.getHouseNumberExtra(), a2.getHouseNumberExtra());
         }
+    }
+    
+    private static class NullSafeCaseInsensitiveComparator implements Comparator<String> {
+
+        public NullSafeCaseInsensitiveComparator() {
+            //
+        }
+
+        @Override
+        public int compare(String s1, String s2) {
+            if (s1 == null && s2 == null) return 0;
+            if (s1 == null) return -1;
+            if (s2 == null) return 1;
+            return Objects.compare(s2, s2, String.CASE_INSENSITIVE_ORDER);
+        }
+        
     }
 }
