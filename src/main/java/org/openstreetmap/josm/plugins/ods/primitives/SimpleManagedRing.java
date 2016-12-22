@@ -126,12 +126,25 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
 
     @Override
     public double getArea() {
-        if (area == 0) updateArea();
+        if ((area == 0 || getPrimitive().isModified()) && !getPrimitive().isDeleted()) {
+            updateArea();
+        }
         return area;
     }
 
     private void updateArea() {
-        this.area = Geometry.computeArea(managedWay.getPrimitive());
+        OsmPrimitive primitive = getPrimitive();
+        if (primitive.isDeleted()) {
+            this.area = 0;
+        }
+        else {
+            this.area = Geometry.computeArea(getPrimitive());
+        }
+    }
+
+    @Override
+    public OsmPrimitive getPrimitive() {
+        return managedWay.getPrimitive();
     }
 
     @Override
