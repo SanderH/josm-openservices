@@ -2,14 +2,16 @@ package org.openstreetmap.josm.plugins.ods.gui;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JOptionPane;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporter;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporterNg;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsUpdater;
+import org.openstreetmap.josm.tools.I18n;
 
 public class OdsUpdateAction extends OdsAction {
     /**
@@ -28,8 +30,11 @@ public class OdsUpdateAction extends OdsAction {
 
         Layer layer = Main.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
-        // This action should only occur when the OpenData layer is active
-        assert (layerManager != null && !layerManager.isOsm());
+        if (layerManager == null || layerManager.isOsm()) {
+            JOptionPane.showMessageDialog(Main.panel, 
+                I18n.tr("This operation is only allowed on the ODS layer;"));
+            return;
+        }
         
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
         importer.doImport(osmLayer.data.getAllSelected());
