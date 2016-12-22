@@ -27,8 +27,10 @@ import org.openstreetmap.josm.data.osm.event.RelationMembersChangedEvent;
 import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * Implementation of @DataSetListener that caches the change events and processes them in a background thread.
@@ -39,6 +41,7 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 public class OsmLayerListener implements DataSetListener, Runnable {
     private List<DataSetListener> childListeners = new LinkedList<>();
     private List<PrimitivesAddedEvent> primitivesAddedCache = new LinkedList<>();
+    private List<PrimitivesRemovedEvent> primitivesRemovedCache = new LinkedList<>();
     private List<WayNodesChangedEvent> wayNodesChangedCache = new LinkedList<>();
     private Map<Node, NodeMovedEvent> nodesMovedCache = new HashMap<>();
     
@@ -66,6 +69,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     private void realRun() {
         processPrimitivesAddedEvents();
+        processPrimitivesRemovedEvents();
         processWayNodesChangedEvents();
         processNodesMovedEvents();
     }
@@ -81,6 +85,21 @@ public class OsmLayerListener implements DataSetListener, Runnable {
         for (PrimitivesAddedEvent event : events) {
             for (DataSetListener listener : childListeners) {
                 listener.primitivesAdded(event);
+            }
+        }
+    }
+
+    private void processPrimitivesRemovedEvents() {
+        // Take a snapshot from the event cache and clear the cache
+        Collection<PrimitivesRemovedEvent> events;
+        synchronized (this) {
+            events = new ArrayList<>(primitivesRemovedCache);
+            primitivesRemovedCache.clear();
+        }
+        // pass the new events to the child listeners
+        for (PrimitivesRemovedEvent event : events) {
+            for (DataSetListener listener : childListeners) {
+                listener.primitivesRemoved(event);
             }
         }
     }
@@ -123,8 +142,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     @Override
     public void primitivesRemoved(PrimitivesRemovedEvent event) {
-        // TODO Auto-generated method stub
-        
+        primitivesRemovedCache.add(event);
     }
 
     @Override
@@ -166,10 +184,12 @@ public class OsmLayerListener implements DataSetListener, Runnable {
     }
     
     private static class UpdateWayHandler extends DefaultDataSetListener {
+        private OsmLayerManager layerManager;
         private OsmEntitiesBuilder osmEntitiesBuilder;
 
         public UpdateWayHandler(OsmLayerManager layerManager) {
             super();
+            this.layerManager = layerManager;
             this.osmEntitiesBuilder = layerManager.getEntitiesBuilder();
         }
 
@@ -184,6 +204,17 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             for (OsmPrimitive primitive : node.getReferrers()) {
                 if (primitive.getType() == OsmPrimitiveType.WAY) {
                     osmEntitiesBuilder.updatedGeometry((Way) primitive);
+                }
+            }
+        }
+
+        @Override
+        public void primitivesRemoved(PrimitivesRemovedEvent event) {
+            for (OsmPrimitive primitive : event.getPrimitives()) {
+                ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(primitive);
+                if (mPrimitive != null && mPrimitive.getEntity() != null) {
+                    Entity entity = mPrimitive.getEntity();
+                    entity.getMatches();
                 }
             }
         }

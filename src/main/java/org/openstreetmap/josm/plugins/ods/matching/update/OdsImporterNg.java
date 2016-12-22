@@ -204,7 +204,7 @@ public class OdsImporterNg {
                 node = nodeMap.get(odNode);
                 if (node == null) {
                     List<Node> nodes = layer.data.searchNodes(odNode.getBBox());
-                    if (!nodes.isEmpty()) {
+                    if (!nodes.isEmpty() && !nodes.get(0).isDeleted()) {
                         node = nodes.get(0);
                     }
                 }
