@@ -9,6 +9,7 @@ import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.OsmBuildingToAddressNodesMatcher;
@@ -52,8 +53,12 @@ public class OsmEntitiesBuilder {
             if (!primitive.isIncomplete() && primitive.isTagged()) {
                 for (OsmEntityBuilder builder : entityBuilders) {
                     if (builder.recognizes(primitive)) {
-                        Entity entity = builder.buildOsmEntity(primitive);
-                        layerManager.getRepository().add(entity);
+                        try {
+                            Entity entity = builder.buildOsmEntity(primitive);
+                            layerManager.getRepository().add(entity);
+                        } catch (InvalidGeometryException e) {
+                            // TODO Create validation error here? Or at a lower level.
+                        }
                     }
                 }
             }

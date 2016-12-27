@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.MultipolygonBuilder;
 import org.openstreetmap.josm.data.osm.MultipolygonBuilder.JoinedPolygon;
+import org.openstreetmap.josm.data.osm.MultipolygonBuilder.JoinedPolygonCreationException;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
@@ -14,6 +14,8 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.visitor.paint.relations.Multipolygon;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidMultiPolygonException;
 import org.openstreetmap.josm.plugins.ods.primitives.ComplexManagedRing.RingMember;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -25,7 +27,7 @@ public class ManagedPrimitiveFactory {
         this.layerManager = layerManager;
     }
 
-    public ManagedPrimitive createArea(OsmPrimitive primitive) {
+    public ManagedPrimitive createArea(OsmPrimitive primitive) throws InvalidGeometryException {
         switch (primitive.getDisplayType()) {
         case CLOSEDWAY:
             return createSimplePolygon((Way)primitive);
@@ -38,7 +40,7 @@ public class ManagedPrimitiveFactory {
         }
     }
     
-    public ManagedPrimitive createArea(Relation multiPolygon) {
+    public ManagedPrimitive createArea(Relation multiPolygon) throws InvalidGeometryException {
         // Extract outer/inner members from multipolygon relation
         final Multipolygon mpm = new Multipolygon(multiPolygon);
         boolean incomplete = false;
@@ -54,9 +56,18 @@ public class ManagedPrimitiveFactory {
         // Construct complete rings for the inner/outer members
         final List<MultipolygonBuilder.JoinedPolygon> outerRings;
         final List<MultipolygonBuilder.JoinedPolygon> innerRings;
-        try {
-            outerRings = MultipolygonBuilder.joinWays(mpm.getOuterWays());
-            innerRings = MultipolygonBuilder.joinWays(mpm.getInnerWays());
+            try {
+                outerRings = MultipolygonBuilder.joinWays(mpm.getOuterWays());
+            } catch (JoinedPolygonCreationException e) {
+                throw new InvalidMultiPolygonException(multiPolygon, 
+                    I18n.tr("The outer ways of (multi)polygon {0} don't form 1 or more closed ways", multiPolygon.getId()));
+            }
+            try {
+                innerRings = MultipolygonBuilder.joinWays(mpm.getInnerWays());
+            } catch (JoinedPolygonCreationException e) {
+                throw new InvalidMultiPolygonException(multiPolygon, 
+                    I18n.tr("The inner ways of (multi)polygon {0} don't form 1 or more closed ways", multiPolygon.getId()));
+            }
             List<ManagedRing> managedOuterRings = new ArrayList<>(outerRings.size());
             List<ManagedRing> managedInnerRings = new ArrayList<>(innerRings.size());
             for (JoinedPolygon outer : outerRings) {
@@ -66,10 +77,6 @@ public class ManagedPrimitiveFactory {
                 managedInnerRings.add(createRing(inner.ways, inner.reversed));
             }
             return new ManagedJosmMultiPolygonImpl(layerManager, managedOuterRings, managedInnerRings, multiPolygon);
-        } catch (MultipolygonBuilder.JoinedPolygonCreationException ex) {
-            Main.debug("Invalid multipolygon " + multiPolygon);
-            return null;
-        }
     }
     
     public ManagedNode createNode(Node node) {

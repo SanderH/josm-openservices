@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -19,6 +18,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.TestLayerManager;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
 import org.openstreetmap.josm.plugins.ods.test.TestData;
 
 public class ManagedPrimitiveFactoryTest {
@@ -92,7 +92,7 @@ public class ManagedPrimitiveFactoryTest {
 //    }
     
     @Test
-    public void testCreateArea_type() {
+    public void testCreateArea_type() throws InvalidGeometryException {
         Relation relation = testData.getRelation("inktpotInner2");
         ManagedPrimitive area = factory.createArea(relation);
         assertTrue("Area should exist and be of type 'MultiPolygon'", 
@@ -100,7 +100,7 @@ public class ManagedPrimitiveFactoryTest {
     }
     
     @Test
-    public void testCreateArea_tags() {
+    public void testCreateArea_tags() throws InvalidGeometryException {
         Relation relation = testData.getRelation("inktpotInner2");
         ManagedPrimitive  area = factory.createArea(relation);
         assertEquals("Area should have the same tags as the related Relation", 
@@ -108,7 +108,7 @@ public class ManagedPrimitiveFactoryTest {
     }
     
     @Test
-    public void testCreateArea2() {
+    public void testCreateArea2() throws InvalidGeometryException {
         Relation relation = testData.getRelation("inktpot");
 //        assert way.isClosed();
         ManagedPrimitive area = factory.createArea(relation);

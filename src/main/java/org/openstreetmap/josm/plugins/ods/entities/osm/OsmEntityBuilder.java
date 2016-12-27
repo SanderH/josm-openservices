@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public interface OsmEntityBuilder {
@@ -29,7 +30,7 @@ public interface OsmEntityBuilder {
      * @param primitive
      * @return 
      */
-    public Entity buildOsmEntity(OsmPrimitive primitive);
+    public Entity buildOsmEntity(OsmPrimitive primitive) throws InvalidGeometryException;
     
     /**
      * Update the ods Entity for the passed osm primitive if such
