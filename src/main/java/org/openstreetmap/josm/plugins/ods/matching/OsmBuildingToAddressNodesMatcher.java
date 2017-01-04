@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import java.util.function.Consumer;
-
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
@@ -13,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
- * <p>Try to find a matching address nodes for every Building. 
+ * <p>Try to find matching address nodes for every Building. 
  * The geometry of the AddressNode will be used to do the matching</p>
  * <p>If a match is found, the building parameter of the addressNode will be set to the related address
  * and the addressNode will be added to the related addresses list of the building.</p>
@@ -26,16 +24,10 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 public class OsmBuildingToAddressNodesMatcher {
     private OdsModule module;
     private DataSet dataSet;
-    private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
     public OsmBuildingToAddressNodesMatcher(OdsModule module) {
         super();
         this.module = module;
-    }
-
-    public void setUnmatchedAddressNodeHandler(
-            Consumer<AddressNode> unmatchedAddressNodeHandler) {
-        this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
     }
 
     /**
@@ -66,11 +58,5 @@ public class OsmBuildingToAddressNodesMatcher {
     }
     private AbstractLayerManager getLayerManager() {
         return module.getOsmLayerManager();
-    }
-
-    private void reportUnmatched(AddressNode addressNode) {
-        if (unmatchedAddressNodeHandler != null) {
-            unmatchedAddressNodeHandler.accept(addressNode);
-        }
     }
 }

@@ -71,4 +71,15 @@ public class ManagedJosmMultiPolygonImpl extends AbstractManagedPrimitive implem
             area -= ring.getArea();
         }
     }
+
+    @Override
+    public boolean contains(ManagedNode mNode) {
+        for (ManagedRing ring : innerRings) {
+            if (ring.contains(mNode)) return false;
+        }
+        for (ManagedRing ring : outerRings) {
+            if (ring.contains(mNode)) return true;
+        }
+        return false;
+    }
 }
