@@ -53,7 +53,7 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
     private OsmLayerManager osmLayerManager;
     private final MatcherManager matcherManager = new MatcherManager(this);
 
-    String osmQuery;
+//    String osmQuery;
     private boolean initialized = false;
     private boolean active = false;
 
@@ -152,22 +152,22 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         return dataSources;
     }
 
-    public void setOsmQuery(String query) {
-        /**
-         * Currently, we pass the osm (overpass) query through http get. This
-         * doesn't allow linefeed or carriage return characters, so we need to
-         * strip them.
-         */
-        if (query == null) {
-            osmQuery = null;
-            return;
-        }
-        this.osmQuery = query.replaceAll("\\s", "");
-    }
-
-    public final String getOsmQuery() {
-        return osmQuery;
-    }
+//    public void setOsmQuery(String query) {
+//        /**
+//         * Currently, we pass the osm (overpass) query through http get. This
+//         * doesn't allow linefeed or carriage return characters, so we need to
+//         * strip them.
+//         */
+//        if (query == null) {
+//            osmQuery = null;
+//            return;
+//        }
+//        this.osmQuery = query.replaceAll("\\s", "");
+//    }
+//
+//    public final String getOsmQuery() {
+//        return osmQuery;
+//    }
 
     protected abstract OpenDataLayerManager createOpenDataLayerManager();
 
@@ -297,11 +297,22 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
         return plugin.getPluginDir();
     }
 
-    public void reset() {
-        getOsmLayerManager().reset();
-        getOpenDataLayerManager().reset();
-        getMatcherManager().reset();
-        Main.map.mapView.repaint();
+    /**
+     * Reset the module
+     * @throws OdsException 
+     */
+    public void reset() throws OdsException {
+        cleanUp();
+        initialize();
+    }
+    
+    /**
+     * Clean up the module. 
+     */
+    private void cleanUp() {
+        matcherManager.reset();
+        osmLayerManager.reset();
+        openDataLayerManager.reset();
     }
 
     /**
