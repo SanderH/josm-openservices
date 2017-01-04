@@ -17,8 +17,6 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
-import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
-import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
@@ -41,7 +39,7 @@ import org.openstreetmap.josm.tools.I18n;
  * @author Gertjan Idema
  * 
  */
-public abstract class OdsModule implements LayerChangeListener, ActiveLayerChangeListener {
+public abstract class OdsModule implements LayerChangeListener {
     private OdsModulePlugin plugin;
     
     private final List<OdsAction> actions = new LinkedList<>();
@@ -244,14 +242,6 @@ public abstract class OdsModule implements LayerChangeListener, ActiveLayerChang
 
     void activateOsmLayer() {
         Main.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
-    }
-
-    @Override
-    public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
-        if (!isActive()) return;
-        for (OdsAction action : actions) {
-            action.activeLayerChange(e.getPreviousActiveLayer(), Main.getLayerManager().getActiveLayer());
-        }
     }
 
     @Override

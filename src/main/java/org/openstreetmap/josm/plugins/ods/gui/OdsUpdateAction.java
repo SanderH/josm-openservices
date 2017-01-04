@@ -10,6 +10,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingAligner;
@@ -56,7 +57,8 @@ public class OdsUpdateAction extends OdsAction {
     }
 
     @Override
-    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+    public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
+        Layer newLayer = Main.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(newLayer);
         this.setEnabled(layerManager != null && !layerManager.isOsm());
     }
