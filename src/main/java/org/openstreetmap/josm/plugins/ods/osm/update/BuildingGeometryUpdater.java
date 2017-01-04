@@ -21,14 +21,12 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 
-/*
- * TODO Incomplete class. Either finish or remove
-*/
 
 public class BuildingGeometryUpdater {
     private final OsmDataLayer osmDataLayer;
@@ -36,6 +34,8 @@ public class BuildingGeometryUpdater {
     private Set<Node> existingNodes = new HashSet<>();
     private Set<Node> newNodes = new HashSet<>();
     private Map<Node, Node> nodeMap = new HashMap<>();
+    private Set<Entity> updatedEntities = new HashSet<>();
+    private Set<Way> updatedWays = new HashSet<>();
     
     public BuildingGeometryUpdater(OdsModule module, List<Match<Building>> matches) {
         this.osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
@@ -67,9 +67,13 @@ public class BuildingGeometryUpdater {
     private void matchNodes() {
         DataSet dataSet = osmDataLayer.data;
         for (Node newNode : newNodes) {
-            List<Node> existing = dataSet.searchNodes(newNode.getBBox());
-            if (!existing.isEmpty()) {
-                nodeMap.put(newNode, existing.get(0));
+            Iterator<Node> it = dataSet.searchNodes(newNode.getBBox()).iterator();
+            Node matchedNode = null;
+            while ((matchedNode == null || matchedNode.isDeleted()) && it.hasNext()) {
+                matchedNode = it.next();
+            }
+            if (matchedNode != null && !matchedNode.isDeleted()) {
+                nodeMap.put(newNode, matchedNode);
             }
         }
     }
@@ -114,9 +118,10 @@ public class BuildingGeometryUpdater {
             }
             newWayNodes.add(newNode);
         }
-        osmPrimitive.geometryChanged();
         Command cmd = new ChangeNodesCommand(osmWay, newWayNodes);
         Main.main.undoRedo.add(cmd);
+        updatedEntities.add(osmBuilding);
+        updatedWays.add(osmWay);
 //        cmd.executeCommand();
 //        for (Node node: osmNodes) {
 //            if (node.getReferrers().size() == 0) {
@@ -140,5 +145,13 @@ public class BuildingGeometryUpdater {
         return match.isSimple() &&
         (match.getOsmEntity().getPrimitive() instanceof SimpleManagedPolygon) &&
         (match.getOpenDataEntity().getPrimitive() instanceof SimpleManagedPolygon);
+    }
+    
+    public Set<Entity> getUpdatedEntities() {
+        return updatedEntities;
+    }
+    
+    public Set<Way> getUpdatedWays() {
+        return updatedWays;
     }
 }

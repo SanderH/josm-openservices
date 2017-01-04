@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.matching.update;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,13 +25,10 @@ import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
- * TODO fix building alignment. Either in this class or through listeners
- * The importer imports objects from the OpenData layer to the Osm layer.
  * 
  * TODO Use AddPrimitivesCommand
  * 
@@ -41,9 +39,8 @@ public class OdsImporterNg {
     private final OdsModule module;
     // TODO Make the importfilter(s) configurable
     private final ImportFilter importFilter = new DefaultImportFilter();
-    // TODO Move buildingAligner out of this class in favour of a
-    // Observer pattern
-//    private final BuildingAligner buildingAligner;
+    
+    private List<Way> importedWays;
     
     public OdsImporterNg(OdsModule module) {
         super();
@@ -91,21 +88,14 @@ public class OdsImporterNg {
         }
         Command cmd = builder.getCommand();
         Main.main.undoRedo.add(builder.getCommand());
-//        AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData, null,
-//            module.getOsmLayerManager().getOsmDataLayer());
-//        cmd.executeCommand();
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);
         buildImportedEntities(importedPrimitives);
         updateMatching();
-        List<Way> ways = importedPrimitives.stream()
+        importedWays = importedPrimitives.stream()
             .filter((OsmPrimitive p) -> p.getType() == OsmPrimitiveType.WAY)
             .map((OsmPrimitive p) -> (Way)p)
             .collect(Collectors.toList());
-        if (!ways.isEmpty()) {
-            BuildingAligner buildingAligner = new BuildingAligner(ways);
-            buildingAligner.run();
-        }
     }
     
     private void updateMatching() {
@@ -114,6 +104,10 @@ public class OdsImporterNg {
         }
     }
 
+    public List<Way> getImportedWays() {
+        return (importedWays == null ? Collections.emptyList() : importedWays);
+    }
+    
     /**
      * Remove the ODS tags from the selected Osm primitives
      * 

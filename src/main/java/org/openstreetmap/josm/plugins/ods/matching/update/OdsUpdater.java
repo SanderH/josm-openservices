@@ -1,10 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -20,11 +23,11 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 public class OdsUpdater {
     private OdsModule module;
     private List<EntityUpdater> entityUpdaters = new LinkedList<>();
+    private Set<Way> updatedWays = new HashSet<>();
     
     public OdsUpdater(OdsModule module) {
         super();
         this.module = module;
-        // TODO improve configuration and generics for the entity updaters
         this.entityUpdaters.add(new BuildingUpdater(module));
     }
 
@@ -45,10 +48,15 @@ public class OdsUpdater {
         }
         for (EntityUpdater updater : entityUpdaters) {
             updater.update(updateableMatches);
+            updatedWays.addAll(updater.getUpdatedWays());
         }
         for (Match<?> match : updateableMatches) {
             match.analyze();
             match.updateMatchTags();
         }
+    }
+
+    public Collection<? extends Way> getUpdatedWays() {
+        return updatedWays;
     }
 }
