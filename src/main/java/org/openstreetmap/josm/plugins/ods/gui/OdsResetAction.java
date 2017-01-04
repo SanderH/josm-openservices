@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.gui;
 import java.awt.event.ActionEvent;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 
 public class OdsResetAction extends OdsAction {
 
@@ -18,6 +19,11 @@ public class OdsResetAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        module.reset();
+        try {
+            module.reset();
+        } catch (OdsException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }
 }

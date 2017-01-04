@@ -87,6 +87,7 @@ public abstract class AbstractLayerManager
     @Override
     public void reset() {
         if (isActive()) {
+            primitiveMap.clear();
             getRepository().clear();
             this.osmDataLayer.data.clear();
             this.osmDataLayer.data.dataSources.clear();

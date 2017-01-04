@@ -14,7 +14,7 @@ public class MatcherManager {
     }
     
     public void reset() {
-        for (Matcher<?> matcher : matchers.values()) {
+        for (Matcher<?> matcher : getMatchers()) {
             matcher.reset();
         }
     }
