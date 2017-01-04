@@ -47,10 +47,10 @@ public class BuildingImpl extends AbstractEntity implements Building {
     @Override
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
-        ManagedPrimitive mPrimitive = this.getPrimitive();
-        if (mPrimitive != null) {
-            mPrimitive.putAll(buildingType.getTags());
-        }
+//        ManagedPrimitive mPrimitive = this.getPrimitive();
+//        if (mPrimitive != null) {
+//            mPrimitive.putAll(buildingType.getTags());
+//        }
     }
 
     @Override
