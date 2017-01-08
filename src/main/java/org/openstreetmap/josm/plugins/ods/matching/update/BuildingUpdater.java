@@ -18,6 +18,7 @@ import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
 import org.openstreetmap.josm.plugins.ods.osm.update.BuildingGeometryUpdater;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
+@Deprecated
 public class BuildingUpdater implements EntityUpdater {
     private final OdsModule module;
     private Set<Way> updatedWays = new HashSet<>();

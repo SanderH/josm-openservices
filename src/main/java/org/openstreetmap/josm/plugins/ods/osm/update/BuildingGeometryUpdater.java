@@ -27,7 +27,7 @@ import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 
-
+@Deprecated
 public class BuildingGeometryUpdater {
     private final OsmDataLayer osmDataLayer;
     private List<Match<Building>> matches;

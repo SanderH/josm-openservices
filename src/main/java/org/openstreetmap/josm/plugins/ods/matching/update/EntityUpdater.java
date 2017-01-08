@@ -11,6 +11,7 @@ import org.openstreetmap.josm.plugins.ods.matching.Match;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
+@Deprecated
 public interface EntityUpdater {
     void update(List<Match<?>> matches);
 

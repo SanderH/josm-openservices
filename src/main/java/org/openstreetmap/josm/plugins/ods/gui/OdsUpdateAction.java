@@ -14,8 +14,8 @@ import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingAligner;
-import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporterNg;
-import org.openstreetmap.josm.plugins.ods.matching.update.OdsUpdater;
+import org.openstreetmap.josm.plugins.ods.update.OdsImporter;
+import org.openstreetmap.josm.plugins.ods.update.OdsUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsUpdateAction extends OdsAction {
@@ -30,7 +30,7 @@ public class OdsUpdateAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        OdsImporterNg importer = new OdsImporterNg(getModule());
+        OdsImporter importer = new OdsImporter(getModule());
         OdsUpdater updater = new OdsUpdater(getModule());
 
         Layer layer = Main.getLayerManager().getActiveLayer();

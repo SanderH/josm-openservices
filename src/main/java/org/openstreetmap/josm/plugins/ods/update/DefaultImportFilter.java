@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching.update;
+package org.openstreetmap.josm.plugins.ods.update;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;

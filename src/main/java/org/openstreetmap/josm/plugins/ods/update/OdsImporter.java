@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching.update;
+package org.openstreetmap.josm.plugins.ods.update;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,23 +30,19 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * 
- * TODO Use AddPrimitivesCommand
- * 
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OdsImporterNg {
+public class OdsImporter {
     private final OdsModule module;
     // TODO Make the importfilter(s) configurable
     private final ImportFilter importFilter = new DefaultImportFilter();
     
     private List<Way> importedWays;
     
-    public OdsImporterNg(OdsModule module) {
+    public OdsImporter(OdsModule module) {
         super();
         this.module = module;
-//        this.buildingAligner=new BuildingAligner(module, 
-//                module.getOsmLayerManager());
     }
 
     public void doImport(Collection<OsmPrimitive> primitives) {
