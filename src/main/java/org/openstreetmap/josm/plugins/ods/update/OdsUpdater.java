@@ -10,7 +10,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUpdater;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
@@ -22,15 +21,12 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
  *
  */
 public class OdsUpdater {
-    private OdsModule module;
-    private List<EntityUpdater> entityUpdaters = new LinkedList<>();
+    private final OdsModule module;
     private Set<Way> updatedWays = new HashSet<>();
     
     public OdsUpdater(OdsModule module) {
         super();
         this.module = module;
-        // TODO get entity updaters from 
-        this.entityUpdaters.add(new BuildingUpdater(module));
     }
 
     public void doUpdate(Collection<OsmPrimitive> primitives) {
@@ -48,7 +44,7 @@ public class OdsUpdater {
                 }
             }
         }
-        for (EntityUpdater updater : entityUpdaters) {
+        for (EntityUpdater updater : module.getUpdaters()) {
             UpdateResult result = updater.update(updateableMatches);
             updatedWays.addAll(result.getUpdatedWays());
         }

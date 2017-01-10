@@ -27,6 +27,7 @@ import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -286,6 +287,8 @@ public abstract class OdsModule implements LayerChangeListener {
     public String getPluginDir() {
         return plugin.getPluginDir();
     }
+
+    public abstract List<EntityUpdater> getUpdaters();
 
     /**
      * Reset the module
