@@ -20,8 +20,6 @@ public class AddressableMatcher implements Matcher<Addressable> {
     private OdsModule module;
     
     private Map<Object, Match<Addressable>> addressableMatches = new HashMap<>();
-    private Repository odRepository;
-    private Repository osmRepository;
     private List<Addressable> unidentifiedOsmAddressables = new LinkedList<>();
     private List<Addressable> unmatchedOpenDataAddressables = new LinkedList<>();
     private List<Addressable> unmatchedOsmAddressables = new LinkedList<>();
@@ -33,8 +31,7 @@ public class AddressableMatcher implements Matcher<Addressable> {
     
     @Override
     public void initialize() throws OdsException {
-        odRepository = module.getOpenDataLayerManager().getRepository();
-        osmRepository = module.getOsmLayerManager().getRepository();
+        // Empty implementation. No action required
     }
 
     
@@ -92,69 +89,9 @@ public class AddressableMatcher implements Matcher<Addressable> {
     }
 
     private void matchOtherAddressables() {
-//        unmatchedOpenDataAddressables.clear();
-//        for (Addressable addressable : odRepository.getAll(Addressable.class)) {
-//            if (addressable.getMatch() == null) {
-//                unmatchedOpenDataAddressables.add(addressable);
-//            }
-//        }
-//        unmatchedOsmAddressables.clear();
-//        for (Addressable addressable : osmRepository.getAll(Addressable.class)) {
-//            if (addressable.getMatch() == null) {
-//                unmatchedOsmAddressables.add(addressable);
-//            }
-//        }
-//        analyze();
+        // TODO implement
     }
 
-//    private void processOpenDataAddressable(Addressable odAddressable) {
-//        Long id = (Long) odAddressable.getReferenceId();
-//        Match<Addressable> match = addressableMatches.get(id);
-//        if (match != null) {
-//            match.addOpenDataEntity(odAddressable);
-//            odAddressable.setMatch(match);
-//            return;
-//        }
-//        List<Addressable> osmAddressables = osmAddressableStore.g;
-//        if (osmBuildings.size() > 0) {
-//            match = new BuildingMatch(osmBuildings.get(0), odBuilding);
-//            for (int i=1; i<osmBuildings.size() ; i++) {
-//                Building osmBuilding = osmBuildings.get(i);
-//                osmBuilding.setMatch(match);
-//                match.addOsmEntity(osmBuilding);
-//            }
-//            buildingMatches.put(id, match);
-//        } else {
-//            unmatchedOpenDataBuildings.add(odBuilding);
-//        }
-//    }
-//
-//    private void processOsmAddressable(Addressable osmAddressable) {
-//        Object id = osmBuilding.getReferenceId();
-//        if (id == null) {
-//            unidentifiedOsmBuildings.add(osmBuilding);
-//            return;
-//        }
-//        Long l;
-//        try {
-//            l = (Long)id;
-//        }
-//        catch (@SuppressWarnings("unused") Exception e) {
-//            unidentifiedOsmBuildings.add(osmBuilding);
-//            return;
-//        }
-//        List<Building> odBuildings = odBuildingStore.getById(l);
-//        if (odBuildings.size() > 0) {
-//            Match<Building> match = new BuildingMatch(osmBuilding, odBuildings.get(0));
-//            for (int i=1; i<odBuildings.size(); i++) {
-//                match.addOpenDataEntity(odBuildings.get(i));
-//            }
-//            buildingMatches.put(l, match);
-//        } else {
-//            unmatchedOsmBuildings.add(osmBuilding);
-//        }
-//    }
-    
     public void analyze() {
         for (Match<Addressable> match : addressableMatches.values()) {
             if (match.isSimple()) {
@@ -186,12 +123,18 @@ public class AddressableMatcher implements Matcher<Addressable> {
         private String houseNumberExtra;
         
         public AddressKey(Address address) {
-            this.postcode = address.getPostcode();
+            this.postcode = normalizePostcode(address.getPostcode());
             this.houseNumber = address.getHouseNumber();
             this.houseLetter = address.getHouseLetter();
             this.houseNumberExtra = address.getHouseNumberExtra();
         }
 
+        private static String normalizePostcode(String postcode) {
+            if (postcode == null) {
+                return postcode;
+            }
+            return postcode.replace(" ", "");
+        }
         @Override
         public int hashCode() {
             return Objects.hash(postcode, houseNumber, houseLetter, houseNumberExtra);
