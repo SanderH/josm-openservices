@@ -133,7 +133,7 @@ public class OsmLayerDownloader implements LayerDownloader {
         layerManager.getOsmDataLayer().mergeFrom(dataSet);
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "OSM");
-        layerManager.getOsmDataLayer().data.dataSources.add(ds);
+        layerManager.getOsmDataLayer().data.addDataSource(ds);
     }
     
     private DataSet parseDataSet() throws OsmTransferException {

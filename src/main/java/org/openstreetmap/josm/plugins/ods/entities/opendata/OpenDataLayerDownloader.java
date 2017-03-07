@@ -109,7 +109,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
         module.getOpenDataLayerManager().extendBoundary(request.getBoundary().getMultiPolygon());
         OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
-        osmDataLayer.data.dataSources.add(ds);
+        osmDataLayer.data.addDataSource(ds);
     }
 
     private void runTasks(List<Callable<Void>> tasks) throws OdsException {

@@ -89,11 +89,13 @@ public abstract class AbstractLayerManager
         if (isActive()) {
             primitiveMap.clear();
             getRepository().clear();
-            this.osmDataLayer.data.clear();
-            this.osmDataLayer.data.dataSources.clear();
-        }
-        if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
-            Main.getLayerManager().addLayer(osmDataLayer);
+            deActivate();
+            activate();
+//            this.osmDataLayer.data.clear();
+//            this.osmDataLayer.data.getDataSources().clear();
+//            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
+//                Main.getLayerManager().addLayer(osmDataLayer);
+//            }
         }
     }
 
