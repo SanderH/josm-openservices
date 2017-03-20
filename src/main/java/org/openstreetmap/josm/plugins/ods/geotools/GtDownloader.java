@@ -28,7 +28,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.geotools.impl.GtPagingReaderImpl;
+import org.openstreetmap.josm.plugins.ods.geotools.impl.GtFeatureReaderImpl;
 import org.openstreetmap.josm.plugins.ods.io.DefaultPrepareResponse;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
@@ -211,7 +211,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
       };
       consumer = dataSource.createVisitor(consumer);
       int maxFeatures = dataSource.getOdsFeatureSource().getHost().getMaxFeatures();
-      GtPagingReader reader = new GtPagingReaderImpl(featureSource, baseQuery, maxFeatures);
+      GtFeatureReader reader = new GtFeatureReaderImpl(featureSource, baseQuery, maxFeatures);
       try {
         reader.read(consumer, null);
       } catch (IOException e) {

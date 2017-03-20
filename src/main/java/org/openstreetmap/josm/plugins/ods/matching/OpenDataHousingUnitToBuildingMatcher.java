@@ -10,13 +10,13 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
 
 
 /**
- * <p>Try to find a matching building for every AddressNode passed to the AddressNode
- * consumer. The referenceId of the address node will be used to do the matching.</p>
+ * <p>Try to find a matching building for every HousingUnit passed to the AddressNode
+ * consumer. The buildingRef of the address node will be used to do the matching.</p>
  * <p>If a match is found, the building parameter of the addressNode will be set to the related address
  * and the addressNode will be added to the related addresses list of the building.</p>
- * <p>If the referenceId is null, or no building with this referenceId was found,
+ * <p>If the buidingRef is null, or no building with this referenceId was found,
  * this must be an error in the integrity of the opendata object. The faulty addressNode will
- * be forwarded to the unmatchedAddressNode consumer if available;
+ * be forwarded to the unmatchedHousingUnit consumer if available;
  * 
  * @author gertjan
  *

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 
 public interface Downloader {
@@ -37,7 +38,12 @@ public interface Downloader {
             tasks.add(new Callable<Void>() {
                 @Override
                 public Void call() throws OdsException {
-                    downloader.download();
+                    try {
+                        downloader.download();
+                    } catch (Exception e) {
+                        Main.error(e);
+                        throw e;
+                    }
                     return null;
                 }
             });

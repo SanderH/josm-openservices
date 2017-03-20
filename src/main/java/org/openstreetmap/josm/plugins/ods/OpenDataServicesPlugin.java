@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -21,6 +22,7 @@ import javax.json.stream.JsonParsingException;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
+import org.geotools.util.logging.Logging;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.UploadAction;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -30,6 +32,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 import org.openstreetmap.josm.plugins.ods.gui.OdsEnableAction;
+import org.openstreetmap.josm.plugins.ods.logging.JosmLoggerFactory;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OpenDataServicesPlugin extends Plugin {
@@ -47,6 +50,14 @@ public class OpenDataServicesPlugin extends Plugin {
 
     public OpenDataServicesPlugin(PluginInformation info) {
         super(info);
+        try {
+            Logging.GEOTOOLS.setLoggerFactory(JosmLoggerFactory.getInstance());
+            Logging.ALL.setLoggerFactory(JosmLoggerFactory.getInstance());
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Logging.getLogger("org.geotools.data.wfs.requests").setLevel(Level.CONFIG);
         if (INSTANCE != null) {
             throw new java.lang.RuntimeException(
                     I18n.tr("The Open Data Services plug-in has allready been started"));

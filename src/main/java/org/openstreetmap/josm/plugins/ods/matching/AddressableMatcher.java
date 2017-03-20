@@ -116,6 +116,17 @@ public class AddressableMatcher implements Matcher<Addressable> {
         unmatchedOsmAddressables.clear();
     }
 
+    /**
+     * A key for comparing addresses.
+     * TODO This implementation is specific to the Dutch situation with
+     *     unique postcode / (full)housenumber combination.
+     * TODO Create a key factory.
+     * TODO Create the implementation of the key factory to the BAG module.
+     * 
+     * 
+     * @author Gertjan Idema <mail@gertjanidema.nl>
+     *
+     */
     private static class AddressKey {
         private Integer houseNumber;
         private String postcode;

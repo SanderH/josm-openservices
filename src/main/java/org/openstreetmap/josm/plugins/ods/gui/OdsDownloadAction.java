@@ -16,6 +16,7 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -127,7 +128,7 @@ public class OdsDownloadAction extends OdsAction {
                     downloadOsm, downloadOpenData);
                 downloader.run(getProgressMonitor(), request);
             }
-            catch (ExecutionException e) {
+            catch (OdsException e) {
                 JOptionPane.showMessageDialog(Main.panel, I18n.tr("The download failed because of the following reason(s):\n{0}",
                         e.getMessage()),
                         I18n.tr("Download error"), JOptionPane.ERROR_MESSAGE);

@@ -88,7 +88,7 @@ public class MainDownloader {
         initialized = true;
     }
     
-    public void run(ProgressMonitor pm, DownloadRequest request) throws ExecutionException, InterruptedException {
+    public void run(ProgressMonitor pm, DownloadRequest request) throws OdsException, InterruptedException {
         pm.indeterminateSubTask(I18n.tr("Setup"));
         cancelled = false;
         try {
@@ -108,7 +108,8 @@ public class MainDownloader {
             computeBboxAndCenterScale(bounds);
             pm.finishTask();
         } catch (OdsException e) {
-            throw new ExecutionException(e);
+            Main.error(e);
+            throw e;
         }
     }
 
@@ -174,11 +175,11 @@ public class MainDownloader {
                     if (e instanceof NullPointerException) {
                         messages.add(I18n.tr("A null pointer exception occurred. This is allways a programming error. " +
                             "Please look at the log file for more details"));
-                        Main.error(e);
                     }
                     else {
                         messages.add(e.getMessage());
                     }
+                    Main.error(e);
                 }
             }
             if (!messages.isEmpty()) {
