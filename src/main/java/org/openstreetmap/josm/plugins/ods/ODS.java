@@ -11,8 +11,4 @@ public class ODS {
         public static String TAG_MATCH = BASE + ":tagMatch";
         
     }
-    
-    public static String[] KEYS = {KEY.BASE, KEY.IDMATCH, KEY.STATUS, KEY.STATUS_MATCH, 
-            KEY.GEOMETRY_MATCH, KEY.TAG_MATCH};
-
 }
