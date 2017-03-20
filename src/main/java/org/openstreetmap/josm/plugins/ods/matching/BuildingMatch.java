@@ -2,7 +2,9 @@ package org.openstreetmap.josm.plugins.ods.matching;
 
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.CONSTRUCTION;
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE;
-import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.PLANNED;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.*;
+
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.*;
 
 import java.util.Objects;
 
@@ -34,40 +36,44 @@ public class BuildingMatch extends MatchImpl<Building> {
     
     private MatchStatus compareStartDates() {
         if (Objects.equals(getOsmEntity().getStartDate(), getOpenDataEntity().getStartDate())) {
-            return MatchStatus.MATCH;
+            return MATCH;
         }
-        return MatchStatus.NO_MATCH;
+        return NO_MATCH;
     }
 
     private MatchStatus compareStatuses() {
         EntityStatus osmStatus = getOsmEntity().getStatus();
         EntityStatus odStatus = getOpenDataEntity().getStatus();
         if (osmStatus.equals(odStatus)) {
-            return MatchStatus.MATCH;
+            return MATCH;
+        }
+        if (odStatus.equals(IN_USE) && osmStatus.equals(IN_USE_NOT_MEASURED)) {
+            return MATCH;
         }
         if (odStatus.equals(PLANNED) && osmStatus.equals(CONSTRUCTION)) {
-            return MatchStatus.COMPARABLE;
+            return COMPARABLE;
         }
-        if (odStatus.equals(CONSTRUCTION) && osmStatus.equals(IN_USE)) {
-            return MatchStatus.COMPARABLE;
-        }
-        return MatchStatus.NO_MATCH;
+        if (odStatus.equals(CONSTRUCTION) && 
+                (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
+                return COMPARABLE;
+            }
+        return NO_MATCH;
     }
     
     private MatchStatus compareAreas() {
         double osmArea = getOsmEntity().getPrimitive().getArea();
         double odArea = getOpenDataEntity().getPrimitive().getArea();
         if (osmArea == 0.0 || odArea == 0.0) {
-            areaMatch = MatchStatus.NO_MATCH;
+            areaMatch = NO_MATCH;
         }
         double match = (osmArea - odArea) / osmArea;
         if (match == 0.0) {
-            return MatchStatus.MATCH;
+            return MATCH;
         }
         if (Math.abs(match) < 0.01) {
-            return MatchStatus.COMPARABLE;
+            return COMPARABLE;
         }
-        return MatchStatus.NO_MATCH;
+        return NO_MATCH;
     }
     
     private MatchStatus compareCentroids() {
@@ -75,12 +81,12 @@ public class BuildingMatch extends MatchImpl<Building> {
         LatLon odCentroid = getOpenDataEntity().getPrimitive().getCenter();
         double centroidDistance = osmCentroid.distance(odCentroid);
         if (centroidDistance == 0) {
-            return MatchStatus.MATCH;
+            return MATCH;
         }
         if (centroidDistance < 1e-6) {
-            return MatchStatus.COMPARABLE;
+            return COMPARABLE;
         }
-        return MatchStatus.NO_MATCH;
+        return NO_MATCH;
     }
 
     @Override

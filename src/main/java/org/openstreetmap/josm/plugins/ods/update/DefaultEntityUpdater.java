@@ -80,8 +80,10 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
     private void updateStatus(E odEntity, E osmEntity) {
         ManagedPrimitive odPrimitive = odEntity.getPrimitive();
         ManagedPrimitive localPrimitive = osmEntity.getPrimitive();
-        if (osmEntity.getStatus().equals(EntityStatus.CONSTRUCTION)
-                && odEntity.getStatus().equals(EntityStatus.IN_USE)) {
+        if (osmEntity.getStatus().equals(EntityStatus.CONSTRUCTION) &&
+                (odEntity.getStatus().equals(EntityStatus.IN_USE) ||
+                 odEntity.getStatus().equals(EntityStatus.IN_USE_NOT_MEASURED))
+        ) {
             if (odEntity.getSourceDate() != null) {
                 osmEntity.setSourceDate(odEntity.getSourceDate());
                 localPrimitive.put("source:date", odEntity.getSourceDate().format(DateTimeFormatter.ISO_DATE));
