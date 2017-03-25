@@ -20,6 +20,11 @@ public class TestLayerManager implements LayerManager {
     }
 
     @Override
+    public boolean isActive() {
+        return true;
+    }
+    
+    @Override
     public OsmDataLayer getOsmDataLayer() {
         return dataLayer;
     }

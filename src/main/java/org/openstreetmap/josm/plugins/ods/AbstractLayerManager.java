@@ -68,6 +68,7 @@ public abstract class AbstractLayerManager
         return layer;
     }
 
+    @Override
     public boolean isActive() {
         return this.active;
     }
@@ -90,24 +91,26 @@ public abstract class AbstractLayerManager
     @Override
     public void reset() {
         if (isActive()) {
-            primitiveMap.clear();
-            getRepository().clear();
             deActivate();
-            activate();
+        }
+        activate();
 //            this.osmDataLayer.data.clear();
 //            this.osmDataLayer.data.getDataSources().clear();
 //            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
 //                Main.getLayerManager().addLayer(osmDataLayer);
 //            }
-        }
     }
 
+    
     @Override
     public void deActivate() {
         if (isActive()) {
+            primitiveMap.clear();
+            getRepository().clear();
             active = false;
-            this.reset();
-            Main.getLayerManager().removeLayer(this.osmDataLayer);
+            if (Main.getLayerManager().containsLayer(this.osmDataLayer)) {
+                Main.getLayerManager().removeLayer(this.osmDataLayer);
+            }
         }
     }
 

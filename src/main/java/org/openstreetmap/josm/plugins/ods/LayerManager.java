@@ -29,7 +29,9 @@ public interface LayerManager {
      *     false if it contains data from an open data service
      */
     public boolean isOsm();
-    
+
+    public boolean isActive();
+
     /**
      * Remove the underlying Osm Datalayer and clear the ODS data stores
      */

@@ -54,6 +54,11 @@ public class TestLayerManager implements LayerManager, LayerChangeListener {
     }
 
     @Override
+    public boolean isActive() {
+        return true;
+    }
+    
+    @Override
     public void deActivate() {
         // TODO Auto-generated method stub
     }
