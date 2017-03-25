@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.event.AbstractDatasetChangedEvent;
 import org.openstreetmap.josm.data.osm.event.DataChangedEvent;
@@ -59,8 +60,10 @@ public abstract class AbstractLayerManager
 
     protected OsmDataLayer createOsmDataLayer() {
         DataSet dataSet = new DataSet();
+        if (!isOsm()) {
+            dataSet.setUploadPolicy(UploadPolicy.BLOCKED);
+        }
         OsmDataLayer layer = new OsmDataLayer(dataSet, getName(), null);
-        layer.setUploadDiscouraged(!isOsm());
         dataSet.addDataSetListener(this);
         return layer;
     }
