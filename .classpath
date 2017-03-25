@@ -5,6 +5,13 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm-latest.jar" sourcepath="/home/gertjan/projects/josm/src"/>
 	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/BuildingSegmentSimplifier.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java|org/openstreetmap/josm/plugins/ods/matching/osm/RingComparator.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -22,19 +29,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" output="target/test-classes" path="src/main/test/resources">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm-latest.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/gt-wfs-ng"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
