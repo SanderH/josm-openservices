@@ -12,6 +12,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.Repository;
+import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
@@ -133,6 +134,10 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
             } catch (DateTimeParseException e) {
                 entity.setSourceDate(null);
             }
+        }
+        String value = tags.get("start_date");
+        if (value != null) {
+            entity.setStartDate(StartDate.parse(value));
         }
     }
 

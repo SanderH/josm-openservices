@@ -67,7 +67,7 @@ public class BuildingUpdater implements EntityUpdater {
         osmBuilding.setSourceDate(odBuilding.getSourceDate());
         osmPrimitive.put("source:date", odBuilding.getPrimitive().get("source:date"));
         osmBuilding.setStartDate(odBuilding.getStartDate());
-        osmPrimitive.put("start_date", odBuilding.getStartDate());
+        osmPrimitive.put("start_date", odBuilding.getStartDate().toString());
 //        osmPrimitive.setModified(true);
     }
 

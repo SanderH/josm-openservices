@@ -26,15 +26,8 @@ public interface Building extends Addressable {
     
     public void addHousingUnit(HousingUnit housingUnit);
 
-    public void setStartDate(String string);
-    
-    public String getStartDate();
-
     public BuildingType getBuildingType();
 
-//    @Override
-//    public BuildingMatch getMatch(Class<);
-//
     @Override
     public Class<Building> getBaseType();
     

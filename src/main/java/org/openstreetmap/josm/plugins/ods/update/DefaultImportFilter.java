@@ -33,9 +33,13 @@ public class DefaultImportFilter implements ImportFilter {
                 }
             }
             return true;
-        default:
+        case IN_USE:
+        case IN_USE_NOT_MEASURED:
+            // TODO Check age
             return true;
-        
+            
+        default:
+            return false;
         }
     }
 

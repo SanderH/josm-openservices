@@ -14,26 +14,14 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
-import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public class BuildingImpl extends AbstractEntity implements Building {
     private Address address;
     private List<HousingUnit> housingUnits = new LinkedList<>();
     private Set<AddressNode> addressNodes = new HashSet<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
-    private String startDate;
     private City city;
     
-    @Override
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    @Override
-    public String getStartDate() {
-         return startDate;
-    }
-
     @Override
     public Class<Building> getBaseType() {
         return Building.class;

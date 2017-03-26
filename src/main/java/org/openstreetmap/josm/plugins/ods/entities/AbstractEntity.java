@@ -19,10 +19,10 @@ public abstract class AbstractEntity implements Entity {
     private DownloadResponse response;
     private LocalDate sourceDate;
     private String source;
+    private StartDate startDate;
     private Geometry geometry;
     private EntityStatus status = EntityStatus.UNKNOWN;
     private boolean incomplete = true;
-    private Map<String, String> otherTags = new HashMap<>();
     private ManagedPrimitive primitive;
     private Map<String, Issue> issues = null;
     private Map<Class<? extends Entity>, Match<? extends Entity>> matches = new HashMap<>();
@@ -78,6 +78,16 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
+    public void setStartDate(StartDate startDate) {
+        this.startDate = startDate;
+    }
+
+    @Override
+    public StartDate getStartDate() {
+        return startDate;
+    }
+
+    @Override
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
@@ -95,16 +105,6 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public void setIncomplete(boolean incomplete) {
         this.incomplete = incomplete;
-    }
-
-    @Override
-    public Map<String, String> getOtherTags() {
-        return otherTags;
-    }
-
-    @Override
-    public void setOtherTags(Map<String, String> otherTags) {
-        this.otherTags = otherTags;
     }
 
     @Override
