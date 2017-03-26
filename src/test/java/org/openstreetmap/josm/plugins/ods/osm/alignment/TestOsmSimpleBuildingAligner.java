@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.io.IllegalDataException;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.test.TestData;
 
 public class TestOsmSimpleBuildingAligner {

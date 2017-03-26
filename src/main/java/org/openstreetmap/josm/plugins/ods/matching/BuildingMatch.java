@@ -9,8 +9,8 @@ import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.*;
 import java.util.Objects;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 public class BuildingMatch extends MatchImpl<Building> {
     /**

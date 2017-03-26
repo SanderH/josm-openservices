@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.osm.alignment;
 
-import static org.openstreetmap.josm.plugins.ods.entities.actual.Building.IsBuilding;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.Building.IsBuilding;
 
 import java.util.Collection;
 import java.util.Comparator;

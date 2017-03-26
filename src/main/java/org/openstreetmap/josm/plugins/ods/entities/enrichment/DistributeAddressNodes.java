@@ -9,11 +9,11 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.HousingUnit;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeGroup;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeGroup;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
 
 /**
  * This enricher finds overlapping nodes in the data and distributes them, so

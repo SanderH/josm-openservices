@@ -13,7 +13,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.update.OdsImporter;
 import org.openstreetmap.josm.plugins.ods.update.OdsUpdater;
 import org.openstreetmap.josm.tools.I18n;

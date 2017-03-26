@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 import org.openstreetmap.josm.plugins.ods.update.DefaultGeometryUpdater;

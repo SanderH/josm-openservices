@@ -5,9 +5,9 @@ import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.UNKNOWN;
 import java.util.List;
 import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Addressable;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Addressable;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 
 public class AddressableMatch extends MatchImpl<Addressable> {
     private MatchStatus houseNumberMatch;
