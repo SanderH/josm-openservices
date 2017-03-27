@@ -15,6 +15,7 @@ import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
  * @author Gertjan Idema
  * 
  */
+@Deprecated
 public interface FeatureMapper {
 
     /**

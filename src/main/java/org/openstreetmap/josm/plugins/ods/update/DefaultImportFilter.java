@@ -9,7 +9,6 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
  * Default import filter implementation
  * TODO This implementation contains code that is specific for address nodes. 
  * That part should be move to a place that is specific for address nodes
- *   
  * 
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
@@ -35,9 +34,12 @@ public class DefaultImportFilter implements ImportFilter {
             return true;
         case IN_USE:
         case IN_USE_NOT_MEASURED:
-            // TODO Check age
-            return true;
-            
+            // Return true is no age is available.
+            if (entity.getStartDate() == null) {
+                return true; 
+            }
+            // TODO Make maximum age configurable
+            return entity.getStartDate().getAge().getYears() < 5;
         default:
             return false;
         }
