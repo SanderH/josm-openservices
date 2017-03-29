@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.enrichment;
+package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -6,28 +6,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeGroup;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
 /**
- * This enricher finds overlapping nodes in the data and distributes them, so
- * they are no longer overlapping. The MatchAddressToBuildingTask must run
- * before this class, so when can distribute over the line pointing to the
- * centre of the building.
+ * This processor finds overlapping nodes in the data and distributes them, so
+ * they are no longer overlapping.
+ * The HousingUnitToBuildingConnector and AddressToBuildingConnector must run
+ * before this class, so we can distribute over the line pointing to the
+ * center of the building.
  * 
- * @author Gertjan Idema <mail@gertjanidema.nl>
+ * @author Gertjan Idema
  * 
  */
-public class DistributeAddressNodes implements Consumer<Building> {
+public class AddressNodeDistributor implements OdsProcessor {
+    private final OdsModule module = OdsProcessor.getModule();
     private Comparator<? super AddressNode> comparator = new DefaultNodeComparator();
 
-    public DistributeAddressNodes() {
+    public AddressNodeDistributor() {
         super();
     }
 
@@ -36,7 +40,14 @@ public class DistributeAddressNodes implements Consumer<Building> {
     }
 
     @Override
-    public void accept(Building building) {
+    public void run() {
+        LayerManager layerManager = module.getOpenDataLayerManager();
+        for (Building building : layerManager.getRepository().getAll(Building.class)) {
+            distributeNodes(building);
+        }
+    }
+
+    public void distributeNodes(Building building) {
         for (AddressNodeGroup group : buildGroups(building).values()) {
             if (group.getAddressNodes().size() > 1) {
                 distribute(group, false);
@@ -92,7 +103,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
         private Comparator<Address> addressComparator = new DefaultAddressComparator();
 
         public DefaultNodeComparator() {
-            // TODO Auto-generated constructor stub
+            // Default constructor
         }
 
         @Override

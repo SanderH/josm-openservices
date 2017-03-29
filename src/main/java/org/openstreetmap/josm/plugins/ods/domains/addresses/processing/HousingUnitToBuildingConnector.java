@@ -1,12 +1,14 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.Repository;
+import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
 
 /**
@@ -21,18 +23,26 @@ import org.openstreetmap.josm.plugins.ods.entities.Repository;
  * @author gertjan
  *
  */
-public class OpenDataHousingUnitToBuildingMatcher {
+public class HousingUnitToBuildingConnector implements OdsProcessor {
     private OdsModule module;
     private Consumer<HousingUnit> unmatchedHousingUnitHandler;
     
-    public OpenDataHousingUnitToBuildingMatcher(OdsModule module) {
+    public HousingUnitToBuildingConnector() {
         super();
-        this.module = module;
+        this.module = OdsProcessor.getModule();
     }
 
     public void setUnmatchedHousingUnitHandler(
             Consumer<HousingUnit> unmatchedHousingUnitHandler) {
         this.unmatchedHousingUnitHandler = unmatchedHousingUnitHandler;
+    }
+
+    @Override
+    public void run() {
+        LayerManager layerManager = module.getOpenDataLayerManager();
+        for(HousingUnit housingUnit : layerManager.getRepository().getAll(HousingUnit.class)) {
+            matchHousingUnitToBuilding(housingUnit);
+        }
     }
 
     /**

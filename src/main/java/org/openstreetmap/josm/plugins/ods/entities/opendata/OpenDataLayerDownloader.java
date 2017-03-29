@@ -9,12 +9,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.DefaultPrepareResponse;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
@@ -22,6 +22,7 @@ import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
+import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 import org.openstreetmap.josm.plugins.ods.io.PrepareResponse;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.osm.LayerUpdater;
@@ -104,20 +105,38 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
     
     @Override
     public void process() throws OdsException {
+        Thread.currentThread().setName("OpenDataLayerDownloader process");
         runTasks(Downloader.getProcessTasks(downloaders));
+        getPrimitiveBuilder().run(getResponse());
+        updateBoundaries();
+        runProcessors();
+        updateLayer();
+    }
+
+    private void updateBoundaries() {
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
         module.getOpenDataLayerManager().extendBoundary(request.getBoundary().getMultiPolygon());
         OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
         osmDataLayer.data.addDataSource(ds);
     }
+    
+    private void runProcessors() throws OdsException {
+        for (Class<? extends OdsProcessor> processorClass : getProcessors()) {
+            OdsProcessor processor;
+            try {
+                processor = processorClass.newInstance();
+                processor.run();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new OdsException(e);
+            }
+        }
+    }
 
     private void runTasks(List<Callable<Void>> tasks) throws OdsException {
         executor = Executors.newFixedThreadPool(NTHREADS);
         cancelled = false;
         try {
-// Removed the time-out because it is handled by the MainDownloader
-//            futures = executor.invokeAll(tasks, 10, TimeUnit.MINUTES);
             futures = executor.invokeAll(tasks);
             List<String> messages = new LinkedList<>();
             for (Future<Void> future : futures) {
@@ -150,6 +169,8 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         }
     }
 
+    protected abstract List<Class<? extends OdsProcessor>> getProcessors();
+
     @Override
     public void cancel() {
         executor.shutdownNow();
@@ -159,4 +180,6 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         LayerUpdater updater = new LayerUpdater(this.module);
         updater.run();
     }
+
+    protected abstract PrimitiveBuilder getPrimitiveBuilder();
 }

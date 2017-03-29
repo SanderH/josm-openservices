@@ -1,13 +1,15 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.entities.Repository;
+import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -23,18 +25,25 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public class OpenDataAddressToBuildingMatcher {
-    private OdsModule module;
+public class AddressToBuildingConnector implements OdsProcessor {
+    private final OdsModule module = OdsProcessor.getModule();
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
-    public OpenDataAddressToBuildingMatcher(OdsModule module) {
+    public AddressToBuildingConnector() {
         super();
-        this.module = module;
     }
 
     public void setUnmatchedHousingUnitHandler(
             Consumer<AddressNode> unmatchedAddressNodeHandler) {
         this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
+    }
+
+    @Override
+    public void run() {
+        LayerManager layerManager = module.getOpenDataLayerManager();
+        for(AddressNode addressNode : layerManager.getRepository().getAll(AddressNode.class)) {
+            match(addressNode);
+        }
     }
 
     /**
