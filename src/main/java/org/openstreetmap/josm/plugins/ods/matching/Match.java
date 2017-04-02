@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public interface Match<E extends Entity> {
-    final static AtomicLong idCounter = new AtomicLong(0);
+//    final static AtomicLong idCounter = new AtomicLong(0);
     
     public Object getId();
     /**
@@ -43,7 +43,7 @@ public interface Match<E extends Entity> {
 
     public void updateMatchTags();
     
-    static Long generateUniqueId() {
-        return idCounter.decrementAndGet();
-    }
+//    static Long generateUniqueId() {
+//        return idCounter.decrementAndGet();
+//    }
 }

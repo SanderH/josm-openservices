@@ -148,6 +148,6 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         return;
     }
 
-    protected abstract void updateGeometry(T addressNode,
+    protected abstract void updateGeometry(T entity,
             OsmPrimitive primitive);
 }
