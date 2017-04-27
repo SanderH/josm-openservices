@@ -12,29 +12,29 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Addressable;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class AddressableMatcher implements Matcher<Addressable> {
-    private OdsModule module;
-    
-    private Map<Object, Match<Addressable>> addressableMatches = new HashMap<>();
-    private List<Addressable> unidentifiedOsmAddressables = new LinkedList<>();
-    private List<Addressable> unmatchedOpenDataAddressables = new LinkedList<>();
-    private List<Addressable> unmatchedOsmAddressables = new LinkedList<>();
+    private final OdsModule module;
+
+    private final Map<Object, Match<Addressable>> addressableMatches = new HashMap<>();
+    private final List<Addressable> unidentifiedOsmAddressables = new LinkedList<>();
+    private final List<Addressable> unmatchedOpenDataAddressables = new LinkedList<>();
+    private final List<Addressable> unmatchedOsmAddressables = new LinkedList<>();
 
     public AddressableMatcher(OdsModule module) {
         super();
         this.module = module;
     }
-    
+
     @Override
     public void initialize() throws OdsException {
         // Empty implementation. No action required
     }
 
-    
+
     @Override
     public Class<Addressable> getType() {
         return Addressable.class;
@@ -45,20 +45,20 @@ public class AddressableMatcher implements Matcher<Addressable> {
         matchBuildingAddressables();
         matchOtherAddressables();
     }
-    
+
     /**
      * Try to match address nodes for matching buildings
      */
     private void matchBuildingAddressables() {
         Repository repository = module.getOpenDataLayerManager().getRepository();
-        for (Building building : repository.getAll(Building.class)) {
+        repository.getAll(Building.class).forEach(building -> {
             Match<Building> match = building.getMatch(Building.class);
             if (match != null && match.isSimple()) {
                 matchAddresses(match);
             }
-        }
+        });
     }
-    
+
     private void matchAddresses(Match<Building> match) {
         Building odBuilding = match.getOpenDataEntity();
         Building osmBuilding = match.getOsmEntity();
@@ -122,17 +122,17 @@ public class AddressableMatcher implements Matcher<Addressable> {
      *     unique postcode / (full)housenumber combination.
      * TODO Create a key factory.
      * TODO Create the implementation of the key factory to the BAG module.
-     * 
-     * 
+     *
+     *
      * @author Gertjan Idema <mail@gertjanidema.nl>
      *
      */
     private static class AddressKey {
-        private Integer houseNumber;
-        private String postcode;
-        private Character houseLetter;
-        private String houseNumberExtra;
-        
+        private final Integer houseNumber;
+        private final String postcode;
+        private final Character houseLetter;
+        private final String houseNumberExtra;
+
         public AddressKey(Address address) {
             this.postcode = normalizePostcode(address.getPostcode());
             this.houseNumber = address.getHouseNumber();
@@ -150,7 +150,7 @@ public class AddressableMatcher implements Matcher<Addressable> {
         public int hashCode() {
             return Objects.hash(postcode, houseNumber, houseLetter, houseNumberExtra);
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;

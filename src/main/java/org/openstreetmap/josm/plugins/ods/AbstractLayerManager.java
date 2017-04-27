@@ -18,21 +18,21 @@ import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 
 /**
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public abstract class AbstractLayerManager
-        implements LayerManager, DataSetListener {
-    private String name;
+implements LayerManager, DataSetListener {
+    private final String name;
     private OsmDataLayer osmDataLayer;
-    private Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
-    private GeoRepository repository = new GeoRepository();
+    private final Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
+    private final GeoRepository repository = new GeoRepository();
     private boolean active = false;
 
     public AbstractLayerManager(String name) {
@@ -94,14 +94,14 @@ public abstract class AbstractLayerManager
             deActivate();
         }
         activate();
-//            this.osmDataLayer.data.clear();
-//            this.osmDataLayer.data.getDataSources().clear();
-//            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
-//                Main.getLayerManager().addLayer(osmDataLayer);
-//            }
+        //            this.osmDataLayer.data.clear();
+        //            this.osmDataLayer.data.getDataSources().clear();
+        //            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
+        //                Main.getLayerManager().addLayer(osmDataLayer);
+        //            }
     }
 
-    
+
     @Override
     public void deActivate() {
         if (isActive()) {

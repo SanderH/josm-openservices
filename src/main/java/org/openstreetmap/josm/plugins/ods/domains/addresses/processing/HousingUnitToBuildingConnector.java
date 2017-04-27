@@ -1,14 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
-import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 
 /**
@@ -19,14 +18,14 @@ import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
  * <p>If the buidingRef is null, or no building with this referenceId was found,
  * this must be an error in the integrity of the opendata object. The faulty addressNode will
  * be forwarded to the unmatchedHousingUnit consumer if available;
- * 
+ *
  * @author gertjan
  *
  */
 public class HousingUnitToBuildingConnector implements OdsProcessor {
-    private OdsModule module;
+    private final OdsModule module;
     private Consumer<HousingUnit> unmatchedHousingUnitHandler;
-    
+
     public HousingUnitToBuildingConnector() {
         super();
         this.module = OdsProcessor.getModule();
@@ -40,14 +39,13 @@ public class HousingUnitToBuildingConnector implements OdsProcessor {
     @Override
     public void run() {
         LayerManager layerManager = module.getOpenDataLayerManager();
-        for(HousingUnit housingUnit : layerManager.getRepository().getAll(HousingUnit.class)) {
-            matchHousingUnitToBuilding(housingUnit);
-        }
+        layerManager.getRepository().getAll(HousingUnit.class)
+        .forEach(this::matchHousingUnitToBuilding);
     }
 
     /**
      * Find a matching building for a housing unit.
-     * 
+     *
      * @param housingUnit
      */
     public void matchHousingUnitToBuilding(HousingUnit housingUnit) {
@@ -55,13 +53,12 @@ public class HousingUnitToBuildingConnector implements OdsProcessor {
         if (housingUnit.getBuilding() == null) {
             Object buildingRef = housingUnit.getBuildingRef();
             if (buildingRef != null) {
-                Iterator<Building> matchedbuildings = repository.query(Building.class, "referenceId", buildingRef).iterator();
-                if (matchedbuildings.hasNext()) {
-                    Building building = matchedbuildings.next();
+                repository.query(Building.class, "referenceId", buildingRef)
+                .forEach(building -> {
                     housingUnit.setBuilding(building);
                     building.addHousingUnit(housingUnit);
-                }
-                else {
+                });
+                if (housingUnit.getBuilding() == null) {
                     reportUnmatched(housingUnit);
                 }
             }
@@ -70,7 +67,7 @@ public class HousingUnitToBuildingConnector implements OdsProcessor {
             }
         }
     }
-    
+
     private void reportUnmatched(HousingUnit housingUnit) {
         if (unmatchedHousingUnitHandler != null) {
             unmatchedHousingUnitHandler.accept(housingUnit);

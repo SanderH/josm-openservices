@@ -24,7 +24,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -34,6 +33,7 @@ import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.PrepareResponse;
 import org.openstreetmap.josm.plugins.ods.properties.EntityMapper;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -48,12 +48,12 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private DownloadResponse response;
     private SimpleFeatureSource featureSource;
     private Query baseQuery;
-//    DefaultFeatureCollection downloadedFeatures = new DefaultFeatureCollection();
+    //    DefaultFeatureCollection downloadedFeatures = new DefaultFeatureCollection();
     DefaultFeatureCollection downloadedFeatures;
     private final Repository repository;
     private final EntityMapper<SimpleFeature, T> entityMapper;
     private Normalisation normalisation = Normalisation.FULL;
-    
+
     @SuppressWarnings("unchecked")
     public GtDownloader(OdsModule module, GtDataSource dataSource,
             Class<T> clazz) {
@@ -109,12 +109,12 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         Query query = new Query(dataSource.getQuery());
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
         Name geometryProperty = featureSource.getSchema()
-            .getGeometryDescriptor().getName();
+                .getGeometryDescriptor().getName();
         Filter filter = query.getFilter();
         filter = ff.intersects(ff.property(geometryProperty), ff.literal(getArea()));
         Filter dataFilter = dataSource.getQuery().getFilter();
         if (dataFilter != null) {
-             filter = ff.and(filter, dataFilter);
+            filter = ff.and(filter, dataFilter);
         }
         query.setFilter(filter);
         query.setCoordinateSystem(featureSource.getSchema().getCoordinateReferenceSystem());
@@ -123,7 +123,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         }
         return query;
     }
-    
+
     private boolean isRequestInsideBoundary() {
         ReferencedEnvelope bounds = featureSource.getInfo().getBounds();
         if (bounds.isNull()) {
@@ -133,11 +133,11 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         Envelope wgsBounds = crsUtil.toOsm(bounds, bounds.getCoordinateReferenceSystem());
         return wgsBounds.intersects(request.getBoundary().getEnvelope());
     }
-    
+
     /**
      * Get the download area and transform to the desired
      * CoordinateReferenceSystem
-     * 
+     *
      * @return The transformed geometry
      */
     private Geometry getArea() {
@@ -149,110 +149,110 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             } catch (CRSException e) {
                 throw new RuntimeException(e);
             }
-        } 
+        }
         return area;
     }
-    
-//    @Override
-//    public void download() throws ExecutionException {
-//        Thread.currentThread().setName(dataSource.getFeatureType() + " download");
-//        String key = dataSource.getOdsFeatureSource().getIdAttribute();
-//        downloadedFeatures = new DefaultFeatureCollection(key);
-//        SimpleFeatureCollection featureCollection;
-//        try {
-//            featureCollection = featureSource.getFeatures(baseQuery);
-//        }
-//        catch (IOException e) {
-//            throw new ExecutionException("WrappedException", e);
-//        }
-//        if (featureCollection.isEmpty()) {
-//            return;
-//        }
-//        try (
-//            SimpleFeatureIterator it = featureCollection.features();
-//        )  {
-//           while (it.hasNext() && !Thread.currentThread().isInterrupted()) {
-//               SimpleFeature feature = it.next();
-//               FeatureUtil.normalizeFeature(feature, normalisation);
-//               downloadedFeatures.add(feature);
-//           }
-//           if (Thread.currentThread().isInterrupted()) {
-//               downloadedFeatures.clear();
-//           }
-//        }
-//        if (downloadedFeatures.isEmpty()) {
-//            if (dataSource.isRequired()) {
-//                String featureType = dataSource.getFeatureType();
-//                Main.info(I18n.tr("The selected download area contains no {0} objects.",
-//                            featureType));
-//            }
-//        }
-//        else {
-//            // Check if the data is complete
-//            Host host = dataSource.getOdsFeatureSource().getHost();
-//            Integer maxFeatures = host.getMaxFeatures();
-//            if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
-//                String featureType = dataSource.getFeatureType();
-//                throw new ExecutionException(I18n.tr(
-//                    "To many {0} objects. Please choose a smaller download area.", featureType), null);
-//            }
-//        }
-//    }
 
-  @Override
-  public void download() throws OdsException {
-      Thread.currentThread().setName(dataSource.getFeatureType() + " download");
-      DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
-      FeatureVisitor consumer = new FeatureVisitor() {
-          @Override
-          public void visit(Feature feature) {
-              featureCollection.add((SimpleFeature) feature);
-          }
-      };
-      consumer = dataSource.createVisitor(consumer);
-      int maxFeatures = dataSource.getOdsFeatureSource().getHost().getMaxFeatures();
-      GtFeatureReader reader = new GtFeatureReaderImpl(featureSource, baseQuery, maxFeatures);
-      try {
-        reader.read(consumer, null);
-      } catch (IOException e) {
-          throw new OdsException(e);
-      }
-      downloadedFeatures = new DefaultFeatureCollection();
-      if (featureCollection.isEmpty()) {
-          return;
-      }
-      try (
-          SimpleFeatureIterator it = featureCollection.features();
-      )  {
-         while (it.hasNext() && !Thread.currentThread().isInterrupted()) {
-             SimpleFeature feature = it.next();
-             FeatureUtil.normalizeFeature(feature, normalisation);
-             downloadedFeatures.add(feature);
-         }
-         if (Thread.currentThread().isInterrupted()) {
-             downloadedFeatures.clear();
-         }
-      }
-      if (downloadedFeatures.isEmpty()) {
-          if (dataSource.isRequired()) {
-              String featureType = dataSource.getFeatureType();
-              Main.info(I18n.tr("The selected download area contains no {0} objects.",
-                          featureType));
-          }
-      }
-      else {
-          // Check if the data is complete
-//          Host host = dataSource.getOdsFeatureSource().getHost();
-//          Integer maxFeatures = host.getMaxFeatures();
-//          if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
-//              String featureType = dataSource.getFeatureType();
-//              throw new ExecutionException(I18n.tr(
-//                  "To many {0} objects. Please choose a smaller download area.", featureType), null);
-//          }
-      }
-  }
+    //    @Override
+    //    public void download() throws ExecutionException {
+    //        Thread.currentThread().setName(dataSource.getFeatureType() + " download");
+    //        String key = dataSource.getOdsFeatureSource().getIdAttribute();
+    //        downloadedFeatures = new DefaultFeatureCollection(key);
+    //        SimpleFeatureCollection featureCollection;
+    //        try {
+    //            featureCollection = featureSource.getFeatures(baseQuery);
+    //        }
+    //        catch (IOException e) {
+    //            throw new ExecutionException("WrappedException", e);
+    //        }
+    //        if (featureCollection.isEmpty()) {
+    //            return;
+    //        }
+    //        try (
+    //            SimpleFeatureIterator it = featureCollection.features();
+    //        )  {
+    //           while (it.hasNext() && !Thread.currentThread().isInterrupted()) {
+    //               SimpleFeature feature = it.next();
+    //               FeatureUtil.normalizeFeature(feature, normalisation);
+    //               downloadedFeatures.add(feature);
+    //           }
+    //           if (Thread.currentThread().isInterrupted()) {
+    //               downloadedFeatures.clear();
+    //           }
+    //        }
+    //        if (downloadedFeatures.isEmpty()) {
+    //            if (dataSource.isRequired()) {
+    //                String featureType = dataSource.getFeatureType();
+    //                Main.info(I18n.tr("The selected download area contains no {0} objects.",
+    //                            featureType));
+    //            }
+    //        }
+    //        else {
+    //            // Check if the data is complete
+    //            Host host = dataSource.getOdsFeatureSource().getHost();
+    //            Integer maxFeatures = host.getMaxFeatures();
+    //            if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
+    //                String featureType = dataSource.getFeatureType();
+    //                throw new ExecutionException(I18n.tr(
+    //                    "To many {0} objects. Please choose a smaller download area.", featureType), null);
+    //            }
+    //        }
+    //    }
 
-    
+    @Override
+    public void download() throws OdsException {
+        Thread.currentThread().setName(dataSource.getFeatureType() + " download");
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
+        FeatureVisitor consumer = new FeatureVisitor() {
+            @Override
+            public void visit(Feature feature) {
+                featureCollection.add((SimpleFeature) feature);
+            }
+        };
+        consumer = dataSource.createVisitor(consumer);
+        int maxFeatures = dataSource.getOdsFeatureSource().getHost().getMaxFeatures();
+        GtFeatureReader reader = new GtFeatureReaderImpl(featureSource, baseQuery, maxFeatures);
+        try {
+            reader.read(consumer, null);
+        } catch (IOException e) {
+            throw new OdsException(e);
+        }
+        downloadedFeatures = new DefaultFeatureCollection();
+        if (featureCollection.isEmpty()) {
+            return;
+        }
+        try (
+                SimpleFeatureIterator it = featureCollection.features();
+                )  {
+            while (it.hasNext() && !Thread.currentThread().isInterrupted()) {
+                SimpleFeature feature = it.next();
+                FeatureUtil.normalizeFeature(feature, normalisation);
+                downloadedFeatures.add(feature);
+            }
+            if (Thread.currentThread().isInterrupted()) {
+                downloadedFeatures.clear();
+            }
+        }
+        if (downloadedFeatures.isEmpty()) {
+            if (dataSource.isRequired()) {
+                String featureType = dataSource.getFeatureType();
+                Main.info(I18n.tr("The selected download area contains no {0} objects.",
+                        featureType));
+            }
+        }
+        else {
+            // Check if the data is complete
+            //          Host host = dataSource.getOdsFeatureSource().getHost();
+            //          Integer maxFeatures = host.getMaxFeatures();
+            //          if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
+            //              String featureType = dataSource.getFeatureType();
+            //              throw new ExecutionException(I18n.tr(
+            //                  "To many {0} objects. Please choose a smaller download area.", featureType), null);
+            //          }
+        }
+    }
+
+
     @Override
     public void process() {
         Thread.currentThread().setName(dataSource.getFeatureType() + " process");
@@ -270,7 +270,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     public OdsDataSource getDataSource() {
         return dataSource;
     }
-    
+
 
     @Override
     public void cancel() {

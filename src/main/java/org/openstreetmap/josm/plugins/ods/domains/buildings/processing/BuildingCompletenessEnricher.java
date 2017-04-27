@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
 /**
  * Enricher to update the completeness parameter for an open data building;
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -34,9 +34,8 @@ public class BuildingCompletenessEnricher implements OdsProcessor {
             Polygonal polygonal = (Polygonal) boundary.getGeometryN(i);
             boundaries.add(new PreparedPolygon(polygonal));
         }
-        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-            enrich(building);
-        }
+        layerManager.getRepository().getAll(Building.class)
+        .forEach(this::enrich);
     }
 
     public void enrich(Building building) {

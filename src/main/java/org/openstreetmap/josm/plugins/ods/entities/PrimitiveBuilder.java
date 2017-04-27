@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class PrimitiveBuilder {
-    private OdsModule module;
-    private List<EntityPrimitiveBuilder<? extends Entity>> entityBuilders = new LinkedList<>();
-    
+    private final OdsModule module;
+    private final List<EntityPrimitiveBuilder<? extends Entity>> entityBuilders = new LinkedList<>();
+
     public PrimitiveBuilder(OdsModule module) {
         super();
         this.module = module;
@@ -18,7 +19,7 @@ public class PrimitiveBuilder {
     public <T extends Entity> void register(Class<T> clazz, EntityPrimitiveBuilder<T> builder) {
         entityBuilders.add(builder);
     }
-    
+
     public void run(DownloadResponse response) {
         for (EntityPrimitiveBuilder<? extends Entity> builder : entityBuilders) {
             buildPrimitives(builder);
@@ -27,17 +28,11 @@ public class PrimitiveBuilder {
 
     private <E extends Entity> void buildPrimitives(EntityPrimitiveBuilder<E> entityBuilder) {
         Repository repository = module.getOpenDataLayerManager().getRepository();
-//        EntityStore<E> store = module.getOpenDataLayerManager()
-//                .getEntityStore(entityBuilder.getEntityClass());
-//        for (E entity : store) {
-//            if (entity.getPrimitive() == null) {
-//                entityBuilder.createPrimitive(entity);
-//            }
-//        }
-        for (E entity : repository.getAll(entityBuilder.getEntityClass())) {
+        repository.getAll(entityBuilder.getEntityClass())
+        .forEach(entity -> {
             if (entity.getPrimitive() == null) {
                 entityBuilder.createPrimitive(entity);
             }
-        }
+        });
     }
 }

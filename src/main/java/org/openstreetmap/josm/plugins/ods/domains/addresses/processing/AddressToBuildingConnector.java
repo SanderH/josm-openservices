@@ -7,9 +7,9 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
-import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -21,14 +21,14 @@ import com.vividsolutions.jts.geom.Geometry;
  * and the addressNode will be added to the related addresses list of the building.</p>
  * <p>If no matching building was found,the faulty addressNode will
  * be forwarded to the unmatchedAddressNode consumer if available;
- * 
+ *
  * @author gertjan
  *
  */
 public class AddressToBuildingConnector implements OdsProcessor {
     private final OdsModule module = OdsProcessor.getModule();
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
-    
+
     public AddressToBuildingConnector() {
         super();
     }
@@ -41,14 +41,13 @@ public class AddressToBuildingConnector implements OdsProcessor {
     @Override
     public void run() {
         LayerManager layerManager = module.getOpenDataLayerManager();
-        for(AddressNode addressNode : layerManager.getRepository().getAll(AddressNode.class)) {
-            match(addressNode);
-        }
+        layerManager.getRepository().getAll(AddressNode.class)
+        .forEach(this::match);
     }
 
     /**
      * Find a matching building for an address node.
-     * 
+     *
      * @param addressNode
      */
     public void match(AddressNode addressNode) {
@@ -71,7 +70,7 @@ public class AddressToBuildingConnector implements OdsProcessor {
             }
         }
     }
-    
+
     private void reportUnmatched(AddressNode addressNode) {
         if (unmatchedAddressNodeHandler != null) {
             unmatchedAddressNodeHandler.accept(addressNode);

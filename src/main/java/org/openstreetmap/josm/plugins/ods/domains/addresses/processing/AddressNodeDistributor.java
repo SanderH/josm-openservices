@@ -23,9 +23,9 @@ import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
  * The HousingUnitToBuildingConnector and AddressToBuildingConnector must run
  * before this class, so we can distribute over the line pointing to the
  * center of the building.
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public class AddressNodeDistributor implements OdsProcessor {
     private final OdsModule module = OdsProcessor.getModule();
@@ -42,9 +42,8 @@ public class AddressNodeDistributor implements OdsProcessor {
     @Override
     public void run() {
         LayerManager layerManager = module.getOpenDataLayerManager();
-        for (Building building : layerManager.getRepository().getAll(Building.class)) {
-            distributeNodes(building);
-        }
+        layerManager.getRepository().getAll(Building.class)
+        .forEach(this::distributeNodes);
     }
 
     public void distributeNodes(Building building) {
@@ -57,7 +56,7 @@ public class AddressNodeDistributor implements OdsProcessor {
 
     /**
      * Analyze all new address nodes and group them by Geometry (Point)
-     * 
+     *
      * @param newEntities
      */
     private static Map<LatLon, AddressNodeGroup> buildGroups(Building building) {
@@ -80,11 +79,11 @@ public class AddressNodeDistributor implements OdsProcessor {
     private void distribute(AddressNodeGroup group, boolean withUndo) {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes, comparator);
-//        if (group.getBuilding().getGeometry().isEmpty()) {
-//            // Happens rarely,
-//            // for now return to prevent null pointer Exception
-//            return;
-//        }
+        //        if (group.getBuilding().getGeometry().isEmpty()) {
+        //            // Happens rarely,
+        //            // for now return to prevent null pointer Exception
+        //            return;
+        //        }
         LatLon center = group.getBuilding().getPrimitive().getCenter();
         double angle = group.getCoords().bearing(center);
         double dx = Math.sin(angle) * 2e-7;
@@ -98,9 +97,9 @@ public class AddressNodeDistributor implements OdsProcessor {
             y = y + dy;
         }
     }
-    
+
     private static class DefaultNodeComparator implements Comparator<AddressNode> {
-        private Comparator<Address> addressComparator = new DefaultAddressComparator();
+        private final Comparator<Address> addressComparator = new DefaultAddressComparator();
 
         public DefaultNodeComparator() {
             // Default constructor
@@ -111,7 +110,7 @@ public class AddressNodeDistributor implements OdsProcessor {
             return addressComparator.compare(o1.getAddress(), o2.getAddress());
         }
     }
-    
+
     private static class DefaultAddressComparator implements Comparator<Address> {
         static Comparator<String> stringComparator = new NullSafeCaseInsensitiveComparator();
 
@@ -140,7 +139,7 @@ public class AddressNodeDistributor implements OdsProcessor {
             return stringComparator.compare(a1.getHouseNumberExtra(), a2.getHouseNumberExtra());
         }
     }
-    
+
     private static class NullSafeCaseInsensitiveComparator implements Comparator<String> {
 
         public NullSafeCaseInsensitiveComparator() {
@@ -154,6 +153,6 @@ public class AddressNodeDistributor implements OdsProcessor {
             if (s2 == null) return 1;
             return Objects.compare(s2, s2, String.CASE_INSENSITIVE_ORDER);
         }
-        
+
     }
 }

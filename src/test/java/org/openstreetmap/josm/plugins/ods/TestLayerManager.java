@@ -9,15 +9,15 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 
 public class TestLayerManager implements LayerManager, LayerChangeListener {
     private final OsmDataLayer osmDataLayer;
     private final Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
     private final GeoRepository repository = new GeoRepository();
-    
+
     public TestLayerManager(OsmDataLayer osmDataLayer) {
         super();
         this.osmDataLayer = osmDataLayer;
@@ -57,7 +57,7 @@ public class TestLayerManager implements LayerManager, LayerChangeListener {
     public boolean isActive() {
         return true;
     }
-    
+
     @Override
     public void deActivate() {
         // TODO Auto-generated method stub
@@ -85,6 +85,6 @@ public class TestLayerManager implements LayerManager, LayerChangeListener {
         // TODO Auto-generated method stub
         return null;
     }
-    
-    
+
+
 }

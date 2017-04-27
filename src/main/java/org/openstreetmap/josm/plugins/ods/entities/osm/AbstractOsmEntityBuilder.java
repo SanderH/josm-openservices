@@ -11,40 +11,40 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder {
-    private OsmLayerManager layerManager;
-//    private Class<T> baseType;
-    private Predicate<OsmPrimitive> recognizer;
-    private Repository repository;
-    private GeoUtil geoUtil;
-    
+    private final OsmLayerManager layerManager;
+    //    private Class<T> baseType;
+    private final Predicate<OsmPrimitive> recognizer;
+    private final Repository repository;
+    private final GeoUtil geoUtil;
+
     public AbstractOsmEntityBuilder(OdsModule module, Class<T> baseType, Predicate<OsmPrimitive> recognizer) {
         super();
         this.geoUtil = module.getGeoUtil();
         this.layerManager = module.getOsmLayerManager();
         this.repository = layerManager.getRepository();
         this.recognizer = recognizer;
-//        this.baseType = baseType;
+        //        this.baseType = baseType;
     }
 
-    
-    
-//    @Override
-//    public Class<T> getEntityClass() {
-//        return baseType;
-//    }
+
+
+    //    @Override
+    //    public Class<T> getEntityClass() {
+    //        return baseType;
+    //    }
 
     // TODO do we still need this method?
-//    @Override
-//    public void initialize() {
-//        // No action required
-//    }
+    //    @Override
+    //    public void initialize() {
+    //        // No action required
+    //    }
 
     @Override
     public OsmLayerManager getLayerManager() {
@@ -59,13 +59,13 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
     public GeoUtil getGeoUtil() {
         return geoUtil;
     }
-    
+
     protected void register(ManagedPrimitive primitive, T entity) {
         entity.setPrimitive(primitive);
         repository.add(entity);
         primitive.setEntity(entity);
     }
-    
+
     /*
      * Check if the primitive is incomplete.
      * Or any of it's members in case of a relation
@@ -109,7 +109,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         if (entity == null) {
             return;
         }
-//        updateGeometry(entity, way);
+        //        updateGeometry(entity, way);
         for (Match<?> match : entity.getMatches()) {
             if (match != null && match.isSimple()) {
                 match.analyze();
@@ -118,7 +118,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         }
     }
 
-//    abstract void updateGeometry(T entity, ManagedPrimitive<?> ods);
+    //    abstract void updateGeometry(T entity, ManagedPrimitive<?> ods);
 
     public void updateTags(T entity, Map<String, String> tags) {
         parseKeys(entity, tags);

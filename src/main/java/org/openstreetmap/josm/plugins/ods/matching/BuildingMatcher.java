@@ -10,35 +10,35 @@ import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.entities.Repository;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class BuildingMatcher implements Matcher<Building> {
     private final OdsModule module;
     Repository odRepository;
     Repository osmRepository;
 
-    private Map<Long, Match<Building>> buildingMatches = new HashMap<>();
-    private List<Building> unidentifiedOsmBuildings = new LinkedList<>();
-    private List<Building> unmatchedOpenDataBuildings = new LinkedList<>();
-    private List<Building> unmatchedOsmBuildings = new LinkedList<>();
+    private final Map<Long, Match<Building>> buildingMatches = new HashMap<>();
+    private final List<Building> unidentifiedOsmBuildings = new LinkedList<>();
+    private final List<Building> unmatchedOpenDataBuildings = new LinkedList<>();
+    private final List<Building> unmatchedOsmBuildings = new LinkedList<>();
 
     public BuildingMatcher(OdsModule module) {
         super();
         this.module = module;
     }
-    
+
     @Override
     public void initialize() throws OdsException {
         // No action required
-//        odRepository = module.getOpenDataLayerManager().getRepository();
-//        osmRepository = module.getOsmLayerManager().getRepository();
-//        odBuildingStore = module.getOpenDataLayerManager().getEntityStore(Building.class);
-//        osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
+        //        odRepository = module.getOpenDataLayerManager().getRepository();
+        //        osmRepository = module.getOsmLayerManager().getRepository();
+        //        odBuildingStore = module.getOpenDataLayerManager().getEntityStore(Building.class);
+        //        osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
     }
 
-    
+
     @Override
     public Class<Building> getType() {
         return Building.class;
@@ -50,12 +50,10 @@ public class BuildingMatcher implements Matcher<Building> {
         unmatchedOsmBuildings.clear();
         odRepository = module.getOpenDataLayerManager().getRepository();
         osmRepository = module.getOsmLayerManager().getRepository();
-        for (Building building : odRepository.getAll(Building.class)) {
-            processOpenDataBuilding(building);
-        }
-        for (Building building : osmRepository.getAll(Building.class)) {
-            processOsmBuilding(building);
-        }
+        odRepository.getAll(Building.class)
+        .forEach(this::processOpenDataBuilding);
+        osmRepository.getAll(Building.class)
+        .forEach(this::processOsmBuilding);
         analyze();
     }
 
@@ -110,7 +108,7 @@ public class BuildingMatcher implements Matcher<Building> {
             unmatchedOsmBuildings.add(osmBuilding);
         }
     }
-    
+
     public void analyze() {
         for (Match<Building> match : buildingMatches.values()) {
             if (match.isSimple()) {
