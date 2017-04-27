@@ -31,28 +31,28 @@ import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
- * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers 
+ * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
  * which are a normal OSM layer and a ODS layer containing data retrieved from an external open data source.
  * A third layer containing polygons to manage download areas is optional.
- * 
+ *
  * The data in the ODS layer may be retrieved from multiple dataSources.
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public abstract class OdsModule implements LayerChangeListener {
     private OdsModulePlugin plugin;
-    
+
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<OsmEntityBuilder> entityBuilders = new LinkedList<>();
-    
+
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
     private OsmLayerManager osmLayerManager;
     private final MatcherManager matcherManager = new MatcherManager(this);
 
-//    String osmQuery;
+    //    String osmQuery;
     private boolean initialized = false;
     private boolean active = false;
 
@@ -61,7 +61,7 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     public abstract OdsModuleConfiguration getConfiguration();
-    
+
     public void initialize() throws OdsException {
         if (!initialized) {
             OdsModuleConfiguration configuration = getConfiguration();
@@ -70,11 +70,11 @@ public abstract class OdsModule implements LayerChangeListener {
             initializeDataSources(configuration);
             this.osmLayerManager = createOsmLayerManager();
             this.openDataLayerManager = createOpenDataLayerManager();
-            Main.getLayerManager().addLayerChangeListener(this, false);
+            Main.getLayerManager().addLayerChangeListener(this);
             initialized = true;
         }
     }
-    
+
     private static void initializeHosts(OdsModuleConfiguration configuration) throws OdsException {
         List<String> messages = new LinkedList<>();
         for (Host host : configuration.getHosts()) {
@@ -134,15 +134,15 @@ public abstract class OdsModule implements LayerChangeListener {
     protected void addOsmEntityBuilder(OsmEntityBuilder entityBuilder) {
         this.entityBuilders.add(entityBuilder);
     }
-    
+
     public List<OsmEntityBuilder> getEntityBuilders() {
         return entityBuilders;
     }
 
     public abstract GeoUtil getGeoUtil();
-    
+
     public abstract CRSUtil getCrsUtil();
-    
+
     public abstract String getName();
 
     public abstract String getDescription();
@@ -151,22 +151,22 @@ public abstract class OdsModule implements LayerChangeListener {
         return dataSources;
     }
 
-//    public void setOsmQuery(String query) {
-//        /**
-//         * Currently, we pass the osm (overpass) query through http get. This
-//         * doesn't allow linefeed or carriage return characters, so we need to
-//         * strip them.
-//         */
-//        if (query == null) {
-//            osmQuery = null;
-//            return;
-//        }
-//        this.osmQuery = query.replaceAll("\\s", "");
-//    }
-//
-//    public final String getOsmQuery() {
-//        return osmQuery;
-//    }
+    //    public void setOsmQuery(String query) {
+    //        /**
+    //         * Currently, we pass the osm (overpass) query through http get. This
+    //         * doesn't allow linefeed or carriage return characters, so we need to
+    //         * strip them.
+    //         */
+    //        if (query == null) {
+    //            osmQuery = null;
+    //            return;
+    //        }
+    //        this.osmQuery = query.replaceAll("\\s", "");
+    //    }
+    //
+    //    public final String getOsmQuery() {
+    //        return osmQuery;
+    //    }
 
     protected abstract OpenDataLayerManager createOpenDataLayerManager();
 
@@ -176,7 +176,7 @@ public abstract class OdsModule implements LayerChangeListener {
     public OpenDataLayerManager getOpenDataLayerManager() {
         return openDataLayerManager;
     }
-    
+
     public OsmLayerManager getOsmLayerManager() {
         return osmLayerManager;
     }
@@ -195,7 +195,7 @@ public abstract class OdsModule implements LayerChangeListener {
         }
         return null;
     }
-    
+
     public void addDataSource(OdsDataSource dataSource) {
         dataSources.put(dataSource.getFeatureType(), dataSource);
     }
@@ -203,7 +203,7 @@ public abstract class OdsModule implements LayerChangeListener {
     public boolean isActive() {
         return active;
     }
-    
+
     public void activate() throws ModuleActivationException {
         try {
             this.initialize();
@@ -236,7 +236,7 @@ public abstract class OdsModule implements LayerChangeListener {
     public List<OdsAction> getActions() {
         return actions;
     }
-    
+
     public void addAction(OdsAction action) {
         actions.add(action);
     }
@@ -285,7 +285,7 @@ public abstract class OdsModule implements LayerChangeListener {
     public boolean usePolygonFile() {
         return false;
     }
-    
+
     public String getPluginDir() {
         return plugin.getPluginDir();
     }
@@ -294,15 +294,15 @@ public abstract class OdsModule implements LayerChangeListener {
 
     /**
      * Reset the module
-     * @throws OdsException 
+     * @throws OdsException
      */
     public void reset() throws OdsException {
         cleanUp();
         initialize();
     }
-    
+
     /**
-     * Clean up the module. 
+     * Clean up the module.
      */
     private void cleanUp() {
         matcherManager.reset();
@@ -313,7 +313,7 @@ public abstract class OdsModule implements LayerChangeListener {
     /**
      * Get the tolerance (in degrees) used to match nearby nodes and lines.
      * TODO provide more versatile configuration option
-     * 
+     *
      * @return
      */
     public abstract Double getTolerance();
