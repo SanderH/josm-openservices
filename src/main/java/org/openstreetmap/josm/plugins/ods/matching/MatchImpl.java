@@ -9,22 +9,18 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 public abstract class MatchImpl<E extends Entity> implements Match<E> {
-    // TODO rename to key
-    private Object id;
-    private Class<E> baseType;
-    private List<E> osmEntities = new LinkedList<>();
-    private List<E> openDataEntities = new LinkedList<>();
-    private Class<E> role;
-    
-    @SuppressWarnings("unchecked")
-    public MatchImpl(E osmEntity, E openDataEntity, Class<E> role, Object key) {
-        baseType = (Class<E>) osmEntity.getBaseType();
-        this.id = key;
+    //    private final Class<E> baseType;
+    private final List<E> osmEntities = new LinkedList<>();
+    private final List<E> openDataEntities = new LinkedList<>();
+    private final Class<E> role;
+
+    public MatchImpl(E osmEntity, E openDataEntity, Class<E> role) {
+        assert role != null;
+        this.role = role;
         addOsmEntity(osmEntity);
         addOpenDataEntity(openDataEntity);
-        this.role = role;
-        osmEntity.addMatch(this, role);
-        openDataEntity.addMatch(this, role);
+        osmEntity.addMatch(this);
+        openDataEntity.addMatch(this);
     }
 
     @Override
@@ -68,7 +64,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         // TODO Do we need a thread safe solution here?
         if (! osmEntities.contains(entity)) {
             osmEntities.add(entity);
-            entity.addMatch(this, role);
+            entity.addMatch(this);
         }
     }
 
@@ -76,34 +72,36 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     public <E2 extends E> void addOpenDataEntity(E2 entity) {
         if (!openDataEntities.contains(entity)) {
             openDataEntities.add(entity);
-            entity.addMatch(this, role);
+            entity.addMatch(this);
         }
     }
 
     @Override
     public void updateMatchTags() {
-        ManagedPrimitive osm = getOpenDataEntity().getPrimitive();
-        if (osm != null) {
-            osm.put(ODS.KEY.BASE, "true");
-            osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
-            osm.remove(ODS.KEY.IDMATCH);
-            osm.put(ODS.KEY.STATUS, getOpenDataEntity().getStatus().toString());
-            osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
-            osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
-            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
-                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
+        getOpenDataEntities().forEach(entity-> {
+            ManagedPrimitive osm = entity.getPrimitive();
+            if (osm != null) {
+                osm.put(ODS.KEY.BASE, "true");
+                osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
+                osm.remove(ODS.KEY.IDMATCH);
+                osm.put(ODS.KEY.STATUS, getOpenDataEntity().getStatus().toString());
+                osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
+                osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
+                if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
+                    osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
+                }
             }
-        }
+        });
     }
 
-    @Override
-    public Object getId() {
-        return id;
-    }
+    //    @Override
+    //    public Class<E> getBaseType() {
+    //        return baseType;
+    //    }
 
     @Override
-    public Class<E> getBaseType() {
-        return baseType;
+    public Class<E> getRole() {
+        return role;
     }
 
     @Override
@@ -127,19 +125,6 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     @Override
     public void analyze() {
         // TODO Auto-generated method stub
-        
-    }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Match)) {
-            return false;
-        }
-        return (id.equals(((Match<?>)obj).getId()));
     }
 }

@@ -34,17 +34,17 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * Implementation of @DataSetListener that caches the change events and processes them in a background thread.
- * 
- * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ * @author Gertjan Idema
  *
  */
 public class OsmLayerListener implements DataSetListener, Runnable {
-    private List<DataSetListener> childListeners = new LinkedList<>();
-    private List<PrimitivesAddedEvent> primitivesAddedCache = new LinkedList<>();
-    private List<PrimitivesRemovedEvent> primitivesRemovedCache = new LinkedList<>();
-    private List<WayNodesChangedEvent> wayNodesChangedCache = new LinkedList<>();
-    private Map<Node, NodeMovedEvent> nodesMovedCache = new HashMap<>();
-    
+    private final List<DataSetListener> childListeners = new LinkedList<>();
+    private final List<PrimitivesAddedEvent> primitivesAddedCache = new LinkedList<>();
+    private final List<PrimitivesRemovedEvent> primitivesRemovedCache = new LinkedList<>();
+    private final List<WayNodesChangedEvent> wayNodesChangedCache = new LinkedList<>();
+    private final Map<Node, NodeMovedEvent> nodesMovedCache = new HashMap<>();
+
     public OsmLayerListener(OsmLayerManager layerManager) {
         super();
         childListeners.add(new ODSTagRemover());
@@ -148,44 +148,44 @@ public class OsmLayerListener implements DataSetListener, Runnable {
     @Override
     public void tagsChanged(TagsChangedEvent event) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void nodeMoved(NodeMovedEvent event) {
         nodesMovedCache.put(event.getNode(), event);
-        
+
     }
 
     @Override
     public void wayNodesChanged(WayNodesChangedEvent event) {
-//        if (event.getChangedWay().isModified()) {
-            wayNodesChangedCache.add(event);
-//        }
+        //        if (event.getChangedWay().isModified()) {
+        wayNodesChangedCache.add(event);
+        //        }
     }
 
     @Override
     public void relationMembersChanged(RelationMembersChangedEvent event) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void otherDatasetChange(AbstractDatasetChangedEvent event) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void dataChanged(DataChangedEvent event) {
         int i=7;
         // TODO Auto-generated method stub
-        
+
     }
-    
+
     private static class UpdateWayHandler extends DefaultDataSetListener {
-        private OsmLayerManager layerManager;
-        private OsmEntitiesBuilder osmEntitiesBuilder;
+        private final OsmLayerManager layerManager;
+        private final OsmEntitiesBuilder osmEntitiesBuilder;
 
         public UpdateWayHandler(OsmLayerManager layerManager) {
             super();
@@ -201,6 +201,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
         @Override
         public void nodeMoved(NodeMovedEvent event) {
             Node node = event.getNode();
+            osmEntitiesBuilder.updatedGeometry(node);
             for (OsmPrimitive primitive : node.getReferrers()) {
                 if (primitive.getType() == OsmPrimitiveType.WAY) {
                     osmEntitiesBuilder.updatedGeometry((Way) primitive);
@@ -219,16 +220,16 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             }
         }
     }
-    
+
     /**
      * Merge nodes of buildings copied to the Ods Osm layer.
-     * 
+     *
      * @author Gertjan Idema <mail@gertjanidema.nl>
      *
      */
     private static class MergeNodesHandler extends DefaultDataSetListener {
-        private OsmLayerManager layerManager;
-        
+        private final OsmLayerManager layerManager;
+
         public MergeNodesHandler(OsmLayerManager layerManager) {
             super();
             this.layerManager = layerManager;
@@ -244,7 +245,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
         }
 
         private void mergeNode(Node newNode) {
-            // Skip nodes that have been deleted 
+            // Skip nodes that have been deleted
             if (newNode.isDeleted()) {
                 return;
             }
@@ -255,17 +256,17 @@ public class OsmLayerListener implements DataSetListener, Runnable {
                 Node targetNode = nodes.get(0);
                 if (!targetNode.hasKeys() && !targetNode.isDeleted()) {
                     Command cmd = MergeNodesAction.mergeNodes(layerManager.getOsmDataLayer(),
-                        Collections.singleton(newNode), targetNode, targetNode);
+                            Collections.singleton(newNode), targetNode, targetNode);
                     // TODO Do we need an Undo option for this command?
                     cmd.executeCommand();
                 }
             }
         }
-        
+
     }
     /**
      * Remove any ODS tags from primitives that have been added to the internal (OSM) layer.
-     * 
+     *
      * @author Gertjan Idema <mail@gertjanidema.nl>
      *
      */
@@ -287,11 +288,11 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             }
         }
     }
-    
+
     /**
      * Implementation of @DataSetListener that ignores all events.
      * Classes that extends this class only have to override the methods for the event they care about.
-     * 
+     *
      * @author Gertjan Idema <mail@gertjanidema.nl>
      *
      */

@@ -53,6 +53,11 @@ public class IdentityIndex<T> implements UniqueIndex<T> {
     }
 
     @Override
+    public Stream<T> getAllByTemplate(T t) {
+        return getAll(getKey(t));
+    }
+
+    @Override
     public void remove(T entity) {
         map.remove(entity);
     }

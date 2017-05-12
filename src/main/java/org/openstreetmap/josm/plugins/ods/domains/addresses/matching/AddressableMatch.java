@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.UNKNOWN;
 
@@ -8,6 +8,8 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Addressable;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.matching.MatchImpl;
+import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
 
 public class AddressableMatch extends MatchImpl<Addressable> {
     private MatchStatus houseNumberMatch;
@@ -16,8 +18,8 @@ public class AddressableMatch extends MatchImpl<Addressable> {
     private MatchStatus streetMatch;
     private MatchStatus cityMatch;
 
-    public AddressableMatch(Addressable a1, Addressable a2, Object key) {
-        super(a1, a2, Addressable.class, key);
+    public AddressableMatch(Addressable osmEntity, Addressable odEntity) {
+        super(osmEntity, odEntity, Addressable.class);
     }
 
     @Override
@@ -54,7 +56,7 @@ public class AddressableMatch extends MatchImpl<Addressable> {
     @Override
     public MatchStatus getAttributeMatch() {
         return MatchStatus.combine(houseNumberMatch, fullHouseNumberMatch, postcodeMatch,
-            streetMatch, cityMatch);
+                streetMatch, cityMatch);
     }
 
     @Override

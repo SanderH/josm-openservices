@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.test;
 
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.io.IllegalDataException;
 
 public class TestData {
     private final static String DEFAULT_TEST_DATA = "testdata.osm";
@@ -24,20 +22,20 @@ public class TestData {
     private final Map<Long, Node> nodeIds = new HashMap<>();
     private final Map<Long, Way> wayIds = new HashMap<>();
     private final Map<Long, Relation> relationIds = new HashMap<>();
-    
-    public TestData(Object object) throws IOException, IllegalDataException {
+
+    public TestData(Object object) {
         this(object, DEFAULT_TEST_DATA);
     }
-    
-    public TestData(Object object, String name) throws IOException, IllegalDataException {
+
+    public TestData(Object object, String name) {
         this(object.getClass(), name);
     }
 
-    public TestData(Class<?> clazz) throws IOException, IllegalDataException {
+    public TestData(Class<?> clazz) {
         this(clazz, DEFAULT_TEST_DATA);
     }
 
-    public TestData(Class<?> clazz, String name) throws IOException, IllegalDataException {
+    public TestData(Class<?> clazz, String name) {
         this.layerManager = TestDataLoader.loadTestData(clazz, name);
         this.dataSet = layerManager.getOsmDataLayer().data;
         for (OsmPrimitive primitive :dataSet.allPrimitives()) {
@@ -66,7 +64,7 @@ public class TestData {
             }
         }
     }
-    
+
     public OsmDataLayer getDataLayer() {
         return layerManager.getOsmDataLayer();
     }
@@ -78,22 +76,22 @@ public class TestData {
         }
         return node;
     }
-    
+
     public Way getWay(Long id) {
         Way way = wayIds.get(id);
         if (way == null) {
             fail("No way with id '" + id + "' was found.");
         }
         return way;
-    } 
-    
+    }
+
     public Relation getRelation(Long id) {
         Relation relation = relationIds.get(id);
         if (relation == null) {
             fail("No relation with id '" + id + "' was found.");
         }
         return relation;
-    } 
+    }
 
     public Node getNode(String ref) {
         Node node = nodes.get(ref);
@@ -102,15 +100,15 @@ public class TestData {
         }
         return nodes.get(ref);
     }
-    
+
     public Way getWay(String ref) {
         Way way = ways.get(ref);
         if (way == null) {
             fail("No way with tag ref:test=" + ref + " was found.");
         }
         return way;
-    } 
-    
+    }
+
     public Relation getRelation(String ref) {
         Relation relation = relations.get(ref);
         if (relation == null) {

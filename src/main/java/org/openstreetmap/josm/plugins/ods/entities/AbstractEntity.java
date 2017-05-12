@@ -25,7 +25,7 @@ public abstract class AbstractEntity implements Entity {
     private boolean incomplete = true;
     private ManagedPrimitive primitive;
     private Map<String, Issue> issues = null;
-    private Map<Class<? extends Entity>, Match<? extends Entity>> matches = new HashMap<>();
+    private final Map<Class<? extends Entity>, Match<? extends Entity>> matches = new HashMap<>();
 
     @Override
     public void setPrimaryId(Object primaryId) {
@@ -51,7 +51,7 @@ public abstract class AbstractEntity implements Entity {
     public void setDownloadResponse(DownloadResponse response) {
         this.response = response;
     }
-    
+
     @Override
     public DownloadResponse getDownloadResponse() {
         return response;
@@ -71,7 +71,7 @@ public abstract class AbstractEntity implements Entity {
     public void setSource(String source) {
         this.source = source;
     }
-    
+
     @Override
     public String getSource() {
         return source;
@@ -91,12 +91,12 @@ public abstract class AbstractEntity implements Entity {
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
-    
+
     @Override
     public Geometry getGeometry() {
         return geometry;
     }
-    
+
     @Override
     public boolean isIncomplete() {
         return incomplete;
@@ -144,8 +144,9 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public <E extends Entity> void addMatch(Match<E> match, Class<E> role) {
-        this.matches.put(role,  match);
+    public <E extends Entity> void addMatch(Match<E> match) {
+        assert match.getRole() != null;
+        this.matches.put(match.getRole(),  match);
     }
 
     @Override

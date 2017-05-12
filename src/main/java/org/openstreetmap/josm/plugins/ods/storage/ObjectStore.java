@@ -5,9 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import org.openstreetmap.josm.plugins.ods.util.ChainedIterator;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -52,14 +56,36 @@ class ObjectStore<T> {
     }
 
     public Index<T> getIndex(IndexKey<T> indexFunction) {
-        return indexes.get(indexFunction);
+        Index<T> index = indexes.get(indexFunction);
+        if (index == null) {
+            // Create a new temporary index
+            index = new IndexImpl<>(indexFunction);
+            stream().forEach(index::insert);
+        }
+        return index;
     }
 
     public boolean isInterface() {
         return type.isInterface();
     }
 
-    public Stream<? extends T> getAll() {
+    public Iterator<? extends T> iterator() {
+        return iterator(true);
+    }
+
+    public Iterator<? extends T> iterator(boolean withChildClasses) {
+        if (!withChildClasses || childStores.isEmpty()) {
+            return primaryIndex.iterator();
+        }
+        List<Iterator<? extends T>> iterators = new LinkedList<>();
+        iterators.add(primaryIndex.iterator());
+        for (ObjectStore<? extends T> store : childStores) {
+            iterators.add(store.iterator(withChildClasses));
+        }
+        return new ChainedIterator<>(iterators);
+    }
+
+    public Stream<? extends T> stream() {
         return getAll(true);
     }
 
@@ -80,26 +106,12 @@ class ObjectStore<T> {
     public void addSuperStore(ObjectStore<? super T> store) {
         superStores.add(store);
         store.addChildStore(this);
-        //        for (Class<? super T> superClass : Repository.getSuperClasses(store.type)) {
-        //            ObjectStore<? super T> superStore = repository.getStore(superClass);
-        //            if (superStore != null) {
-        //                this.addSuperStore(superStore);
-        //                superStore.addChildStore(this);
-        //            }
-        //        }
     }
 
     public void addChildStore(ObjectStore<? extends T> store) {
         childStores.add(store);
     }
 
-    //    private Set<ObjectStore<? extends T>> getChildStores() {
-    //        return childStores;
-    //    }
-
-    //    public boolean isPrimary() {
-    //        return primaryIndex != null;
-    //    }
 
     public Class<T> getType() {
         return type;
@@ -162,13 +174,13 @@ class ObjectStore<T> {
         return primaryIndex;
     }
 
-    public Iterator<T> iterator() {
-        return getPrimaryIndex().iterator();
-    }
-
-    public Stream<T> stream() {
-        return getPrimaryIndex().stream();
-    }
+    //    public Iterator<T> iterator() {
+    //        return getPrimaryIndex().iterator();
+    //    }
+    //
+    //    public Stream<T> stream() {
+    //        return getPrimaryIndex().stream();
+    //    }
 
     public boolean contains(T entity) {
         return getPrimaryIndex().contains(entity);
@@ -185,14 +197,11 @@ class ObjectStore<T> {
     }
 
     public void reIndex() {
-        for (Index<?> index : indexes.values()) {
-            index.clear();
-        }
-        getAll().forEach(object->{
+        indexes.values().forEach(index -> index.clear());
+        stream().forEach(object->{
             for (Index<T> index : indexes.values()) {
                 index.insert(object);
             }
-
         });
     }
 

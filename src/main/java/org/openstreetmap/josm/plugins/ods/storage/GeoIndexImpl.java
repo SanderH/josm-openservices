@@ -68,6 +68,12 @@ public class GeoIndexImpl<T> implements GeoIndex<T> {
         throw new UnsupportedOperationException();
     }
 
+
+    @Override
+    public Stream<T> getAllByTemplate(T t) {
+        throw new UnsupportedOperationException();
+    }
+
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.GeoIndex#intersection(com.vividsolutions.jts.geom.Geometry)
      */

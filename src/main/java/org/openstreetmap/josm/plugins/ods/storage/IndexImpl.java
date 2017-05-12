@@ -58,6 +58,13 @@ public class IndexImpl<T> implements Index<T> {
         }
     }
 
+
+    @Override
+    public Stream<T> getAllByTemplate(T t) {
+        Object key = getKey(t);
+        return getAll(key);
+    }
+
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.Index#get(U)
      */

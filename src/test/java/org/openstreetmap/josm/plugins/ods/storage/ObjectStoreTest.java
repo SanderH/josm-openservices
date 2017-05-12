@@ -25,7 +25,7 @@ public class ObjectStoreTest {
     public void testStoreAndRetreiveAll() {
         ObjectStore<Foo> store = new ObjectStore<>(repo, Foo.class);
         store.add(foo);
-        Iterator<? extends Foo> allFoos = store.getAll().iterator();
+        Iterator<? extends Foo> allFoos = store.stream().iterator();
         assertTrue(allFoos.hasNext());
         Foo f = allFoos.next();
         assertTrue(f == foo);

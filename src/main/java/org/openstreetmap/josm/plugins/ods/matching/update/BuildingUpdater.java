@@ -21,8 +21,8 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 @Deprecated
 public class BuildingUpdater implements EntityUpdater {
     private final OdsModule module;
-    private Set<Way> updatedWays = new HashSet<>();
-    
+    private final Set<Way> updatedWays = new HashSet<>();
+
     public BuildingUpdater(OdsModule module) {
         super();
         this.module = module;
@@ -34,7 +34,7 @@ public class BuildingUpdater implements EntityUpdater {
         List<Match<Building>> geometryUpdateNeeded = new LinkedList<>();
         Set<Entity> updatedEntities = new HashSet<>();
         for (Match<?> match : matches) {
-            if (match.getBaseType().equals(Building.class)) {
+            if (match.getRole().equals(Building.class)) {
                 @SuppressWarnings("unchecked")
                 Match<Building> buildingMatch = (Match<Building>) match;
                 if (match.getGeometryMatch() == MatchStatus.NO_MATCH) {
@@ -54,7 +54,7 @@ public class BuildingUpdater implements EntityUpdater {
         }
         if (!geometryUpdateNeeded.isEmpty()) {
             BuildingGeometryUpdater geometryUpdater = new BuildingGeometryUpdater(
-                module, geometryUpdateNeeded);
+                    module, geometryUpdateNeeded);
             geometryUpdater.run();
             updatedWays.addAll(geometryUpdater.getUpdatedWays());
             updatedEntities.addAll(geometryUpdater.getUpdatedEntities());
@@ -68,7 +68,7 @@ public class BuildingUpdater implements EntityUpdater {
         osmPrimitive.put("source:date", odBuilding.getPrimitive().get("source:date"));
         osmBuilding.setStartDate(odBuilding.getStartDate());
         osmPrimitive.put("start_date", odBuilding.getStartDate().toString());
-//        osmPrimitive.setModified(true);
+        //        osmPrimitive.setModified(true);
     }
 
     private static void updateStatus(Building odBuilding, Building osmBuilding) {
@@ -87,7 +87,7 @@ public class BuildingUpdater implements EntityUpdater {
             localPrimitive.getPrimitive().setModified(true);
         }
     }
-    
+
     private void updateMatching() {
         // TODO only update matching for modified objects
         for (Matcher<?> matcher : module.getMatcherManager().getMatchers()) {

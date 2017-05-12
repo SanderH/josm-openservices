@@ -20,7 +20,7 @@ import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 /**
  * This processor finds overlapping nodes in the data and distributes them, so
  * they are no longer overlapping.
- * The HousingUnitToBuildingConnector and AddressToBuildingConnector must run
+ * The HousingUnitToBuildingConnector and OdAddressToBuildingConnector must run
  * before this class, so we can distribute over the line pointing to the
  * center of the building.
  *
@@ -79,22 +79,21 @@ public class AddressNodeDistributor implements OdsProcessor {
     private void distribute(AddressNodeGroup group, boolean withUndo) {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes, comparator);
-        //        if (group.getBuilding().getGeometry().isEmpty()) {
-        //            // Happens rarely,
-        //            // for now return to prevent null pointer Exception
-        //            return;
-        //        }
-        LatLon center = group.getBuilding().getPrimitive().getCenter();
-        double angle = group.getCoords().bearing(center);
-        double dx = Math.sin(angle) * 2e-7;
-        double dy = Math.cos(angle) * 2e-7;
-        double x = group.getCoords().getX();
-        double y = group.getCoords().getY();
-        for (AddressNode node : nodes) {
-            LatLon coord = new LatLon(y, x);
-            node.getPrimitive().getNode().setCoor(coord);
-            x = x + dx;
-            y = y + dy;
+        try {
+            LatLon center = group.getBuilding().getPrimitive().getCenter();
+            double angle = group.getCoords().bearing(center);
+            double dx = Math.sin(angle) * 2e-7;
+            double dy = Math.cos(angle) * 2e-7;
+            double x = group.getCoords().getX();
+            double y = group.getCoords().getY();
+            for (AddressNode node : nodes) {
+                LatLon coord = new LatLon(y, x);
+                node.getPrimitive().getNode().setCoor(coord);
+                x = x + dx;
+                y = y + dy;
+            }
+        } catch (NullPointerException e) {
+            return;
         }
     }
 

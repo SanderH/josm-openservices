@@ -1,7 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.storage;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -118,6 +120,13 @@ public class Repository {
         return store == null ? null : store.getIndex(indexKey);
     }
 
+    public <E> Iterator<? extends E> iterator(Class<E> entityClass) {
+        ObjectStore<E> store = getStore(entityClass);
+        if (store == null) {
+            return Collections.emptyIterator();
+        }
+        return store.iterator(true);
+    }
 
     public <E> Stream<? extends E> getAll(Class<E> entityClass) {
         ObjectStore<E> store = getStore(entityClass);

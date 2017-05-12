@@ -1,17 +1,37 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
 import org.openstreetmap.josm.plugins.ods.domains.places.City;
 import org.openstreetmap.josm.plugins.ods.domains.streets.Street;
+import org.openstreetmap.josm.plugins.ods.storage.IndexKey;
+import org.openstreetmap.josm.plugins.ods.storage.IndexKeyImpl;
 
 public interface Address {
+    static Function<Address, Object> PC_HNR_INDEX_FUNCTION = (address->{
+        if (address == null) return null;
+        return Arrays.asList(Address.normalizePostcode(address.getPostcode()),
+                address.getHouseNumber());
+    });
+    static Function<Address, Object> PC_FULL_HNR_INDEX_FUNCTION = (address->{
+        if (address == null) return null;
+        return  Arrays.asList(Address.normalizePostcode(address.getPostcode()),
+                address.getHouseNumber(), address.getHouseLetter(), address.getHouseNumberExtra());
+    });
+    public static IndexKey<Address> PC_HNR_INDEX_KEY =
+            new IndexKeyImpl<>(Address.class, PC_HNR_INDEX_FUNCTION);
+    public static IndexKey<Address> PC_FULL_HNR_INDEX_KEY =
+            new IndexKeyImpl<>(Address.class, PC_FULL_HNR_INDEX_FUNCTION);
+
     public void setStreet(Street street);
 
     public void setHouseNumber(Integer houseNumber);
 
     public void setHouseName(String houseName);
-    
+
     public void setHouseLetter(Character houseLetter);
-    
+
     public void setHouseNumberExtra(String housenumberExtra);
 
     public void setPostcode(String postcode);
@@ -23,11 +43,11 @@ public interface Address {
     public void setStreetName(String streetName);
 
     public Integer getHouseNumber();
-    
+
     public Character getHouseLetter();
-    
+
     public String getHouseNumberExtra();
-    
+
     public String getFullHouseNumber();
 
     public String getHouseName();
@@ -41,4 +61,11 @@ public interface Address {
     public String getCityName();
 
     public City getCity();
+
+    public static String normalizePostcode(String postcode) {
+        if (postcode == null) {
+            return postcode;
+        }
+        return postcode.replace(" ", "");
+    }
 }

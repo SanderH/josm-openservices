@@ -16,6 +16,8 @@ public interface Index<T> {
 
     public void insert(T entity);
 
+    public Stream<T> getAllByTemplate(T t);
+
     public Stream<T> getAll(Object id);
 
     public void remove(T entity);

@@ -20,8 +20,8 @@ public interface AddressNode extends Addressable {
     /**
      * Add a building to this address node.
      * An address node is typically contained in exactly 1 building,
-     * but there may be exceptions. Therefore there is a possibility to 
-     * add multiple buildings. 
+     * but there may be exceptions. Therefore there is a possibility to
+     * add multiple buildings.
      * @param building
      */
     public void addBuilding(Building building);
@@ -31,6 +31,7 @@ public interface AddressNode extends Addressable {
      * @return The building to which this address node belongs.
      *     null if there are 0 or more than 1 buildings
      */
+    @Override
     public Building getBuilding();
 
     /**
@@ -39,15 +40,15 @@ public interface AddressNode extends Addressable {
      * @return A set of buildings or null if there is not more than 1
      */
     public Set<Building> getBuildings();
-    
-//    public void setGeometry(Point point);
-//    
-//    @Override
-//    public Point getGeometry();
-    
+
+    //    public void setGeometry(Point point);
+    //
+    //    @Override
+    //    public Point getGeometry();
+
     @Override
     public Class<AddressNode> getBaseType();
-    
+
     public static boolean isAddressNode(OsmPrimitive primitive) {
         return (primitive.hasKey("addr:housenumber") &&
                 (primitive.getDisplayType() == OsmPrimitiveType.NODE));

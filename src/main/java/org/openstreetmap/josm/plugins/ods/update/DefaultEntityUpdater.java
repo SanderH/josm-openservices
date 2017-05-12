@@ -20,8 +20,8 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
     private final OdsModule module;
     private final Class<E> entityType;
     private final GeometryUpdater geometryUpdater;
-    private Set<Way> updatedWays = new HashSet<>();
-    
+    private final Set<Way> updatedWays = new HashSet<>();
+
     public DefaultEntityUpdater(OdsModule module, Class<E> entityType, GeometryUpdater geometryUpdater) {
         super();
         this.module = module;
@@ -29,7 +29,7 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
         this.geometryUpdater = geometryUpdater;
     }
 
-    
+
     @Override
     public Class<E> getType() {
         return entityType;
@@ -42,7 +42,7 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
         List<Match<? extends Entity>> geometryUpdateNeeded = new LinkedList<>();
         Set<E> updatedEntities = new HashSet<>();
         for (Match<?> match : matches) {
-            if (match.getBaseType().equals(entityType)) {
+            if (match.getRole().equals(entityType)) {
                 @SuppressWarnings("unchecked")
                 Match<E> theMatch = (Match<E>) match;
                 if (match.getGeometryMatch() == MatchStatus.NO_MATCH) {
@@ -61,8 +61,8 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
             }
         }
         if (!geometryUpdateNeeded.isEmpty()) {
-//            BuildingGeometryUpdater geometryUpdater = new BuildingGeometryUpdater(
-//                module, geometryUpdateNeeded);
+            //            BuildingGeometryUpdater geometryUpdater = new BuildingGeometryUpdater(
+            //                module, geometryUpdateNeeded);
             UpdateResult result = geometryUpdater.run(geometryUpdateNeeded);
             updatedWays.addAll(result.getUpdatedWays());
             updatedEntities.addAll((Collection<? extends E>) result.getUpdatedEntities());
@@ -82,8 +82,8 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
         ManagedPrimitive localPrimitive = osmEntity.getPrimitive();
         if (osmEntity.getStatus().equals(EntityStatus.CONSTRUCTION) &&
                 (odEntity.getStatus().equals(EntityStatus.IN_USE) ||
-                 odEntity.getStatus().equals(EntityStatus.IN_USE_NOT_MEASURED))
-        ) {
+                        odEntity.getStatus().equals(EntityStatus.IN_USE_NOT_MEASURED))
+                ) {
             if (odEntity.getSourceDate() != null) {
                 osmEntity.setSourceDate(odEntity.getSourceDate());
                 localPrimitive.put("source:date", odEntity.getSourceDate().format(DateTimeFormatter.ISO_DATE));
@@ -95,7 +95,7 @@ public class DefaultEntityUpdater<E extends Entity> implements EntityUpdater {
             localPrimitive.getPrimitive().setModified(true);
         }
     }
-    
+
     private void updateMatching() {
         // TODO only update matching for modified objects
         for (Matcher<?> matcher : module.getMatcherManager().getMatchers()) {

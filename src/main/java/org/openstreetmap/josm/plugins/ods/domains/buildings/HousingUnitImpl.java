@@ -7,12 +7,12 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 
 public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
-    private List<AddressNode> addressNodes = new LinkedList<>();
+    private final List<AddressNode> addressNodes = new LinkedList<>();
     private BuildingType type;
     private Double area;
     private Object buildingRef;
     private Building building;
-    
+
     @Override
     public void setMainAddressNode(AddressNode addressNode) {
         if (addressNodes.isEmpty()) {
@@ -22,7 +22,7 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
             addressNodes.set(0, addressNode);
         }
     }
-    
+
     @Override
     public AddressNode getMainAddressNode() {
         if (addressNodes.isEmpty()) {
@@ -80,14 +80,4 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
     public Class<HousingUnit> getBaseType() {
         return HousingUnit.class;
     }
-
-//    @Override
-//    public void setGeometry(Point point) {
-//        super.setGeometry(point);
-//    }
-//
-//    @Override
-//    public Point getGeometry() {
-//        return (Point) super.getGeometry();
-//    }
 }

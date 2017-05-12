@@ -25,17 +25,17 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public class AddressToBuildingConnector implements OdsProcessor {
+public class OdAddressToBuildingConnector implements OdsProcessor {
     private final OdsModule module = OdsProcessor.getModule();
-    private Consumer<AddressNode> unmatchedAddressNodeHandler;
+    private Consumer<AddressNode> unmatchedAddressNodeHandler = (t -> {/**/});
 
-    public AddressToBuildingConnector() {
+    public OdAddressToBuildingConnector() {
         super();
     }
 
     public void setUnmatchedHousingUnitHandler(
-            Consumer<AddressNode> unmatchedAddressNodeHandler) {
-        this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
+            Consumer<AddressNode> handler) {
+        this.unmatchedAddressNodeHandler = handler;
     }
 
     @Override
@@ -72,8 +72,6 @@ public class AddressToBuildingConnector implements OdsProcessor {
     }
 
     private void reportUnmatched(AddressNode addressNode) {
-        if (unmatchedAddressNodeHandler != null) {
-            unmatchedAddressNodeHandler.accept(addressNode);
-        }
+        unmatchedAddressNodeHandler.accept(addressNode);
     }
 }
