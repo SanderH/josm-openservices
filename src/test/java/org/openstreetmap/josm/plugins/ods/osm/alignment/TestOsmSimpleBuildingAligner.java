@@ -1,10 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.osm.alignment;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,20 +13,15 @@ import org.openstreetmap.josm.plugins.ods.test.TestData;
 
 public class TestOsmSimpleBuildingAligner {
     private TestData testData;
-    
+
     @BeforeClass
     public static void setUpBeforeClass() {
-//        JOSMFixture.createUnitTestFixture().init();
+        //        JOSMFixture.createUnitTestFixture().init();
     }
 
     @Before
     public void init() throws IOException, IllegalDataException {
-        try {
-            testData = new TestData(this, "buildingAligner.osm");
-        }
-        catch (FileNotFoundException e) {
-            Assert.fail(e.getMessage());
-        }
+        testData = new TestData(this, "buildingAligner.osm");
     }
 
     @Test
