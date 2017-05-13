@@ -31,13 +31,13 @@ import org.openstreetmap.josm.tools.WindowGeometry;
 
 /**
  * Dialog box to download a polygon area.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public abstract class AbstractDownloadDialog extends JDialog implements PropertyChangeListener {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     protected JButton btnDownload;
 
     public AbstractDownloadDialog(OdsModule module, String title) {
-        super(JOptionPane.getFrameForComponent(Main.panel), title, ModalityType.DOCUMENT_MODAL);
+        super(JOptionPane.getFrameForComponent(Main.main.panel), title, ModalityType.DOCUMENT_MODAL);
         this.addWindowListener(new WindowEventHandler());
         this.module = module;
         getContentPane().setLayout(new BorderLayout());
@@ -66,8 +66,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         return cbDownloadODS.isSelected();
     }
 
-    abstract protected JPanel buildMainPanel(); 
-    
+    abstract protected JPanel buildMainPanel();
+
     protected JPanel buildButtonPanel() {
         JPanel pnl = new JPanel();
         pnl.setLayout(new FlowLayout());
@@ -96,7 +96,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     /**
      * Remembers the current settings in the download dialog
-     * 
+     *
      */
     public void rememberSettings() {
         Main.pref.put("openservices.download.osm", cbDownloadOSM.isSelected());
@@ -109,7 +109,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         cbDownloadODS.setSelected(Main.pref.getBoolean(
                 "openservices.download.ods", true));
     }
-    
+
     @Override
     public void setVisible(boolean visible) {
         if (visible) {
@@ -118,8 +118,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
                     WindowGeometry.centerInWindow(
                             getParent(),
                             getDimension()
-                    )
-            ).applySafe(this);
+                            )
+                    ).applySafe(this);
         } else if (isShowing()) { // Avoid IllegalComponentStateException like in #8775
             new WindowGeometry(this).remember(getClass().getName() + ".geometry");
         }
@@ -127,7 +127,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     }
 
     abstract Dimension getDimension();
-    
+
     /**
      * Replies true if the dialog was canceled
      *
@@ -142,7 +142,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     }
 
     class CancelAction extends AbstractAction {
-        
+
         private static final long serialVersionUID = 1L;
 
         public CancelAction() {
@@ -164,7 +164,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     class DownloadAction extends AbstractAction {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -183,10 +183,10 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
                                 cbDownloadOSM.getText(),
                                 cbDownloadODS.getText(),
                                 module.getName()
-                        ),
+                                ),
                         tr("Error"),
                         JOptionPane.ERROR_MESSAGE
-                );
+                        );
                 return;
             }
             setCanceled(false);

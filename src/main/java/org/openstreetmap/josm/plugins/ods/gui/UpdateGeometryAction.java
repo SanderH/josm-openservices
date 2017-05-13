@@ -8,8 +8,8 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
@@ -21,13 +21,13 @@ import org.openstreetmap.josm.tools.I18n;
 /**
  * Temporary action to update a single building's geometry.
  * Used during development of this new functionality
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class UpdateGeometryAction extends OdsAction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class UpdateGeometryAction extends OdsAction {
         LayerManager layerManager = getModule().getLayerManager(layer);
         // This action should only occur when the OpenData layer is active
         assert (layerManager != null && !layerManager.isOsm());
-        
+
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
         Collection<OsmPrimitive> primitives = osmLayer.data.getAllSelected();
         Match<Building> match = null;
@@ -56,8 +56,8 @@ public class UpdateGeometryAction extends OdsAction {
             }
         }
         if (match == null) {
-            JOptionPane.showMessageDialog(Main.panel, I18n.tr(
-                "Please select exactly one building that has been matched."));
+            JOptionPane.showMessageDialog(Main.main.panel, I18n.tr(
+                    "Please select exactly one building that has been matched."));
             return;
         }
         update(match);
@@ -66,7 +66,7 @@ public class UpdateGeometryAction extends OdsAction {
     }
 
     private void update(Match<Building> match) {
-        
+
     }
 
     @Override

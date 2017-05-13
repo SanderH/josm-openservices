@@ -40,8 +40,8 @@ public class OdsEnableAction extends AbstractAction {
             }
             Bounds bounds = new Bounds(
                     Main.pref.get("openservices.download.bounds"), ";");
-                // Zoom to the last used bounds
-                Main.map.mapView.zoomTo(bounds);
+            // Zoom to the last used bounds
+            Main.map.mapView.zoomTo(bounds);
         }
         catch (ModuleActivationException e) {
             if (e == ModuleActivationException.CANCELLED) {
@@ -50,7 +50,7 @@ public class OdsEnableAction extends AbstractAction {
             Main.error(e, false);
             String msg = I18n.tr("The module could not be activated because of the following error(s):") +
                     "\n" + e.getMessage();
-            JOptionPane.showMessageDialog(Main.panel, msg, "Module not available", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(Main.main.panel, msg, "Module not available", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

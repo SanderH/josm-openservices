@@ -20,22 +20,22 @@ import org.openstreetmap.josm.tools.GBC;
 /**
  * This Dialog box is used to ask the user what to do after removing one of
  * the layers that are managed by an ODS module.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class OdsLayerDeletedDialog extends JDialog {
-    private OdsModule module;
+    private final OdsModule module;
     private JButton buttonReset;
     private JButton buttonDisable;
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
     public OdsLayerDeletedDialog(OdsModule module) {
-        super(JOptionPane.getFrameForComponent(Main.panel), tr("ODS layer removed."),
-            ModalityType.DOCUMENT_MODAL);
+        super(JOptionPane.getFrameForComponent(Main.main.panel), tr("ODS layer removed."),
+                ModalityType.DOCUMENT_MODAL);
         this.module = module;
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(buildMainPanel(), BorderLayout.CENTER);
@@ -45,8 +45,8 @@ public class OdsLayerDeletedDialog extends JDialog {
     protected JPanel buildMainPanel() {
         String moduleName = module.getName();
         JLabel lbl = new JLabel(tr("You removed one of the layers that belong to the {0} module." +
-            " For the stability of the {0} module, you have to reset, or to disable" +
-            " the module.", moduleName));
+                " For the stability of the {0} module, you have to reset, or to disable" +
+                " the module.", moduleName));
         buttonReset = new JButton(tr("Reset {0}", moduleName));
         buttonReset.setToolTipText(tr("<html>Reset the {0} module.</html>", moduleName));
         buttonDisable = new JButton(tr("Disable {0}", moduleName));

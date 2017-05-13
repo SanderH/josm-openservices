@@ -4,7 +4,6 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 
@@ -25,7 +24,7 @@ import org.openstreetmap.josm.tools.ImageProvider;
 
 public class OdsDownloadAction extends OdsAction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -35,9 +34,9 @@ public class OdsDownloadAction extends OdsAction {
     Boundary boundary;
     boolean downloadOsm;
     boolean downloadOpenData;
-    private SlippyMapDownloadDialog slippyDialog;
-    private FixedBoundsDownloadDialog fixedDialog;
-    
+    private final SlippyMapDownloadDialog slippyDialog;
+    private final FixedBoundsDownloadDialog fixedDialog;
+
     public OdsDownloadAction(OdsModule module) {
         super(module, "Download", ImageProvider.get("download"));
         slippyDialog = new SlippyMapDownloadDialog(module);
@@ -49,7 +48,7 @@ public class OdsDownloadAction extends OdsAction {
     public void actionPerformed(ActionEvent e) {
         run();
     }
-    
+
     public void run() {
         cancelled = false;
         boundary = getBoundary();
@@ -84,7 +83,7 @@ public class OdsDownloadAction extends OdsAction {
         }
         return bounds;
     }
-    
+
     private Boundary getPolygonBoundary() {
         if (Main.map == null) {
             return null;
@@ -109,9 +108,9 @@ public class OdsDownloadAction extends OdsAction {
         }
         return null;
     }
-    
+
     private class DownloadTask extends PleaseWaitRunnable {
-        
+
         public DownloadTask() {
             super(tr("Downloading data"));
         }
@@ -125,11 +124,11 @@ public class OdsDownloadAction extends OdsAction {
         protected void realRun() {
             try {
                 DownloadRequest request = new DownloadRequest(startDate, boundary,
-                    downloadOsm, downloadOpenData);
+                        downloadOsm, downloadOpenData);
                 downloader.run(getProgressMonitor(), request);
             }
             catch (OdsException e) {
-                JOptionPane.showMessageDialog(Main.panel, I18n.tr("The download failed because of the following reason(s):\n{0}",
+                JOptionPane.showMessageDialog(Main.main.panel, I18n.tr("The download failed because of the following reason(s):\n{0}",
                         e.getMessage()),
                         I18n.tr("Download error"), JOptionPane.ERROR_MESSAGE);
             } catch (InterruptedException e) {

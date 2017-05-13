@@ -9,8 +9,8 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingAligner;
@@ -20,7 +20,7 @@ import org.openstreetmap.josm.tools.I18n;
 
 public class OdsUpdateAction extends OdsAction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -36,11 +36,11 @@ public class OdsUpdateAction extends OdsAction {
         Layer layer = Main.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         if (layerManager == null || layerManager.isOsm()) {
-            JOptionPane.showMessageDialog(Main.panel, 
-                I18n.tr("This operation is only allowed on the ODS layer;"));
+            JOptionPane.showMessageDialog(Main.main.panel,
+                    I18n.tr("This operation is only allowed on the ODS layer;"));
             return;
         }
-        
+
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
         importer.doImport(osmLayer.data.getAllSelected());
         updater.doUpdate(osmLayer.data.getAllSelected());
