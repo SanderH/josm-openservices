@@ -27,6 +27,7 @@ import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -45,6 +46,7 @@ public abstract class OdsModule implements LayerChangeListener {
 
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<OsmEntityBuilder> entityBuilders = new LinkedList<>();
+    private final List<OsmEntityRelationManager> osmEntityReationManagers = new LinkedList<>();
 
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private OpenDataLayerManager openDataLayerManager;
@@ -56,6 +58,7 @@ public abstract class OdsModule implements LayerChangeListener {
     private boolean initialized = false;
     private boolean active = false;
 
+
     protected void setPlugin(OdsModulePlugin plugin) {
         this.plugin = plugin;
     }
@@ -64,20 +67,21 @@ public abstract class OdsModule implements LayerChangeListener {
 
     public void initialize() throws OdsException {
         if (!initialized) {
-            OdsModuleConfiguration configuration = getConfiguration();
-            initializeHosts(configuration);
-            initializeFeatureSources(configuration);
-            initializeDataSources(configuration);
+            initializeHosts();
+            initializeFeatureSources();
+            initializeDataSources();
             this.osmLayerManager = createOsmLayerManager();
             this.openDataLayerManager = createOpenDataLayerManager();
+            initializeOsmEntityBuilders();
+            initializeOsmRelationManagers();
             Main.getLayerManager().addLayerChangeListener(this);
             initialized = true;
         }
     }
 
-    private static void initializeHosts(OdsModuleConfiguration configuration) throws OdsException {
+    private void initializeHosts() throws OdsException {
         List<String> messages = new LinkedList<>();
-        for (Host host : configuration.getHosts()) {
+        for (Host host : getConfiguration().getHosts()) {
             try {
                 host.initialize();
             }
@@ -90,9 +94,9 @@ public abstract class OdsModule implements LayerChangeListener {
         }
     }
 
-    private static void initializeFeatureSources(OdsModuleConfiguration configuration) throws OdsException {
+    private void initializeFeatureSources() throws OdsException {
         StringBuilder sb = new StringBuilder(100);
-        for (OdsFeatureSource featureSource : configuration.getFeatureSources()) {
+        for (OdsFeatureSource featureSource : getConfiguration().getFeatureSources()) {
             try {
                 featureSource.initialize();
             }
@@ -108,9 +112,9 @@ public abstract class OdsModule implements LayerChangeListener {
         }
     }
 
-    private static void initializeDataSources(OdsModuleConfiguration configuration) throws OdsException {
+    private void initializeDataSources() throws OdsException {
         List<String> problems = new LinkedList<>();
-        for (OdsDataSource dataSource : configuration.getDataSources()) {
+        for (OdsDataSource dataSource : getConfiguration().getDataSources()) {
             try {
                 dataSource.initialize();
             }
@@ -131,12 +135,39 @@ public abstract class OdsModule implements LayerChangeListener {
         }
     }
 
-    protected void addOsmEntityBuilder(OsmEntityBuilder entityBuilder) {
-        this.entityBuilders.add(entityBuilder);
+    private void initializeOsmEntityBuilders() throws OdsException {
+        for (Class<? extends OsmEntityBuilder> builderClass : getConfiguration().getOsmEntityBuilders()) {
+            try {
+                OsmEntityBuilder builder;
+                builder = builderClass.newInstance();
+                builder.initialize(this);
+                entityBuilders.add(builder);
+            } catch (Exception e) {
+                throw new OdsException(e);
+            }
+        }
     }
+
+    private void initializeOsmRelationManagers() throws OdsException {
+        for (Class<? extends OsmEntityRelationManager> managerClass : getConfiguration().getOsmRelationManagers()) {
+            try {
+                OsmEntityRelationManager manager = managerClass.newInstance();
+                manager.initialize(this);
+                this.osmEntityReationManagers.add(manager);
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new OdsException(e);
+            }
+        }
+    }
+
+
 
     public List<OsmEntityBuilder> getEntityBuilders() {
         return entityBuilders;
+    }
+
+    public List<OsmEntityRelationManager> getOsmEntityRelationManagers() {
+        return osmEntityReationManagers;
     }
 
     public abstract GeoUtil getGeoUtil();
@@ -151,27 +182,9 @@ public abstract class OdsModule implements LayerChangeListener {
         return dataSources;
     }
 
-    //    public void setOsmQuery(String query) {
-    //        /**
-    //         * Currently, we pass the osm (overpass) query through http get. This
-    //         * doesn't allow linefeed or carriage return characters, so we need to
-    //         * strip them.
-    //         */
-    //        if (query == null) {
-    //            osmQuery = null;
-    //            return;
-    //        }
-    //        this.osmQuery = query.replaceAll("\\s", "");
-    //    }
-    //
-    //    public final String getOsmQuery() {
-    //        return osmQuery;
-    //    }
-
     protected abstract OpenDataLayerManager createOpenDataLayerManager();
 
     protected abstract OsmLayerManager createOsmLayerManager();
-
 
     public OpenDataLayerManager getOpenDataLayerManager() {
         return openDataLayerManager;
@@ -308,6 +321,7 @@ public abstract class OdsModule implements LayerChangeListener {
         matcherManager.reset();
         osmLayerManager.reset();
         openDataLayerManager.reset();
+        entityBuilders.clear();
     }
 
     /**

@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.processing;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
+
 /**
  * OsmEntityRelationManager manages relations between entities on
  * the OSM layer.
@@ -14,4 +16,10 @@ package org.openstreetmap.josm.plugins.ods.processing;
  */
 public interface OsmEntityRelationManager {
 
+    public void initialize(OdsModule odsModule);
+
+    /**
+     * Update relations for all related entities.
+     */
+    public void createRelations();
 }

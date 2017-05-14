@@ -24,21 +24,26 @@ import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
  *
  */
 public class Osm_Building_AddressNode_RelationManager implements OsmEntityRelationManager {
-    private final OdsModule module;
+    private OdsModule module;
     private DataSet dataSet;
 
-    public Osm_Building_AddressNode_RelationManager(OdsModule module) {
+    public Osm_Building_AddressNode_RelationManager() {
         super();
-        this.module = module;
+    }
+
+    @Override
+    public void initialize(OdsModule odsModule) {
+        this.module = odsModule;
     }
 
     /**
-     * Create connections
+     * Create relations
      */
-    public void createConnections() {
+    @Override
+    public void createRelations() {
         LayerManager layerManager = module.getOsmLayerManager();
         layerManager.getRepository().getAll(Building.class)
-        .forEach(this::createConnections);
+        .forEach(this::createRelations);
     }
 
     /**
@@ -46,7 +51,7 @@ public class Osm_Building_AddressNode_RelationManager implements OsmEntityRelati
      *
      * @param building
      */
-    public void createConnections(Building building) {
+    public void createRelations(Building building) {
         ManagedPrimitive mPrimitive = building.getPrimitive();
         BBox bbox = building.getPrimitive().getBBox();
         for (Node node : getDataSet().searchNodes(bbox)) {

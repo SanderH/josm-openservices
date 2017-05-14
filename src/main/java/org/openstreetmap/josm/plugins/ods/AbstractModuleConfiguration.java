@@ -9,12 +9,12 @@ import java.util.Map;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 
-public class AbstractModuleConfiguration implements OdsModuleConfiguration {
+public abstract class AbstractModuleConfiguration implements OdsModuleConfiguration {
 
     private final Map<String, Host> hosts = new HashMap<>();
     private final List<OdsFeatureSource> featureSources = new LinkedList<>();
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    
+
     protected void addHost(Host host) {
         hosts.put(host.getName(), host);
     }
@@ -23,7 +23,7 @@ public class AbstractModuleConfiguration implements OdsModuleConfiguration {
         featureSources.add(featureSource);
         addHost(featureSource.getHost());
     }
-    
+
     @Override
     public Collection<Host> getHosts() {
         return hosts.values();

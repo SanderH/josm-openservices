@@ -15,11 +15,11 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
     private HousingUnit housingUnit;
     private Building building;
     private Set<Building> buildings;
-    
+
     public AddressNodeImpl() {
         super();
     }
-    
+
     @Override
     public Class<AddressNode> getBaseType() {
         return AddressNode.class;
@@ -41,7 +41,7 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
             return EntityStatus.UNKNOWN;
         }
         EntityStatus status = super.getStatus();
-        if (status == EntityStatus.CONSTRUCTION &&
+        if ((status == EntityStatus.CONSTRUCTION || status == EntityStatus.UNKNOWN) &&
                 getBuilding().getStatus() == EntityStatus.PLANNED) {
             return EntityStatus.PLANNED;
         }
@@ -56,7 +56,7 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
         return getBuilding() == null || getBuilding().isIncomplete();
     }
 
-    
+
     @Override
     public void setHousingUnit(HousingUnit housingUnit) {
         this.housingUnit = housingUnit;
@@ -97,7 +97,7 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
         }
         return null;
     }
-    
+
     @Override
     public Set<Building> getBuildings() {
         return buildings;
@@ -124,17 +124,17 @@ public class AddressNodeImpl extends AbstractEntity implements AddressNode {
     public ManagedNode getPrimitive() {
         return (ManagedNode) super.getPrimitive();
     }
-    
-//    @Override
-//    public void setGeometry(Point point) {
-//        super.setGeometry(point);
-//    }
-//
-//    @Override
-//    public Point getGeometry() {
-//        return (Point) super.getGeometry();
-//    }
-    
+
+    //    @Override
+    //    public void setGeometry(Point point) {
+    //        super.setGeometry(point);
+    //    }
+    //
+    //    @Override
+    //    public Point getGeometry() {
+    //        return (Point) super.getGeometry();
+    //    }
+
     @Override
     public String toString() {
         return getAddress().toString();

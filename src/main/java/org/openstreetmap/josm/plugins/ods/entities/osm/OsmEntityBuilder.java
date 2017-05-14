@@ -6,11 +6,14 @@ import java.util.Set;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public interface OsmEntityBuilder {
     //    public void initialize();
+
+    public void initialize(OdsModule odsModule);
 
     public OsmLayerManager getLayerManager();
     /**

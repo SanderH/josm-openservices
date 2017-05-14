@@ -5,6 +5,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
@@ -18,33 +19,22 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder {
-    private final OsmLayerManager layerManager;
-    //    private Class<T> baseType;
+    private OsmLayerManager layerManager;
     private final Predicate<OsmPrimitive> recognizer;
-    private final Repository repository;
-    private final GeoUtil geoUtil;
+    private Repository repository;
+    private GeoUtil geoUtil;
 
-    public AbstractOsmEntityBuilder(OdsModule module, Class<T> baseType, Predicate<OsmPrimitive> recognizer) {
+    public AbstractOsmEntityBuilder(Predicate<OsmPrimitive> recognizer) {
         super();
+        this.recognizer = recognizer;
+    }
+
+    @Override
+    public void initialize(OdsModule module) {
         this.geoUtil = module.getGeoUtil();
         this.layerManager = module.getOsmLayerManager();
         this.repository = layerManager.getRepository();
-        this.recognizer = recognizer;
-        //        this.baseType = baseType;
     }
-
-
-
-    //    @Override
-    //    public Class<T> getEntityClass() {
-    //        return baseType;
-    //    }
-
-    // TODO do we still need this method?
-    //    @Override
-    //    public void initialize() {
-    //        // No action required
-    //    }
 
     @Override
     public OsmLayerManager getLayerManager() {
@@ -118,7 +108,10 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         }
     }
 
-    //    abstract void updateGeometry(T entity, ManagedPrimitive<?> ods);
+    @Override
+    public void updateGeometry(Node node) {
+        // Default behavior: do nothing
+    }
 
     public void updateTags(T entity, Map<String, String> tags) {
         parseKeys(entity, tags);
