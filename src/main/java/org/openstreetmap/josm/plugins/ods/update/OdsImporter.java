@@ -29,7 +29,7 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -37,9 +37,9 @@ public class OdsImporter {
     private final OdsModule module;
     // TODO Make the importfilter(s) configurable
     private final ImportFilter importFilter = new DefaultImportFilter();
-    
+
     private List<Way> importedWays;
-    
+
     public OdsImporter(OdsModule module) {
         super();
         this.module = module;
@@ -52,48 +52,52 @@ public class OdsImporter {
             ManagedPrimitive managedPrimitive = layerManager.getManagedPrimitive(primitive);
             if (managedPrimitive != null) {
                 Entity entity = managedPrimitive.getEntity();
-                if (entity != null && entity.getMatch(entity.getBaseType()) == null 
+                if (entity != null && entity.getMatch(entity.getBaseType()) == null
                         && importFilter.test(entity)) {
                     primitivesToImport.add(primitive);
                 }
             }
-//            for (OsmPrimitive referrer : primitive.getReferrers()) {
-//                if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
-//                    Entity referrerEntity = layerManager.getEntity(referrer);
-//                    if (referrerEntity != null && referrerEntity.getMatch() == null 
-//                          && importFilter.test(referrerEntity)) {
-//                        entitiesToImport.add(referrerEntity);
-//                    }
-//                }
-//            }
+            //            for (OsmPrimitive referrer : primitive.getReferrers()) {
+            //                if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
+            //                    Entity referrerEntity = layerManager.getEntity(referrer);
+            //                    if (referrerEntity != null && referrerEntity.getMatch() == null
+            //                          && importFilter.test(referrerEntity)) {
+            //                        entitiesToImport.add(referrerEntity);
+            //                    }
+            //                }
+            //            }
         }
         importPrimitives(primitivesToImport);
     }
-    
+
     private void importPrimitives(Set<OsmPrimitive> primitives) {
         PrimitiveDataBuilder builder = new PrimitiveDataBuilder(module);
         for (OsmPrimitive primitive : primitives) {
-//            if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
-//                Relation relation = (Relation) primitive;
-//                for (OsmPrimitive member : relation.getMemberPrimitives()) {
-//                    primitivesToImport.add(member);
-//                    builder.addPrimitive(member);
-//                }
-//            }
+            //            if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
+            //                Relation relation = (Relation) primitive;
+            //                for (OsmPrimitive member : relation.getMemberPrimitives()) {
+            //                    primitivesToImport.add(member);
+            //                    builder.addPrimitive(member);
+            //                }
+            //            }
             builder.addPrimitive(primitive);
         }
-        Command cmd = builder.getCommand();
-        Main.main.undoRedo.add(builder.getCommand());
-        Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
-        removeOdsTags(importedPrimitives);
-        buildImportedEntities(importedPrimitives);
-        updateMatching();
-        importedWays = importedPrimitives.stream()
-            .filter((OsmPrimitive p) -> p.getType() == OsmPrimitiveType.WAY)
-            .map((OsmPrimitive p) -> (Way)p)
-            .collect(Collectors.toList());
+        List<Command> commands = builder.getCommands();
+        if (!commands.isEmpty()) {
+            Command cmd = new SequenceCommand("Import objects", commands);
+            Main.main.undoRedo.add(cmd);
+            // Remove any |ODS tags from the imported primitives
+            Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
+            removeOdsTags(importedPrimitives);
+            buildImportedEntities(importedPrimitives);
+            updateMatching();
+            importedWays = importedPrimitives.stream()
+                    .filter((OsmPrimitive p) -> p.getType() == OsmPrimitiveType.WAY)
+                    .map((OsmPrimitive p) -> (Way)p)
+                    .collect(Collectors.toList());
+        }
     }
-    
+
     private void updateMatching() {
         for (Matcher<?> matcher : module.getMatcherManager().getMatchers()) {
             matcher.run();
@@ -103,10 +107,10 @@ public class OdsImporter {
     public List<Way> getImportedWays() {
         return (importedWays == null ? Collections.emptyList() : importedWays);
     }
-    
+
     /**
      * Remove the ODS tags from the selected Osm primitives
-     * 
+     *
      * @param osmData
      */
     private static void removeOdsTags(Collection<? extends OsmPrimitive> primitives) {
@@ -124,7 +128,7 @@ public class OdsImporter {
      * We could have created these entities from the OpenData entities instead. But by building them
      * from the Osm primitives, we make sure that all entities in the Osm layer are built the same way,
      * making them consistent with each other.
-     * 
+     *
      * @param importedPrimitives
      */
     private void buildImportedEntities(
@@ -132,32 +136,16 @@ public class OdsImporter {
         OsmEntitiesBuilder entitiesBuilder = module.getOsmLayerManager().getEntitiesBuilder();
         entitiesBuilder.build(importedPrimitives);
     }
-    
+
     private class PrimitiveDataBuilder {
         private final OsmDataLayer layer;
         private final Map<Node, Node> nodeMap = new HashMap<>();
-//        private List<PrimitiveData> primitiveData = new LinkedList<>();
-        private List<Command> commands = new LinkedList<>();
-        
+        private final List<Command> commands = new LinkedList<>();
+
         public PrimitiveDataBuilder(OdsModule module) {
             this.layer = module.getOsmLayerManager().getOsmDataLayer();
         }
 
-//        public void addPrimitive(ManagedPrimitive managedPrimitive) {
-//            OsmPrimitive primitive = managedPrimitive.getPrimitive();
-//            primitiveData.add(primitive.save());
-//            if (primitive.getType() == OsmPrimitiveType.WAY) {
-//                for (Node node :((Way)primitive).getNodes()) {
-//                    addPrimitive(node);
-//                }
-//            }
-//            else if (primitive.getType() == OsmPrimitiveType.RELATION) {
-//                for (OsmPrimitive osm : ((Relation)primitive).getMemberPrimitives()) {
-//                    addPrimitive(osm);
-//                }
-//            }
-//        }
-        
         public void addPrimitive(OsmPrimitive primitive) {
             switch (primitive.getType()) {
             case NODE:
@@ -172,7 +160,7 @@ public class OdsImporter {
                 break;
             }
         }
-        
+
         public void addWay(Way odWay) {
             List<Node> nodes = new ArrayList<>(odWay.getNodesCount());
             for (Node odNode : odWay.getNodes()) {
@@ -183,11 +171,11 @@ public class OdsImporter {
             newWay.setNodes(nodes);
             commands.add(new AddCommand(layer, newWay));
         }
-        
+
         public void addNode(Node odNode) {
             getNode(odNode, false);
         }
-        
+
         private Node getNode(Node odNode, boolean merge) {
             Node node = null;
             if (merge) {
@@ -209,9 +197,9 @@ public class OdsImporter {
             }
             return node;
         }
-        
-        Command getCommand() {
-            return new SequenceCommand("Import objects", commands);
+
+        List<Command> getCommands() {
+            return commands;
         }
     }
 }
