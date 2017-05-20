@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Addressable;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -23,7 +24,6 @@ public class SameBuildingAddressableMatcher implements Matcher<Addressable> {
         // Empty implementation. No action required
     }
 
-
     @Override
     public Class<Addressable> getType() {
         return Addressable.class;
@@ -43,11 +43,11 @@ public class SameBuildingAddressableMatcher implements Matcher<Addressable> {
     private static void matchAddresses(Match<Building> match) {
         Building odBuilding = match.getOpenDataEntity();
         Building osmBuilding = match.getOsmEntity();
-        Index<Addressable> index = new IndexImpl<>(Addressable.PC_FULL_HNR_INDEX_KEY);
-        osmBuilding.getAddressables().forEach(index::insert);
-        for (Addressable odAddressable : odBuilding.getAddressables()) {
-            index.getAllByTemplate(odAddressable).forEach(osmAddressable -> {
-                matchAddressables(osmAddressable, odAddressable);
+        Index<AddressNode> index = new IndexImpl<>(AddressNode.PC_FULL_HNR_INDEX_KEY);
+        osmBuilding.getAddressNodes().forEach(index::insert);
+        for (AddressNode odAddressNode : odBuilding.getAddressNodes()) {
+            index.getAllByTemplate(odAddressNode).forEach(osmAddressNode -> {
+                matchAddressNodes(osmAddressNode, odAddressNode);
             });
         }
     }
@@ -60,6 +60,19 @@ public class SameBuildingAddressableMatcher implements Matcher<Addressable> {
         }
         else {
             match = new AddressableMatch(osmEntity, odEntity);
+        }
+        match.analyze();
+        match.updateMatchTags();
+    }
+
+    private static void matchAddressNodes(AddressNode osmEntity, AddressNode odEntity) {
+        Match<AddressNode> match = osmEntity.getMatch(AddressNode.class);
+        if (match != null) {
+            match.addOpenDataEntity(odEntity);
+            odEntity.addMatch(match);
+        }
+        else {
+            match = new AddressNodeMatch(osmEntity, odEntity);
         }
         match.analyze();
         match.updateMatchTags();

@@ -1,17 +1,31 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
+import org.openstreetmap.josm.plugins.ods.storage.IndexKey;
+import org.openstreetmap.josm.plugins.ods.storage.IndexKeyImpl;
 
-public interface AddressNode extends Addressable {
+public interface AddressNode extends Entity {
+    public static Function<AddressNode, Object> PC_FULL_HNR_INDEX_FUNCTION = addressable->{
+        Address address = addressable.getAddress();
+        return Address.PC_FULL_HNR_INDEX_FUNCTION.apply(address);
+    };
+    public static IndexKey<AddressNode> PC_FULL_HNR_INDEX_KEY =
+            new IndexKeyImpl<>(AddressNode.class, PC_FULL_HNR_INDEX_FUNCTION);
 
     @Override
     public ManagedNode getPrimitive();
+
+    void setAddress(Address address);
+
+    public Address getAddress();
 
     public void setHousingUnit(HousingUnit housingUnit);
 
@@ -31,7 +45,6 @@ public interface AddressNode extends Addressable {
      * @return The building to which this address node belongs.
      *     null if there are 0 or more than 1 buildings
      */
-    @Override
     public Building getBuilding();
 
     /**

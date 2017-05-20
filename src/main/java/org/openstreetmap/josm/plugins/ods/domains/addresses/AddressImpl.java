@@ -15,6 +15,10 @@ public class AddressImpl implements Address {
     private String cityName;
     private City city;
 
+    public AddressImpl() {
+        // Default constructor
+    }
+
     @Override
     public void setHouseName(String houseName) {
         this.houseName = houseName;
@@ -29,7 +33,7 @@ public class AddressImpl implements Address {
     public void setStreetName(String streetName) {
         this.streetName = streetName;
     }
-    
+
     @Override
     public String getStreetName() {
         return streetName;
@@ -54,13 +58,13 @@ public class AddressImpl implements Address {
     public void setHouseNumber(Integer houseNumber) {
         this.houseNumber = houseNumber;
     }
-    
+
     @Override
     public void setFullHouseNumber(String fullHouseNumber) {
         this.fullHouseNumber = fullHouseNumber;
         this.parseHouseNumberParts();
     }
-    
+
     @Override
     public Integer getHouseNumber() {
         return houseNumber;
@@ -74,7 +78,7 @@ public class AddressImpl implements Address {
         return fullHouseNumber;
     }
 
-    
+
     @Override
     public Character getHouseLetter() {
         return houseLetter;
@@ -115,7 +119,7 @@ public class AddressImpl implements Address {
         this.street = street;
         this.setStreetName(street.getName());
     }
-    
+
     public String formatHouseNumber() {
         StringBuilder sb = new StringBuilder(10);
         if (getHouseNumber() != null) {
@@ -152,7 +156,7 @@ public class AddressImpl implements Address {
             setHouseNumberExtra(s.substring(i));
         }
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
