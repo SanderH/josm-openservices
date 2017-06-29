@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 import java.util.Collection;
 import java.util.Map;
 
+import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -27,15 +28,15 @@ public interface ManagedPrimitive {
      * created primitive.
      * If the Osm primitive already exists. Just return it.
      *
-     * 
+     *
      * @param dataSet
-     * @return 
+     * @return
      */
     public OsmPrimitive create(DataSet dataSet);
-    
-    public void put(String key, String value);
+
+    public Command put(String key, String value);
     public String get(String key);
-    public void putAll(Map<String, String> tags);
+    public Command putAll(Map<String, String> tags);
     public Map<String, String> getKeys();
     public void remove(String string);
     public BBox getBBox();

@@ -9,7 +9,7 @@ import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
-public class AddressNodeImpl extends AbstractEntity implements AddressNode {
+public class AddressNodeImpl extends AbstractEntity<AddressNode> implements AddressNode {
     private Address address;
     private HousingUnit housingUnit;
     private Building building;

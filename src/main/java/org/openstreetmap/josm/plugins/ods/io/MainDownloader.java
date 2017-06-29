@@ -23,8 +23,8 @@ import org.openstreetmap.josm.tools.I18n;
 /**
  * Main downloader that retrieves data from multiple sources. Currently only a OSM source
  * and a single OpenData source are supported.
- * The 
- * 
+ * The
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -32,15 +32,15 @@ public class MainDownloader {
     private static final int NTHREADS = 10;
     private boolean initialized = false;
     private boolean cancelled = false;
-    private OdsModule module;
+    private final OdsModule module;
     private OpenDataLayerDownloader openDataLayerDownloader;
     private OsmLayerDownloader osmLayerDownloader;
 
     private List<LayerDownloader> enabledDownloaders;
-    
-    private ExecutorService executor;
 
-//    private Status status = new Status();
+    private final ExecutorService executor;
+
+    //    private Status status = new Status();
 
     public MainDownloader(OdsModule module) {
         super();
@@ -87,7 +87,7 @@ public class MainDownloader {
         }
         initialized = true;
     }
-    
+
     public void run(ProgressMonitor pm, DownloadRequest request) throws OdsException, InterruptedException {
         pm.indeterminateSubTask(I18n.tr("Setup"));
         cancelled = false;
@@ -103,7 +103,7 @@ public class MainDownloader {
             DownloadResponse response = new DownloadResponse(request);
             process(response);
             if (cancelled) return;
-            
+
             Bounds bounds = request.getBoundary().getBounds();
             computeBboxAndCenterScale(bounds);
             pm.finishTask();
@@ -115,8 +115,8 @@ public class MainDownloader {
 
     /**
      * Setup the download jobs. One job for the Osm data and one for imported data.
-     * Setup the download tasks. Maybe more than 1 per job. 
-     * @throws OdsException 
+     * Setup the download tasks. Maybe more than 1 per job.
+     * @throws OdsException
      */
     private void setup(DownloadRequest request) throws OdsException {
         enabledDownloaders = new LinkedList<>();
@@ -147,17 +147,17 @@ public class MainDownloader {
     private void download() throws OdsException, CancellationException, InterruptedException {
         runTasks(Downloader.getDownloadTasks(enabledDownloaders));
     }
-    
+
     /**
      * Run the processing tasks.
-     * @throws CancellationException 
-     * @throws ExecutionException 
-     * @throws InterruptedException 
-     * 
+     * @throws CancellationException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     *
      */
     protected void process(DownloadResponse response) throws OdsException, CancellationException, InterruptedException {
         runTasks(Downloader.getProcessTasks(enabledDownloaders));
-        for (Matcher<?> matcher : getModule().getMatcherManager().getMatchers()) {
+        for (Matcher matcher : getModule().getMatcherManager().getMatchers()) {
             matcher.run();
         }
     }
@@ -174,7 +174,7 @@ public class MainDownloader {
                     Exception e = (Exception) executionException.getCause();
                     if (e instanceof NullPointerException) {
                         messages.add(I18n.tr("A null pointer exception occurred. This is allways a programming error. " +
-                            "Please look at the log file for more details"));
+                                "Please look at the log file for more details"));
                     }
                     else {
                         messages.add(e.getMessage());
@@ -207,5 +207,5 @@ public class MainDownloader {
         }
         executor.shutdownNow();
     }
-    
+
 }

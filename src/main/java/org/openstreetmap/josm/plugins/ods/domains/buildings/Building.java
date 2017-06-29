@@ -13,7 +13,7 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.places.City;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public interface Building extends Entity {
+public interface Building extends Entity<Building> {
 
     public void setAddress(Address address);
 
@@ -38,9 +38,6 @@ public interface Building extends Entity {
     public void addHousingUnit(HousingUnit housingUnit);
 
     public BuildingType getBuildingType();
-
-    @Override
-    public Class<Building> getBaseType();
 
     // Setters
     public void setBuildingType(BuildingType buildingType);

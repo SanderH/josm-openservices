@@ -23,38 +23,37 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.matching.StraightMatch;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 
-public class DefaultGeometryUpdater<E extends Entity>
-        implements GeometryUpdater {
+public class DefaultGeometryUpdater implements GeometryUpdater {
     private final OsmDataLayer osmDataLayer;
-    private final Predicate<Match<?>> condition;
+    private final Predicate<StraightMatch<?>> condition;
 
     public DefaultGeometryUpdater(OdsModule module,
-            Predicate<Match<?>> condition) {
+            Predicate<StraightMatch<?>> condition) {
         this.osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
         this.condition = condition;
     }
 
     @Override
-    public UpdateResult run(List<Match<?>> allMatches) {
-        List<Match<?>> matches = allMatches.stream().filter(condition)
+    public UpdateResult run(List<StraightMatch<?>> allMatches) {
+        List<StraightMatch<?>> matches = allMatches.stream().filter(condition)
                 .collect(Collectors.toList());
         Updater updater = new Updater(matches);
         return updater.run();
     }
 
     private class Updater {
-        private final List<Match<?>> matches;
-        private Set<Node> existingNodes = new HashSet<>();
-        private Set<Node> newNodes = new HashSet<>();
-        private Map<Node, Node> nodeMap = new HashMap<>();
-        private Set<Entity> updatedEntities = new HashSet<>();
-        private Set<Way> updatedWays = new HashSet<>();
+        private final List<StraightMatch<?>> matches;
+        private final Set<Node> existingNodes = new HashSet<>();
+        private final Set<Node> newNodes = new HashSet<>();
+        private final Map<Node, Node> nodeMap = new HashMap<>();
+        private final Set<Entity> updatedEntities = new HashSet<>();
+        private final Set<Way> updatedWays = new HashSet<>();
 
-        public Updater(List<Match<?>> matches) {
+        public Updater(List<StraightMatch<?>> matches) {
             this.matches = matches;
         }
 
@@ -67,7 +66,7 @@ public class DefaultGeometryUpdater<E extends Entity>
         }
 
         private void collectNodes() {
-            for (Match<?> match : this.matches) {
+            for (StraightMatch<?> match : this.matches) {
                 SimpleManagedPolygon polygon = (SimpleManagedPolygon) match
                         .getOsmEntity().getPrimitive();
                 Iterator<Node> it = polygon.getNodeIterator();
@@ -100,7 +99,7 @@ public class DefaultGeometryUpdater<E extends Entity>
         }
 
         private void updateGeometries() {
-            for (Match<?> match : matches) {
+            for (StraightMatch<?> match : matches) {
                 updateGeometry(match.getOsmEntity(), match.getOpenDataEntity());
             }
         }
@@ -125,7 +124,7 @@ public class DefaultGeometryUpdater<E extends Entity>
             if (osmPrimitive.getPrimitive()
                     .getDisplayType() != OsmPrimitiveType.CLOSEDWAY
                     || odPrimitive.getPrimitive()
-                            .getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
+                    .getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
                 return;
             }
             Way osmWay = (Way) osmPrimitive.getPrimitive();

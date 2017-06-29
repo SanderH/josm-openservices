@@ -1,12 +1,14 @@
 package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
+import org.openstreetmap.josm.command.ChangePropertyCommand;
+import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.NodeData;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -15,12 +17,12 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     private OsmPrimitive primitive = null;
-    private LayerManager layerManager;
-//    private Set<ManagedPrimitive<?>> referrers;
-    private long uniqueId = (new NodeData()).getUniqueId();
+    private final LayerManager layerManager;
+    //    private Set<ManagedPrimitive<?>> referrers;
+    private final long uniqueId = (new NodeData()).getUniqueId();
     private Map<String, String> keys;
     private Entity entity = null;
-    
+
     public AbstractManagedPrimitive(LayerManager layerManager) {
         this(layerManager, new HashMap<>());
     }
@@ -41,7 +43,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     public LayerManager getLayerManager() {
         return layerManager;
     }
-    
+
     @Override
     public Collection<ManagedPrimitive> getReferrers() {
         Set<ManagedPrimitive> referrers = new HashSet<>();
@@ -53,7 +55,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
         }
         return referrers;
     }
-    
+
     @Override
     public boolean isIncomplete() {
         return false;
@@ -69,7 +71,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
         return primitive;
     }
 
-    
+
     @Override
     public boolean contains(ManagedNode mNode) {
         return false;
@@ -85,16 +87,13 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     }
 
     @Override
-    public void putAll(Map<String, String> tags) {
+    public Command putAll(Map<String, String> tags) {
         OsmPrimitive osm = getPrimitive();
+
         if (osm != null) {
-            for (Entry<String, String> entry : tags.entrySet()) {
-                osm.put(entry.getKey(), entry.getValue());
-            }
+            return new ChangePropertyCommand(Collections.singleton(osm), tags);
         }
-        else {
-            keys.putAll(tags);
-        }
+        return null;
     }
 
     @Override
@@ -116,7 +115,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
         return uniqueId;
     }
 
-    
+
     @Override
     public <E extends Entity> void setEntity(E entity) {
         this.entity = entity;
@@ -127,24 +126,24 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
         return entity;
     }
 
-    
-//    @Override
-//    public Map<String, String> getKeys() {
-//        if (getPrimitive() != null) {
-//            return getPrimitive().getKeys();
-//        }
-//        return keys;
-//    }
 
-//    @Override
-//    public void setKeys(Map<String, String> keys) {
-//        if (getPrimitive() != null) {
-//            primitive.setKeys(keys);
-//        }
-//        else {
-//            this.keys = keys;
-//        }
-//    }
+    //    @Override
+    //    public Map<String, String> getKeys() {
+    //        if (getPrimitive() != null) {
+    //            return getPrimitive().getKeys();
+    //        }
+    //        return keys;
+    //    }
+
+    //    @Override
+    //    public void setKeys(Map<String, String> keys) {
+    //        if (getPrimitive() != null) {
+    //            primitive.setKeys(keys);
+    //        }
+    //        else {
+    //            this.keys = keys;
+    //        }
+    //    }
 
     @Override
     public LatLon getCenter() {
@@ -152,14 +151,12 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     }
 
     @Override
-    public void put(String key, String value) {
+    public Command put(String key, String value) {
         OsmPrimitive osm = getPrimitive();
         if (osm != null) {
-            osm.put(key, value);
+            return new ChangePropertyCommand(osm, key, value);
         }
-        else {
-            keys.put(key, value);
-        }
+        return null;
     }
 
     @Override

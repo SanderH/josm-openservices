@@ -194,9 +194,9 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmLayerManager;
     }
 
-    public MatcherManager getMatcherManager() {
-        return matcherManager;
-    }
+        public MatcherManager getMatcherManager() {
+            return matcherManager;
+        }
 
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;

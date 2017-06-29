@@ -52,7 +52,7 @@ public class OdsImporter {
             ManagedPrimitive managedPrimitive = layerManager.getManagedPrimitive(primitive);
             if (managedPrimitive != null) {
                 Entity entity = managedPrimitive.getEntity();
-                if (entity != null && entity.getMatch(entity.getBaseType()) == null
+                if (entity != null && entity.getMatch() == null
                         && importFilter.test(entity)) {
                     primitivesToImport.add(primitive);
                 }
@@ -99,7 +99,7 @@ public class OdsImporter {
     }
 
     private void updateMatching() {
-        for (Matcher<?> matcher : module.getMatcherManager().getMatchers()) {
+        for (Matcher matcher : module.getMatcherManager().getMatchers()) {
             matcher.run();
         }
     }

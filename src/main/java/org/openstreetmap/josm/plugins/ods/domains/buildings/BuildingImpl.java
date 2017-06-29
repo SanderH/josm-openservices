@@ -11,13 +11,12 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.places.City;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 
-public class BuildingImpl extends AbstractEntity implements Building {
+public class BuildingImpl extends AbstractEntity<Building> implements Building {
     private Optional<Address> address = Optional.empty();
     private final List<HousingUnit> housingUnits = new LinkedList<>();
     private final Set<AddressNode> addressNodes = new HashSet<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private City city;
-
 
     @Override
     public Class<Building> getBaseType() {

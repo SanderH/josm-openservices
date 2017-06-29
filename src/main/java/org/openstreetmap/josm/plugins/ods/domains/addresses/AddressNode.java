@@ -12,9 +12,9 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.storage.IndexKey;
 import org.openstreetmap.josm.plugins.ods.storage.IndexKeyImpl;
 
-public interface AddressNode extends Entity {
-    public static Function<AddressNode, Object> PC_FULL_HNR_INDEX_FUNCTION = addressable->{
-        Address address = addressable.getAddress();
+public interface AddressNode extends Entity<AddressNode> {
+    public static Function<AddressNode, Object> PC_FULL_HNR_INDEX_FUNCTION = addressNode->{
+        Address address = addressNode.getAddress();
         return Address.PC_FULL_HNR_INDEX_FUNCTION.apply(address);
     };
     public static IndexKey<AddressNode> PC_FULL_HNR_INDEX_KEY =

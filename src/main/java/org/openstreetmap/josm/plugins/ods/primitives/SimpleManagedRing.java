@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -15,7 +16,7 @@ import org.openstreetmap.josm.tools.I18n;
 
 /**
  * A ManagedRing implementation that is based on a single closed ManagedWay;
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -63,7 +64,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     @Override
     public boolean contains(ManagedNode mNode) {
         return Geometry.nodeInsidePolygon(mNode.getNode(),
-            managedWay.getNodes());
+                managedWay.getNodes());
     }
 
     @Override
@@ -75,7 +76,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     public Iterator<Node> getNodeIterator() {
         return new RingNodeIterator();
     }
-    
+
     /**
      * Determines whether path from nodes list is oriented clockwise.
      * @param nodes ManagedNodes list to be checked.
@@ -102,14 +103,14 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
         area2 -= coorCurr.lon() * coorPrev.lat();
         return area2 < 0;
     }
-    
+
     private class RingNodeIterator implements Iterator<Node> {
-        private ListIterator<Node> iterator;
+        private final ListIterator<Node> iterator;
 
         RingNodeIterator() {
             this.iterator = managedWay.getNodes().listIterator();
         }
-        
+
         @Override
         public boolean hasNext() {
             return iterator.nextIndex() < managedWay.getNodesCount();
@@ -153,8 +154,8 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
-    public void putAll(Map<String, String> tags) {
-        managedWay.putAll(tags);
+    public Command putAll(Map<String, String> tags) {
+        return managedWay.putAll(tags);
     }
 
     @Override
@@ -163,8 +164,8 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
-    public void put(String key, String value) {
-        managedWay.put(key, value);
+    public Command put(String key, String value) {
+        return managedWay.put(key, value);
     }
 
     @Override

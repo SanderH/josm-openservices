@@ -14,11 +14,10 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
-import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
-public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmEntityBuilder {
+public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements OsmEntityBuilder {
     private OsmLayerManager layerManager;
     private final Predicate<OsmPrimitive> recognizer;
     private Repository repository;
@@ -80,13 +79,11 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
         if (entity == null) {
             return;
         }
-        updateTags(entity, newTags);
-        for (Match<?> match : entity.getMatches()) {
-            if (match != null && match.isSimple()) {
-                match.analyze();
-                match.updateMatchTags();
-            }
-        }
+        //        updateTags(entity, newTags);
+        //        entity.getMatch().ifPresent(match -> {
+        //            match.analyze();
+        //            match.updateMatchTags();
+        //        });
     }
 
     @Override
@@ -100,12 +97,10 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity> implements OsmE
             return;
         }
         //        updateGeometry(entity, way);
-        for (Match<?> match : entity.getMatches()) {
-            if (match != null && match.isSimple()) {
-                match.analyze();
-                match.updateMatchTags();
-            }
-        }
+        //        entity.getMatch().ifPresent(match -> {
+        //            match.analyze();
+        //            match.updateMatchTags();
+        //        });
     }
 
     @Override

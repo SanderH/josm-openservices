@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.issues.Issue;
@@ -13,7 +14,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class AbstractEntity implements Entity {
+public abstract class AbstractEntity<E extends Entity<E>> implements Entity<E> {
     private Object primaryId;
     private Object referenceId;
     private DownloadResponse response;
@@ -25,7 +26,7 @@ public abstract class AbstractEntity implements Entity {
     private boolean incomplete = true;
     private ManagedPrimitive primitive;
     private Map<String, Issue> issues = null;
-    private final Map<Class<? extends Entity>, Match<? extends Entity>> matches = new HashMap<>();
+    private Optional<Match<E>> match = Optional.empty();
 
     @Override
     public void setPrimaryId(Object primaryId) {
@@ -133,20 +134,13 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public Collection<Match<? extends Entity>> getMatches() {
-        return matches.values();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <E extends Entity> Match<E> getMatch(Class<E> role) {
-        return (Match<E>) matches.get(role);
+    public Optional<Match<E>> getMatch() {
+        return match;
     }
 
     @Override
-    public <E extends Entity> void addMatch(Match<E> match) {
-        assert match.getRole() != null;
-        this.matches.put(match.getRole(),  match);
+    public void setMatch(Match<E> match) {
+        this.match = Optional.of(match);
     }
 
     @Override

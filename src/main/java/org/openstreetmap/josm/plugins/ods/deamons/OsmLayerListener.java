@@ -215,7 +215,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
                 ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(primitive);
                 if (mPrimitive != null && mPrimitive.getEntity() != null) {
                     Entity entity = mPrimitive.getEntity();
-                    entity.getMatches();
+                    entity.getMatch();
                 }
             }
         }

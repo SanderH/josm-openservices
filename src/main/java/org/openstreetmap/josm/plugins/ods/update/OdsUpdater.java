@@ -16,14 +16,14 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 /**
  * The updater updates objects in the Osm layer with new data from the OpenData layer.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class OdsUpdater {
     private final OdsModule module;
-    private Set<Way> updatedWays = new HashSet<>();
-    
+    private final Set<Way> updatedWays = new HashSet<>();
+
     public OdsUpdater(OdsModule module) {
         super();
         this.module = module;
@@ -31,24 +31,19 @@ public class OdsUpdater {
 
     public void doUpdate(Collection<OsmPrimitive> primitives) {
         LayerManager layerManager = module.getOpenDataLayerManager();
-        List<Match<?>> updateableMatches = new LinkedList<>();
+        List<Match> updateableMatches = new LinkedList<>();
         for (OsmPrimitive primitive : primitives) {
             ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(primitive);
             if (mPrimitive != null) {
                 Entity entity = mPrimitive.getEntity();
-                if (entity != null) {
-                    Match<?> match = entity.getMatch(entity.getBaseType());
-                    if (match != null && match.isSimple()) {
-                        updateableMatches.add(match);
-                    }
-                }
+                entity.getMatch().ifPresent(updateableMatches::add);
             }
         }
         for (EntityUpdater updater : module.getUpdaters()) {
             UpdateResult result = updater.update(updateableMatches);
             updatedWays.addAll(result.getUpdatedWays());
         }
-        for (Match<?> match : updateableMatches) {
+        for (Match match : updateableMatches) {
             match.analyze();
             match.updateMatchTags();
         }
