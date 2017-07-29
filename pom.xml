@@ -24,9 +24,9 @@
       <version>4.10</version>
     </dependency>
     <dependency>
-      <groupId>proj4j</groupId>
+      <groupId>org.osgeo</groupId>
       <artifactId>proj4j</artifactId>
-      <version>2408</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
