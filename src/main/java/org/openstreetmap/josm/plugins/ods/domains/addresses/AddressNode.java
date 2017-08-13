@@ -3,16 +3,13 @@ package org.openstreetmap.josm.plugins.ods.domains.addresses;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.storage.IndexKey;
 import org.openstreetmap.josm.plugins.ods.storage.IndexKeyImpl;
 
-public interface AddressNode extends Entity<AddressNode> {
+public interface AddressNode extends Entity<AddressNodeEntityType> {
     public static Function<AddressNode, Object> PC_FULL_HNR_INDEX_FUNCTION = addressNode->{
         Address address = addressNode.getAddress();
         return Address.PC_FULL_HNR_INDEX_FUNCTION.apply(address);
@@ -20,17 +17,12 @@ public interface AddressNode extends Entity<AddressNode> {
     public static IndexKey<AddressNode> PC_FULL_HNR_INDEX_KEY =
             new IndexKeyImpl<>(AddressNode.class, PC_FULL_HNR_INDEX_FUNCTION);
 
-    @Override
-    public ManagedNode getPrimitive();
-
     void setAddress(Address address);
 
     public Address getAddress();
 
-    public void setHousingUnit(HousingUnit housingUnit);
-
-    public HousingUnit getHousingUnit();
-
+    @Override
+    public ManagedNode getPrimitive();
     /**
      * Add a building to this address node.
      * An address node is typically contained in exactly 1 building,
@@ -59,11 +51,4 @@ public interface AddressNode extends Entity<AddressNode> {
     //    @Override
     //    public Point getGeometry();
 
-    @Override
-    public Class<AddressNode> getBaseType();
-
-    public static boolean isAddressNode(OsmPrimitive primitive) {
-        return (primitive.hasKey("addr:housenumber") &&
-                (primitive.getDisplayType() == OsmPrimitiveType.NODE));
-    }
 }

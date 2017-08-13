@@ -31,12 +31,12 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-transform</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>
@@ -57,17 +57,17 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-shapefile</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-wfs</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-wfs-ng</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

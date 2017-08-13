@@ -8,6 +8,16 @@ import org.openstreetmap.josm.plugins.ods.domains.streets.Street;
 import org.openstreetmap.josm.plugins.ods.storage.IndexKey;
 import org.openstreetmap.josm.plugins.ods.storage.IndexKeyImpl;
 
+/**
+ * Base interface for addresses.
+ * An address is not a stand-alone entity. It is always part of an entity. Most of the
+ * (Usually an addressNode or a building).
+ * TODO houseLetter and HousenumberExtra are specific for the Netherlands. Move
+ *  these out of the Address interface into a specific Dutch implementation.
+ *
+ * @author Gertjan Idema
+ *
+ */
 public interface Address {
     static Function<Address, Object> PC_HNR_INDEX_FUNCTION = (address->{
         if (address == null) return null;

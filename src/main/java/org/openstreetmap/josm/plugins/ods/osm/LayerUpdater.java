@@ -2,9 +2,10 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
@@ -17,7 +18,7 @@ import org.openstreetmap.josm.plugins.ods.storage.Repository;
  */
 public class LayerUpdater {
     private final OdsModule module;
-    private final LayerManager layerManager;
+    private final OpenDataLayerManager layerManager;
     private final DataSet dataSet;
 
     public LayerUpdater(OdsModule module) {
@@ -28,8 +29,8 @@ public class LayerUpdater {
 
     public void run() {
         dataSet.beginUpdate();
-        Repository repository = module.getOpenDataLayerManager().getRepository();
-        repository.getAll(Entity.class).forEach(entity -> {
+        Repository repository = module.getRepository();
+        repository.getAll(OdEntity.class).forEach(entity -> {
             if (entity.getPrimitive() != null) {
                 update(entity.getPrimitive());
             }
@@ -38,7 +39,7 @@ public class LayerUpdater {
     }
 
     private void update(ManagedPrimitive primitive) {
-        Entity entity = primitive.getEntity();
+        Entity<?> entity = primitive.getEntity();
         if (entity != null && !entity.isIncomplete()) {
             OsmPrimitive osmPrimitive = primitive.create(dataSet);
             layerManager.register(osmPrimitive, primitive);

@@ -4,10 +4,10 @@ import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.AbstractLayerManager;
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
@@ -41,8 +41,7 @@ public class Osm_Building_AddressNode_RelationManager implements OsmEntityRelati
      */
     @Override
     public void createRelations() {
-        LayerManager layerManager = module.getOsmLayerManager();
-        layerManager.getRepository().getAll(Building.class)
+        module.getRepository().getAll(OsmBuilding.class)
         .forEach(this::createRelations);
     }
 

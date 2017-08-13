@@ -11,21 +11,14 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
-import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 
 public class TestLayerManager implements LayerManager, LayerChangeListener {
     private final OsmDataLayer osmDataLayer;
     private final Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
-    private final GeoRepository repository = new GeoRepository();
 
     public TestLayerManager(OsmDataLayer osmDataLayer) {
         super();
         this.osmDataLayer = osmDataLayer;
-    }
-
-    @Override
-    public GeoRepository getRepository() {
-        return repository;
     }
 
     @Override

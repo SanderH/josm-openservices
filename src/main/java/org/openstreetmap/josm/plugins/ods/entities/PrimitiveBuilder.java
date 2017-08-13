@@ -9,25 +9,25 @@ import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class PrimitiveBuilder {
     private final OdsModule module;
-    private final List<EntityPrimitiveBuilder<? extends Entity>> entityBuilders = new LinkedList<>();
+    private final List<EntityPrimitiveBuilder<? extends Entity<?>>> entityBuilders = new LinkedList<>();
 
     public PrimitiveBuilder(OdsModule module) {
         super();
         this.module = module;
     }
 
-    public <T extends Entity> void register(Class<T> clazz, EntityPrimitiveBuilder<T> builder) {
+    public <T extends Entity<?>> void register(Class<T> clazz, EntityPrimitiveBuilder<T> builder) {
         entityBuilders.add(builder);
     }
 
     public void run(DownloadResponse response) {
-        for (EntityPrimitiveBuilder<? extends Entity> builder : entityBuilders) {
+        for (EntityPrimitiveBuilder<? extends Entity<?>> builder : entityBuilders) {
             buildPrimitives(builder);
         }
     }
 
-    private <E extends Entity> void buildPrimitives(EntityPrimitiveBuilder<E> entityBuilder) {
-        Repository repository = module.getOpenDataLayerManager().getRepository();
+    private <E extends Entity<?>> void buildPrimitives(EntityPrimitiveBuilder<E> entityBuilder) {
+        Repository repository = module.getRepository();
         repository.getAll(entityBuilder.getEntityClass())
         .forEach(entity -> {
             if (entity.getPrimitive() == null) {

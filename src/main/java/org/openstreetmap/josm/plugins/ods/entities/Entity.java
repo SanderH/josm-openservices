@@ -2,11 +2,8 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.issues.Issue;
-import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -21,9 +18,8 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public interface Entity<E extends Entity<E>> {
-    public void setDownloadResponse(DownloadResponse response);
-    public DownloadResponse getDownloadResponse();
+public interface Entity<T extends EntityType> {
+    public T getEntityType();
     public void setSource(String source);
     public String getSource();
     public void setSourceDate(LocalDate date);
@@ -42,10 +38,6 @@ public interface Entity<E extends Entity<E>> {
     public Geometry getGeometry();
 
     public void setGeometry(Geometry geometry);
-    public Class<E> getBaseType();
-
-    public void setMatch(Match<E> match);
-    public Optional<Match<E>> getMatch();
 
     /**
      * Get the OSM primitive from which this entity was constructed,

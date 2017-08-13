@@ -4,7 +4,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
-import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 
 /**
  * <p>The LayerManager manages the Osm Datalayer that is shown in the
@@ -68,7 +67,7 @@ public interface LayerManager {
     //     */
     //    public <E extends Entity> EntityStore<E> getEntityStore(Class<E> clazz);
 
-    public GeoRepository getRepository();
+    //    public GeoRepository getRepository();
 
     public ManagedNodeSet getManagedNodes();
 }

@@ -20,7 +20,6 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
-import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 
 /**
  *
@@ -32,7 +31,7 @@ implements LayerManager, DataSetListener {
     private final String name;
     private OsmDataLayer osmDataLayer;
     private final Map<OsmPrimitive, ManagedPrimitive> primitiveMap = new HashMap<>();
-    private final GeoRepository repository = new GeoRepository();
+    //    private final GeoRepository repository = new GeoRepository();
     private boolean active = false;
 
     public AbstractLayerManager(String name) {
@@ -43,10 +42,10 @@ implements LayerManager, DataSetListener {
         return name;
     }
 
-    @Override
-    public GeoRepository getRepository() {
-        return repository;
-    }
+    //    @Override
+    //    public GeoRepository getRepository() {
+    //        return repository;
+    //    }
 
     @Override
     public ManagedNodeSet getManagedNodes() {
@@ -106,7 +105,7 @@ implements LayerManager, DataSetListener {
     public void deActivate() {
         if (isActive()) {
             primitiveMap.clear();
-            getRepository().clear();
+            //            getRepository().clear();
             active = false;
             if (Main.getLayerManager().containsLayer(this.osmDataLayer)) {
                 Main.getLayerManager().removeLayer(this.osmDataLayer);

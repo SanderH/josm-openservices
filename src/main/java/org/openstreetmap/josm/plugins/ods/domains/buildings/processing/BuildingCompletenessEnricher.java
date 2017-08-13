@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
@@ -34,7 +35,7 @@ public class BuildingCompletenessEnricher implements OdsProcessor {
             Polygonal polygonal = (Polygonal) boundary.getGeometryN(i);
             boundaries.add(new PreparedPolygon(polygonal));
         }
-        layerManager.getRepository().getAll(Building.class)
+        module.getRepository().getAll(OpenDataBuilding.class)
         .forEach(this::enrich);
     }
 

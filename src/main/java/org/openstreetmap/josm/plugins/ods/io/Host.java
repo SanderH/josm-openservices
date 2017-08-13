@@ -7,14 +7,14 @@ import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
  * Host for 1 or more open data services.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -23,7 +23,7 @@ public interface Host {
     /**
      * Get the name of this host. This is a descriptive name that has no direct
      * relation to any meta data.
-     * 
+     *
      * @return the name
      */
     String getName();
@@ -31,8 +31,8 @@ public interface Host {
     /**
      * Get the URL of this host. Dependent of the service type, the URL may include a path
      * or even one or more query parameters.
-     * Use 
-     * 
+     * Use
+     *
      * @return
      */
     URL getUrl();
@@ -41,7 +41,7 @@ public interface Host {
      * Get a string that describes the type of this host. The type name is given by
      * the implementor of the Host class and should be different for every host type.
      * The type name is used to distinct host classed of different types that have the same name.
-     * 
+     *
      * @return
      */
     String getType();
@@ -50,7 +50,7 @@ public interface Host {
      * Get the default maximum number of features the services of this host will return for
      *     one request.
      * This value can be used to check if results have been truncated by the service.
-     * 
+     *
      * @return The maximum feature count or -1 if unlimited.
      */
     Integer getMaxFeatures();
@@ -62,11 +62,11 @@ public interface Host {
 
     /**
      * Perform any initialization required for this host.
-     * Typically, this included checking availability and building a list 
+     * Typically, this included checking availability and building a list
      * of available features.
-     * 
+     *
      * Do nothing if the host has already been initialized.
-     * @throws OdsConfigurationException 
+     * @throws OdsConfigurationException
      */
     void initialize() throws OdsException;
 
@@ -84,7 +84,7 @@ public interface Host {
      */
     OdsFeatureSource getOdsFeatureSource(String feature)
             throws ServiceException;
-    
+
     /**
      * Create a feature downloader for passed data source that return results of type
      * <? extends class>
@@ -94,5 +94,5 @@ public interface Host {
      * @return A @FeatureDownloader, or null if not available
      * @throws OdsException
      */
-    <T extends Entity> FeatureDownloader createDownloader(OdsModule module, OdsDataSource dataSource, Class<T> clazz) throws OdsException;
+    <T extends EntityType> FeatureDownloader createDownloader(OdsModule module, OdsDataSource dataSource, T entityType) throws OdsException;
 }

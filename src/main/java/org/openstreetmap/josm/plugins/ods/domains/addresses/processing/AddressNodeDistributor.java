@@ -8,19 +8,18 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeGroup;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 
 /**
  * This processor finds overlapping nodes in the data and distributes them, so
  * they are no longer overlapping.
- * The HousingUnitToBuildingConnector and OdAddressToBuildingConnector must run
+ * The BuildingUnitToBuildingConnector and OdAddressToBuildingConnector must run
  * before this class, so we can distribute over the line pointing to the
  * center of the building.
  *
@@ -41,12 +40,11 @@ public class AddressNodeDistributor implements OdsProcessor {
 
     @Override
     public void run() {
-        LayerManager layerManager = module.getOpenDataLayerManager();
-        layerManager.getRepository().getAll(Building.class)
+        module.getRepository().getAll(OpenDataBuilding.class)
         .forEach(this::distributeNodes);
     }
 
-    public void distributeNodes(Building building) {
+    public void distributeNodes(OpenDataBuilding building) {
         for (AddressNodeGroup group : buildGroups(building).values()) {
             if (group.getAddressNodes().size() > 1) {
                 distribute(group, false);
@@ -59,10 +57,10 @@ public class AddressNodeDistributor implements OdsProcessor {
      *
      * @param newEntities
      */
-    private static Map<LatLon, AddressNodeGroup> buildGroups(Building building) {
+    private static Map<LatLon, AddressNodeGroup> buildGroups(OpenDataBuilding building) {
         Map<LatLon, AddressNodeGroup> groups = new HashMap<>();
-        for (HousingUnit housingUnit : building.getHousingUnits()) {
-            for (AddressNode addressNode : housingUnit.getAddressNodes()) {
+        for (BuildingUnit buildingUnit : building.getBuildingUnits()) {
+            for (AddressNode addressNode : buildingUnit.getAddressNodes()) {
                 LatLon coord = addressNode.getPrimitive().getCenter();
                 AddressNodeGroup group = groups.get(coord);
                 if (group == null) {

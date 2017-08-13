@@ -29,10 +29,11 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.AbstractHost;
+import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.w3c.dom.Document;
 
 import net.opengis.wfs.FeatureTypeType;
@@ -43,7 +44,7 @@ import net.opengis.wfs.WFSCapabilitiesType;
  * containing WFS data.
  * Intended to be used to for test data.
  * This class is still work in progress.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -55,7 +56,7 @@ public class FileWFSHost extends AbstractHost {
     private final Configuration configuration;
     private final Map<String, FeatureTypeType> featureTypeTypes = new HashMap<>();
     private final Map<String, SimpleFeatureType> featureTypes = new HashMap<>();
-    
+
     public FileWFSHost(WFSStrategy strategy, File dir) throws IOException {
         // TODO should we extend AbstractHost ?
         super("FileWFS", dir.toString());
@@ -64,7 +65,7 @@ public class FileWFSHost extends AbstractHost {
         this.directory = dir;
         assert dir.isDirectory();
         this.configuration = strategy.getWfsConfiguration();
-//        configuration.
+        //        configuration.
         getCapabilities();
         try {
             schemaLocation = new File(dir, "featureTypes.xsd").toURI().toURL();
@@ -73,24 +74,24 @@ public class FileWFSHost extends AbstractHost {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-//        CRSUtil.
-//        this.crs = crs;
-//        collectFeaturTypes();
+        //        CRSUtil.
+        //        this.crs = crs;
+        //        collectFeaturTypes();
     }
-    
+
     private void getCapabilities() throws IOException {
         URL url = getGetCapabilitiesURL();
         try (
                 InputStream is = url.openStream();
-        ) {
+                ) {
             Document rawDocument = parseXml(is);
             is.close();
             parsedCapabilities = (WFSCapabilitiesType) parseCapabilities(rawDocument);
             collectFeatureTypes();
-//            this.capabilities = WFSGetCapabilities.create(parsedCapabilities, rawDocument);
+            //            this.capabilities = WFSGetCapabilities.create(parsedCapabilities, rawDocument);
         }
     }
-    
+
     private static Document parseXml(InputStream is) throws IOException {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -102,7 +103,7 @@ public class FileWFSHost extends AbstractHost {
             throw new IOException("Error parsing capabilities document: " + e.getMessage(), e);
         }
     }
-    
+
     private EObject parseCapabilities(final Document document)
             throws IOException {
 
@@ -131,7 +132,7 @@ public class FileWFSHost extends AbstractHost {
         }
         return capabilitiesFile.toURI().toURL();
     }
-    
+
     private void collectFeatureTypes() {
         @SuppressWarnings("unchecked")
         EList<FeatureTypeType> list = parsedCapabilities.getFeatureTypeList().getFeatureType();
@@ -139,7 +140,7 @@ public class FileWFSHost extends AbstractHost {
             featureTypeTypes.put(featureTypeType.getTitle(), featureTypeType);
         }
     }
-    
+
     public SimpleFeatureType getFeatureType(QName typeName) throws IOException, CRSException {
         SimpleFeatureType type = featureTypes.get(typeName);
         if (type == null) {
@@ -166,8 +167,8 @@ public class FileWFSHost extends AbstractHost {
     }
 
     @Override
-    public <T extends Entity> FeatureDownloader createDownloader(
-            OdsModule module, OdsDataSource dataSource, Class<T> clazz)
+    public <T extends EntityType> FeatureDownloader createDownloader(
+            OdsModule module, OdsDataSource dataSource, T entityType)
                     throws OdsException {
         throw new UnsupportedOperationException();
     }

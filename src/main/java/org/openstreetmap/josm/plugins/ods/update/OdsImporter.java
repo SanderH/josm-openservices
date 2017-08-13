@@ -24,7 +24,7 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
@@ -35,8 +35,6 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
  */
 public class OdsImporter {
     private final OdsModule module;
-    // TODO Make the importfilter(s) configurable
-    private final ImportFilter importFilter = new DefaultImportFilter();
 
     private List<Way> importedWays;
 
@@ -49,23 +47,26 @@ public class OdsImporter {
         LayerManager layerManager = module.getOpenDataLayerManager();
         Set<OsmPrimitive> primitivesToImport = new HashSet<>();
         for (OsmPrimitive primitive : primitives) {
-            ManagedPrimitive managedPrimitive = layerManager.getManagedPrimitive(primitive);
+            ManagedPrimitive managedPrimitive = layerManager
+                    .getManagedPrimitive(primitive);
             if (managedPrimitive != null) {
-                Entity entity = managedPrimitive.getEntity();
-                if (entity != null && entity.getMatch() == null
-                        && importFilter.test(entity)) {
-                    primitivesToImport.add(primitive);
+                OdEntity<?> entity = (OdEntity<?>) managedPrimitive.getEntity();
+                if (entity != null) {
+                    if (entity.isCreationRequired()) {
+                        primitivesToImport.add(primitive);
+                    }
                 }
+                // for (OsmPrimitive referrer : primitive.getReferrers()) {
+                // if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
+                // Entity referrerEntity = layerManager.getEntity(referrer);
+                // if (referrerEntity != null && referrerEntity.getMatch() ==
+                // null
+                // && importFilter.test(referrerEntity)) {
+                // entitiesToImport.add(referrerEntity);
+                // }
+                // }
+                // }
             }
-            //            for (OsmPrimitive referrer : primitive.getReferrers()) {
-            //                if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
-            //                    Entity referrerEntity = layerManager.getEntity(referrer);
-            //                    if (referrerEntity != null && referrerEntity.getMatch() == null
-            //                          && importFilter.test(referrerEntity)) {
-            //                        entitiesToImport.add(referrerEntity);
-            //                    }
-            //                }
-            //            }
         }
         importPrimitives(primitivesToImport);
     }
@@ -73,13 +74,13 @@ public class OdsImporter {
     private void importPrimitives(Set<OsmPrimitive> primitives) {
         PrimitiveDataBuilder builder = new PrimitiveDataBuilder(module);
         for (OsmPrimitive primitive : primitives) {
-            //            if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
-            //                Relation relation = (Relation) primitive;
-            //                for (OsmPrimitive member : relation.getMemberPrimitives()) {
-            //                    primitivesToImport.add(member);
-            //                    builder.addPrimitive(member);
-            //                }
-            //            }
+            // if (primitive.g.getType().equals(OsmPrimitiveType.RELATION)) {
+            // Relation relation = (Relation) primitive;
+            // for (OsmPrimitive member : relation.getMemberPrimitives()) {
+            // primitivesToImport.add(member);
+            // builder.addPrimitive(member);
+            // }
+            // }
             builder.addPrimitive(primitive);
         }
         List<Command> commands = builder.getCommands();
@@ -87,13 +88,15 @@ public class OdsImporter {
             Command cmd = new SequenceCommand("Import objects", commands);
             Main.main.undoRedo.add(cmd);
             // Remove any |ODS tags from the imported primitives
-            Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
+            Collection<? extends OsmPrimitive> importedPrimitives = cmd
+                    .getParticipatingPrimitives();
             removeOdsTags(importedPrimitives);
             buildImportedEntities(importedPrimitives);
             updateMatching();
             importedWays = importedPrimitives.stream()
-                    .filter((OsmPrimitive p) -> p.getType() == OsmPrimitiveType.WAY)
-                    .map((OsmPrimitive p) -> (Way)p)
+                    .filter((OsmPrimitive p) -> p
+                            .getType() == OsmPrimitiveType.WAY)
+                    .map((OsmPrimitive p) -> (Way) p)
                     .collect(Collectors.toList());
         }
     }
@@ -113,7 +116,8 @@ public class OdsImporter {
      *
      * @param osmData
      */
-    private static void removeOdsTags(Collection<? extends OsmPrimitive> primitives) {
+    private static void removeOdsTags(
+            Collection<? extends OsmPrimitive> primitives) {
         for (OsmPrimitive primitive : primitives) {
             for (String key : primitive.keySet()) {
                 if (key.startsWith(ODS.KEY.BASE)) {
@@ -124,16 +128,17 @@ public class OdsImporter {
     }
 
     /**
-     * Build entities for the newly imported primitives.
-     * We could have created these entities from the OpenData entities instead. But by building them
-     * from the Osm primitives, we make sure that all entities in the Osm layer are built the same way,
-     * making them consistent with each other.
+     * Build entities for the newly imported primitives. We could have created
+     * these entities from the OpenData entities instead. But by building them
+     * from the Osm primitives, we make sure that all entities in the Osm layer
+     * are built the same way, making them consistent with each other.
      *
      * @param importedPrimitives
      */
     private void buildImportedEntities(
             Collection<? extends OsmPrimitive> importedPrimitives) {
-        OsmEntitiesBuilder entitiesBuilder = module.getOsmLayerManager().getEntitiesBuilder();
+        OsmEntitiesBuilder entitiesBuilder = module.getOsmLayerManager()
+                .getEntitiesBuilder();
         entitiesBuilder.build(importedPrimitives);
     }
 

@@ -11,13 +11,14 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
-public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements OsmEntityBuilder {
+public abstract class AbstractOsmEntityBuilder<T extends EntityType, E extends OsmEntity<T>> implements OsmEntityBuilder {
     private OsmLayerManager layerManager;
     private final Predicate<OsmPrimitive> recognizer;
     private Repository repository;
@@ -32,7 +33,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements O
     public void initialize(OdsModule module) {
         this.geoUtil = module.getGeoUtil();
         this.layerManager = module.getOsmLayerManager();
-        this.repository = layerManager.getRepository();
+        this.repository = module.getRepository();
     }
 
     @Override
@@ -49,7 +50,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements O
         return geoUtil;
     }
 
-    protected void register(ManagedPrimitive primitive, T entity) {
+    protected void register(ManagedPrimitive primitive, OsmEntity<T> entity) {
         entity.setPrimitive(primitive);
         repository.add(entity);
         primitive.setEntity(entity);
@@ -75,7 +76,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements O
         ManagedPrimitive ods = getLayerManager().getManagedPrimitive(primitive);
         if (ods == null) return;
         @SuppressWarnings("unchecked")
-        T entity = (T) ods.getEntity();
+        OsmEntity<T> entity = (OsmEntity<T>) ods.getEntity();
         if (entity == null) {
             return;
         }
@@ -92,7 +93,7 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements O
         if (ods == null) return;
         ods.setPrimitive(way);
         @SuppressWarnings("unchecked")
-        T entity = (T) ods.getEntity();
+        OsmEntity<T> entity = (OsmEntity<T>) ods.getEntity();
         if (entity == null) {
             return;
         }
@@ -108,11 +109,11 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements O
         // Default behavior: do nothing
     }
 
-    public void updateTags(T entity, Map<String, String> tags) {
+    public void updateTags(E entity, Map<String, String> tags) {
         parseKeys(entity, tags);
     }
 
-    protected void parseKeys(T entity, Map<String, String> tags) {
+    protected void parseKeys(E entity, Map<String, String> tags) {
         entity.setReferenceId(parseReferenceId(tags));
         entity.setSource(tags.get("source"));
         String sourceDate = tags.get("source:date");
@@ -136,6 +137,6 @@ public abstract class AbstractOsmEntityBuilder<T extends Entity<T>> implements O
         return;
     }
 
-    protected abstract void updateGeometry(T entity,
+    protected abstract void updateGeometry(E entity,
             OsmPrimitive primitive);
 }

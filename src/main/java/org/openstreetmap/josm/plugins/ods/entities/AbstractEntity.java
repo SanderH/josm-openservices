@@ -5,19 +5,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.issues.Issue;
-import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class AbstractEntity<E extends Entity<E>> implements Entity<E> {
+public abstract class AbstractEntity<T extends EntityType> implements Entity<T> {
+    private T entityType;
     private Object primaryId;
     private Object referenceId;
-    private DownloadResponse response;
     private LocalDate sourceDate;
     private String source;
     private StartDate startDate;
@@ -26,7 +23,10 @@ public abstract class AbstractEntity<E extends Entity<E>> implements Entity<E> {
     private boolean incomplete = true;
     private ManagedPrimitive primitive;
     private Map<String, Issue> issues = null;
-    private Optional<Match<E>> match = Optional.empty();
+
+    public void setEntityType(T entityType) {
+        this.entityType = entityType;
+    }
 
     @Override
     public void setPrimaryId(Object primaryId) {
@@ -39,6 +39,11 @@ public abstract class AbstractEntity<E extends Entity<E>> implements Entity<E> {
     }
 
     @Override
+    public T getEntityType() {
+        return entityType;
+    }
+
+    @Override
     public Object getReferenceId() {
         return referenceId;
     }
@@ -46,16 +51,6 @@ public abstract class AbstractEntity<E extends Entity<E>> implements Entity<E> {
     @Override
     public void setReferenceId(Object referenceId) {
         this.referenceId = referenceId;
-    }
-
-    @Override
-    public void setDownloadResponse(DownloadResponse response) {
-        this.response = response;
-    }
-
-    @Override
-    public DownloadResponse getDownloadResponse() {
-        return response;
     }
 
     @Override
@@ -131,16 +126,6 @@ public abstract class AbstractEntity<E extends Entity<E>> implements Entity<E> {
     @Override
     public ManagedPrimitive getPrimitive() {
         return primitive;
-    }
-
-    @Override
-    public Optional<Match<E>> getMatch() {
-        return match;
-    }
-
-    @Override
-    public void setMatch(Match<E> match) {
-        this.match = Optional.of(match);
     }
 
     @Override

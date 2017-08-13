@@ -5,7 +5,9 @@ import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeEntityType;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.matching.GeometryDifference;
@@ -19,6 +21,7 @@ public class AddressableMatcher implements Matcher {
 
     public AddressableMatcher(OdsModule module) {
         super();
+        // TODO Use (DI?) container to retrieve the fields.
         this.byBuildingMatcher = new SameBuildingAddressableMatcher(module);
         this.pcHnrMatcher = new PcHnrAddressableMatcher(module);
     }
@@ -52,9 +55,11 @@ public class AddressableMatcher implements Matcher {
     //    }
     //
 
-    public static void analizeGeometry(StraightMatch<AddressNode> match) {
-        Building odBuilding = match.getOpenDataEntity().getBuilding();
-        Building osmBuilding = match.getOsmEntity().getBuilding();
+    public static void analizeGeometry(StraightMatch<AddressNodeEntityType> match) {
+        OsmAddressNode osmAddressNode = (OsmAddressNode) match.getOsmEntity();
+        OpenDataAddressNode odAddressNode = (OpenDataAddressNode) match.getOpenDataEntity();
+        Building odBuilding = odAddressNode.getBuilding();
+        Building osmBuilding = osmAddressNode.getBuilding();
         boolean different = true;
         if (osmBuilding != null && odBuilding != null) {
             if (Objects.equals(osmBuilding.getReferenceId(), odBuilding.getReferenceId())) {
@@ -62,22 +67,24 @@ public class AddressableMatcher implements Matcher {
             }
         }
         if (different) {
-            match.addDifference(new GeometryDifference(match));
+            match.setGeometryDifference(new GeometryDifference(match));
         }
     }
 
-    private static void analyzeStatus(StraightMatch<AddressNode> match) {
+    private static void analyzeStatus(StraightMatch<AddressNodeEntityType> match) {
         if (Objects.equals(match.getOpenDataEntity().getStatus(), match.getOsmEntity().getStatus())) {
             return;
         }
-        match.addDifference(new StatusDifference(match));
+        match.setStatusDifference(new StatusDifference(match));
     }
 
-    private static void analyzeAttributes(StraightMatch<AddressNode> match) {
-        List<String> differeningKeys = AddressTagMatcher.compare(match.getOpenDataEntity().getAddress(),
-                match.getOsmEntity().getAddress());
+    private static void analyzeAttributes(StraightMatch<AddressNodeEntityType> match) {
+        OsmAddressNode osmAddressNode = (OsmAddressNode) match.getOsmEntity();
+        OpenDataAddressNode odAddressNode = (OpenDataAddressNode) match.getOpenDataEntity();
+        List<String> differeningKeys = AddressTagMatcher.compare(odAddressNode.getAddress(),
+                osmAddressNode.getAddress());
         for (String key : differeningKeys) {
-            match.addDifference(new TagDifference(match, key));
+            match.addAttributeDifference(new TagDifference(match, key));
         }
     }
 

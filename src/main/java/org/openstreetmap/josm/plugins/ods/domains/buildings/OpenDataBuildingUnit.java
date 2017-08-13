@@ -3,18 +3,18 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 
-public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
-    private final List<AddressNode> addressNodes = new LinkedList<>();
-    private BuildingType type;
+public class OpenDataBuildingUnit extends AbstractEntity<BuildingUnitEntityType> implements BuildingUnit {
+    private final List<OpenDataAddressNode> addressNodes = new LinkedList<>();
+    private TypeOfBuilding type;
     private Double area;
     private Object buildingRef;
     private Building building;
 
     @Override
-    public void setMainAddressNode(AddressNode addressNode) {
+    public void setMainAddressNode(OpenDataAddressNode addressNode) {
         if (addressNodes.isEmpty()) {
             addressNodes.add(addressNode);
         }
@@ -24,7 +24,7 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
     }
 
     @Override
-    public AddressNode getMainAddressNode() {
+    public OpenDataAddressNode getMainAddressNode() {
         if (addressNodes.isEmpty()) {
             return null;
         }
@@ -32,7 +32,7 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
     }
 
     @Override
-    public List<AddressNode> getAddressNodes() {
+    public List<OpenDataAddressNode> getAddressNodes() {
         return addressNodes;
     }
 
@@ -47,12 +47,12 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
     }
 
     @Override
-    public void setType(BuildingType type) {
+    public void setType(TypeOfBuilding type) {
         this.type = type;
     }
 
     @Override
-    public BuildingType getType() {
+    public TypeOfBuilding getType() {
         return type;
     }
 
@@ -74,10 +74,5 @@ public class HousingUnitImpl extends AbstractEntity implements HousingUnit {
     @Override
     public Building getBuilding() {
         return building;
-    }
-
-    @Override
-    public Class<HousingUnit> getBaseType() {
-        return HousingUnit.class;
     }
 }

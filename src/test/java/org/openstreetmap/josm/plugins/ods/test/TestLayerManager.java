@@ -5,7 +5,6 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
-import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 
 public class TestLayerManager implements LayerManager {
     private final OsmDataLayer dataLayer;
@@ -50,12 +49,6 @@ public class TestLayerManager implements LayerManager {
 
     @Override
     public ManagedPrimitive getManagedPrimitive(OsmPrimitive primitive) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public GeoRepository getRepository() {
         // TODO Auto-generated method stub
         return null;
     }

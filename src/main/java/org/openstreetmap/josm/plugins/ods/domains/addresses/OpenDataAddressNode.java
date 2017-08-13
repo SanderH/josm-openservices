@@ -4,24 +4,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.HousingUnit;
-import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.AbstractOdEntity;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 
-public class AddressNodeImpl extends AbstractEntity<AddressNode> implements AddressNode {
+public class OpenDataAddressNode extends AbstractOdEntity<AddressNodeEntityType> implements AddressNode {
     private Address address;
-    private HousingUnit housingUnit;
+    private BuildingUnit buildingUnit;
     private Building building;
     private Set<Building> buildings;
 
-    public AddressNodeImpl() {
+    public OpenDataAddressNode() {
         super();
-    }
-
-    @Override
-    public Class<AddressNode> getBaseType() {
-        return AddressNode.class;
     }
 
     @Override
@@ -55,15 +50,12 @@ public class AddressNodeImpl extends AbstractEntity<AddressNode> implements Addr
         return getBuilding() == null || getBuilding().isIncomplete();
     }
 
-
-    @Override
-    public void setHousingUnit(HousingUnit housingUnit) {
-        this.housingUnit = housingUnit;
+    public void setBuildingUnit(BuildingUnit buildingUnit) {
+        this.buildingUnit = buildingUnit;
     }
 
-    @Override
-    public HousingUnit getHousingUnit() {
-        return housingUnit;
+    public BuildingUnit getBuildingUnit() {
+        return buildingUnit;
     }
 
     @Override
@@ -91,8 +83,8 @@ public class AddressNodeImpl extends AbstractEntity<AddressNode> implements Addr
         if (building != null) {
             return building;
         }
-        if (housingUnit != null) {
-            return housingUnit.getBuilding();
+        if (buildingUnit != null) {
+            return buildingUnit.getBuilding();
         }
         return null;
     }

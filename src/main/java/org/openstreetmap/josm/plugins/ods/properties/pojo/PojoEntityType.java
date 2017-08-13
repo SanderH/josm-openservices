@@ -1,10 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.properties.pojo;
 
-import org.openstreetmap.josm.plugins.ods.properties.EntityType;
+import org.openstreetmap.josm.plugins.ods.properties.OdsEntityType;
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 import org.openstreetmap.josm.tools.I18n;
 
-public class PojoEntityType<T> implements EntityType<T> {
+public class PojoEntityType<T> implements OdsEntityType<T> {
     private final PojoPropertyHandlerFactory handlerFactory = new PojoPropertyHandlerFactory();
     private final Class<T> type;
 

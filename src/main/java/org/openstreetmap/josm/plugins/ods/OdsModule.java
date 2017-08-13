@@ -18,6 +18,7 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
@@ -28,6 +29,7 @@ import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
+import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -44,9 +46,13 @@ import org.openstreetmap.josm.tools.I18n;
 public abstract class OdsModule implements LayerChangeListener {
     private OdsModulePlugin plugin;
 
+    private final Map<Class<? extends EntityType>, EntityType> entityTypes = new HashMap<>();
+
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<OsmEntityBuilder> entityBuilders = new LinkedList<>();
-    private final List<OsmEntityRelationManager> osmEntityReationManagers = new LinkedList<>();
+    private final List<OsmEntityRelationManager> osmEntityRelationManagers = new LinkedList<>();
+
+    private final GeoRepository repository = new GeoRepository();
 
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private OpenDataLayerManager openDataLayerManager;
@@ -67,6 +73,7 @@ public abstract class OdsModule implements LayerChangeListener {
 
     public void initialize() throws OdsException {
         if (!initialized) {
+            initializeEntityTypes();
             initializeHosts();
             initializeFeatureSources();
             initializeDataSources();
@@ -76,6 +83,12 @@ public abstract class OdsModule implements LayerChangeListener {
             initializeOsmRelationManagers();
             Main.getLayerManager().addLayerChangeListener(this);
             initialized = true;
+        }
+    }
+
+    private void initializeEntityTypes() {
+        for (EntityType entityType : getConfiguration().getEntityTypes()) {
+            entityTypes.put(entityType.getClass(), entityType);
         }
     }
 
@@ -153,7 +166,7 @@ public abstract class OdsModule implements LayerChangeListener {
             try {
                 OsmEntityRelationManager manager = managerClass.newInstance();
                 manager.initialize(this);
-                this.osmEntityReationManagers.add(manager);
+                this.osmEntityRelationManagers.add(manager);
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new OdsException(e);
             }
@@ -167,7 +180,7 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     public List<OsmEntityRelationManager> getOsmEntityRelationManagers() {
-        return osmEntityReationManagers;
+        return osmEntityRelationManagers;
     }
 
     public abstract GeoUtil getGeoUtil();
@@ -194,9 +207,9 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmLayerManager;
     }
 
-        public MatcherManager getMatcherManager() {
-            return matcherManager;
-        }
+    public MatcherManager getMatcherManager() {
+        return matcherManager;
+    }
 
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;
@@ -331,4 +344,14 @@ public abstract class OdsModule implements LayerChangeListener {
      * @return
      */
     public abstract Double getTolerance();
+
+    public GeoRepository getRepository() {
+        return repository;
+    }
+
+    public <T extends EntityType> T getEntityType(Class<T> type) {
+        @SuppressWarnings("unchecked")
+        T entityType = (T) entityTypes.get(type);
+        return entityType;
+    }
 }

@@ -13,8 +13,8 @@ import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -42,7 +42,7 @@ public class AlignBuildingAction extends OdsAction {
 
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
         Collection<Way> ways = osmLayer.data.getSelectedWays().stream()
-                .filter(Building.IsBuildingWay).collect(Collectors.toList());
+                .filter(BuildingEntityType::isBuildingWay).collect(Collectors.toList());
         if (ways.isEmpty()) {
             JOptionPane.showMessageDialog(Main.main.panel, I18n.tr(
                     "Please select at least one way that is part of a building."));

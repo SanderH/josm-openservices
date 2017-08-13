@@ -7,8 +7,8 @@ import org.openstreetmap.josm.plugins.ods.properties.transform.TypeTransform;
 import org.openstreetmap.josm.tools.I18n;
 
 public class EntityMapperBuilder<T1, T2> {
-    private final EntityType<T1> sourceType;
-    private final EntityType<T2> targetType;
+    private final OdsEntityType<T1> sourceType;
+    private final OdsEntityType<T2> targetType;
     private EntityFactory<T2> factory;
     private List<EntityAttributeMapper<T1, T2>> attributeMappers = new LinkedList<>();
     private List<ChildMapper<T1, T2>> childAttributeMappers = new LinkedList<>();
@@ -17,8 +17,8 @@ public class EntityMapperBuilder<T1, T2> {
     private List<ChildMapping<T1, ?>> childMappings = new LinkedList<>();
     private List<String> issues = new LinkedList<>();
     
-    public EntityMapperBuilder(EntityType<T1> sourceType,
-            EntityType<T2> targetType) {
+    public EntityMapperBuilder(OdsEntityType<T1> sourceType,
+            OdsEntityType<T2> targetType) {
         super();
         this.sourceType = sourceType;
         this.targetType = targetType;

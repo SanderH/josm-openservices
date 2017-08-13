@@ -11,6 +11,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class OsmEntitiesBuilder {
     private final OdsModule module;
@@ -40,13 +41,14 @@ public class OsmEntitiesBuilder {
      */
     public void build(Collection<? extends OsmPrimitive> osmPrimitives) {
         List<OsmEntityBuilder> entityBuilders = module.getEntityBuilders();
+        Repository repository = module.getRepository();
         for (OsmPrimitive primitive : osmPrimitives) {
             if (!primitive.isIncomplete() && primitive.isTagged()) {
                 for (OsmEntityBuilder builder : entityBuilders) {
                     if (builder.recognizes(primitive)) {
                         try {
-                            Entity entity = builder.buildOsmEntity(primitive);
-                            layerManager.getRepository().add(entity);
+                            Entity<?> entity = builder.buildOsmEntity(primitive);
+                            repository.add(entity);
                         } catch (InvalidGeometryException e) {
                             // TODO Create validation error here? Or at a lower level.
                         }

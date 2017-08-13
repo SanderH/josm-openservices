@@ -3,10 +3,10 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.openstreetmap.josm.plugins.ods.properties.EntityType;
+import org.openstreetmap.josm.plugins.ods.properties.OdsEntityType;
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 
-public class SimpleFeatureEntityType implements EntityType<SimpleFeature> {
+public class SimpleFeatureEntityType implements OdsEntityType<SimpleFeature> {
 //    private final FeaturePropertyHandlerFactory propertyHandlerFactory = new FeaturePropertyHandlerFactory();
     private SimpleFeatureType featureType;
     

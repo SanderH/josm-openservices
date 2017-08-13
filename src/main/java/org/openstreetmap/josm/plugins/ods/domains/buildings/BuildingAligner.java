@@ -12,8 +12,8 @@ public class BuildingAligner extends OsmWayAligner {
     public BuildingAligner(Collection<Way> ways) {
         this(ways, new NodeDWithinLatLon(0.05));
     }
-    
+
     public BuildingAligner(Collection<Way> ways, NodeDWithin dWithin) {
-        super(ways, dWithin, Building.IsBuildingWay);
+        super(ways, dWithin, BuildingEntityType::isBuildingWay);
     }
 }

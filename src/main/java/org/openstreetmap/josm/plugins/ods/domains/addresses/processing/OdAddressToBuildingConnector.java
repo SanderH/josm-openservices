@@ -3,9 +3,9 @@ package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
 import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
@@ -40,8 +40,7 @@ public class OdAddressToBuildingConnector implements OdsProcessor {
 
     @Override
     public void run() {
-        LayerManager layerManager = module.getOpenDataLayerManager();
-        layerManager.getRepository().getAll(AddressNode.class)
+        module.getRepository().getAll(OpenDataAddressNode.class)
         .forEach(this::match);
     }
 
@@ -51,7 +50,7 @@ public class OdAddressToBuildingConnector implements OdsProcessor {
      * @param addressNode
      */
     public void match(AddressNode addressNode) {
-        Repository repository = module.getOpenDataLayerManager().getRepository();
+        Repository repository = module.getRepository();
         if (addressNode.getBuilding() == null) {
             Geometry geometry = addressNode.getGeometry();
             if (geometry != null && repository instanceof GeoRepository) {

@@ -4,60 +4,59 @@ import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.util.OdsTagMap;
 
-public class BuildingType {
-    private OdsTagMap tags;
-    
-    
-    public BuildingType(String[][] theTags) {
+public class TypeOfBuilding {
+    private final OdsTagMap tags;
+
+    public TypeOfBuilding(String[][] theTags) {
         super();
         this.tags = new OdsTagMap(theTags);
     }
 
-    public static BuildingType UNCLASSIFIED = new BuildingType(
-        new String[][] {{"building", "yes"}});
-    
-    public static BuildingType HOUSE = new BuildingType(
-        new String[][] {{"building", "house"}});
-    
-    public static BuildingType HOUSEBOAT = new BuildingType(
-        new String[][] {{"building", "houseboat"},
-            {"floating", "yes"}});
-    
-    public static BuildingType STATIC_CARAVAN = new BuildingType(
-        new String[][] {{"building", "house"}});
+    public static TypeOfBuilding UNCLASSIFIED = new TypeOfBuilding(
+            new String[][] {{"building", "yes"}});
 
-    public static BuildingType INDUSTRIAL = new BuildingType(
-        new String[][] {{"building", "industrial"}});
+    public static TypeOfBuilding HOUSE = new TypeOfBuilding(
+            new String[][] {{"building", "house"}});
 
-    public static BuildingType RETAIL = new BuildingType(
+    public static TypeOfBuilding HOUSEBOAT = new TypeOfBuilding(
+            new String[][] {{"building", "houseboat"},
+                {"floating", "yes"}});
+
+    public static TypeOfBuilding STATIC_CARAVAN = new TypeOfBuilding(
+            new String[][] {{"building", "house"}});
+
+    public static TypeOfBuilding INDUSTRIAL = new TypeOfBuilding(
+            new String[][] {{"building", "industrial"}});
+
+    public static TypeOfBuilding RETAIL = new TypeOfBuilding(
             new String[][] {{"building", "retail"}});
 
-    public static BuildingType OFFICE = new BuildingType(
+    public static TypeOfBuilding OFFICE = new TypeOfBuilding(
             new String[][] {{"building", "office"}});
-    
-    public static BuildingType APARTMENTS = new BuildingType(
+
+    public static TypeOfBuilding APARTMENTS = new TypeOfBuilding(
             new String[][] {{"building", "apartments"}});
-    
-    public static BuildingType GARAGE = new BuildingType(
+
+    public static TypeOfBuilding GARAGE = new TypeOfBuilding(
             new String[][] {{"building", "garage"}});
-    
-    public static BuildingType SUBSTATION = new BuildingType(
+
+    public static TypeOfBuilding SUBSTATION = new TypeOfBuilding(
             new String[][] {{"building", "yes"},
                 {"power", "substation"}});
-    
-    public static BuildingType PRISON = new BuildingType(
+
+    public static TypeOfBuilding PRISON = new TypeOfBuilding(
             new String[][] {{"building", "yes"},
                 {"amenity", "prison"}});
 
     public OdsTagMap getTags() {
         return tags;
     }
-    
-    public static BuildingType OTHER(String subType) {
-        return new BuildingType.OTHER(subType);
+
+    public static TypeOfBuilding OTHER(String subType) {
+        return new TypeOfBuilding.OTHER(subType);
     }
-    
-    public static class OTHER extends BuildingType {
+
+    public static class OTHER extends TypeOfBuilding {
         private String subType;
 
         public OTHER(String subType) {

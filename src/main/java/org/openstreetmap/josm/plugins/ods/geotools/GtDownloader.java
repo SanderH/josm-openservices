@@ -23,7 +23,7 @@ import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -39,7 +39,7 @@ import org.openstreetmap.josm.tools.I18n;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GtDownloader<T extends Entity> implements FeatureDownloader {
+public class GtDownloader<T extends EntityType> implements FeatureDownloader {
     private final GtDataSource dataSource;
     private List<PropertyName> properties;
     private final CRSUtil crsUtil;
@@ -56,11 +56,11 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
 
     @SuppressWarnings("unchecked")
     public GtDownloader(OdsModule module, GtDataSource dataSource,
-            Class<T> clazz) {
+            T EntityType) {
         this.dataSource = dataSource;
         this.crsUtil = module.getCrsUtil();
         this.entityMapper = (EntityMapper<SimpleFeature, T>) dataSource.getEntityMapper();
-        this.repository = module.getOpenDataLayerManager().getRepository();
+        this.repository = module.getRepository();
     }
 
     @Override

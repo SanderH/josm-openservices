@@ -1,18 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.domains.miscellaneous;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public class BarrierImpl extends AbstractEntity implements Barrier {
+public class BarrierImpl extends AbstractEntity<BarrierEntityType> implements Barrier {
     private String type;
     private String detail;
     private String height;
     private String width;
-    
-    @Override
-    public Class<? extends Entity> getBaseType() {
-        return Barrier.class;
-    }
 
     @Override
     public String getType() {

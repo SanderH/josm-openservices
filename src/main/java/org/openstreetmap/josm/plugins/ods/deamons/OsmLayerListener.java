@@ -27,7 +27,6 @@ import org.openstreetmap.josm.data.osm.event.RelationMembersChangedEvent;
 import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
 import org.openstreetmap.josm.plugins.ods.ODS;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
@@ -214,8 +213,8 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             for (OsmPrimitive primitive : event.getPrimitives()) {
                 ManagedPrimitive mPrimitive = layerManager.getManagedPrimitive(primitive);
                 if (mPrimitive != null && mPrimitive.getEntity() != null) {
-                    Entity entity = mPrimitive.getEntity();
-                    entity.getMatch();
+                    //                    Entity entity = mPrimitive.getEntity();
+                    //                    entity.getMatch();
                 }
             }
         }

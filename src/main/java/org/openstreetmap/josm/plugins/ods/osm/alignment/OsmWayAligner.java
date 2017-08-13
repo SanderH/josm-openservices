@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.osm.alignment;
 
-import static org.openstreetmap.josm.plugins.ods.domains.buildings.Building.IsBuilding;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -16,6 +14,7 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.osm.alignment.ModifiableWay.UndoMode;
 
 /**
@@ -28,7 +27,7 @@ import org.openstreetmap.josm.plugins.ods.osm.alignment.ModifiableWay.UndoMode;
  * A lineSegment from either of the rings, that is within 'tolerance'
  * distance from a point on the other ring, will be split by adding that
  * point in between the start and end point of that segment.
- * 
+ *
  * @author gertjan
  *
  */
@@ -39,25 +38,25 @@ public class OsmWayAligner {
     private final Set<Way> neighbourWays = new HashSet<>();
     private final DataSet dataset;
     private final  UndoMode undoMode = UndoMode.DETAILED;
-//    private NodeMerger nodeMerger;
-    private List<Issue> issues = new LinkedList<>();
-    private Set<Node> specialNodes = new HashSet<>();
-//    private Set<Node> connectedNodes = new HashSet<>();
-//    private Map<OsmPrimitive, ConnectedBuilding> connectedBuildings = new HashMap<>();
-    private Set<OsmPrimitive> otherConnections = new HashSet<>();
-    private NodeDWithin dWithin;
+    //    private NodeMerger nodeMerger;
+    private final List<Issue> issues = new LinkedList<>();
+    private final Set<Node> specialNodes = new HashSet<>();
+    //    private Set<Node> connectedNodes = new HashSet<>();
+    //    private Map<OsmPrimitive, ConnectedBuilding> connectedBuildings = new HashMap<>();
+    private final Set<OsmPrimitive> otherConnections = new HashSet<>();
+    private final NodeDWithin dWithin;
     private ModifiableWay modWay;
 
     public OsmWayAligner(Collection<Way> ways,
             NodeDWithin dWithin, Predicate<Way> isRelevantWay) {
-//        this.nodeMerger = nodeMerger;
+        //        this.nodeMerger = nodeMerger;
         this.ways = new HashSet<>(ways);
         this.dataset = ways.iterator().next().getDataSet();
         this.dWithin = dWithin;
         this.isRelevantWay = isRelevantWay;
         this.isRelevantNode = new IsRelevantNode(isRelevantWay);
     }
-    
+
     public void run() {
         dataset.beginUpdate();
         try {
@@ -72,7 +71,7 @@ public class OsmWayAligner {
             dataset.endUpdate();
         }
     }
-    
+
     private void findNeighbourWays() {
         Set<Way> nearbyWays = new HashSet<>();
         for (Way way : ways) {
@@ -83,7 +82,7 @@ public class OsmWayAligner {
         nearbyWays.removeIf(isRelevantWay.negate());
         this.neighbourWays.addAll(nearbyWays);
     }
-    
+
     private void align(Way way) {
         if (!way.isClosed() || way.isIncomplete()) {
             issues.add(Issue.UnclosedWay);
@@ -91,7 +90,7 @@ public class OsmWayAligner {
         }
         analyzeConnections(way);
         if (hasIssues()) return;
-        
+
         modWay = new ModifiableWay(way, undoMode);
         while (modWay.hasNextNode()) {
             WaySegment segment = modWay.getCurrentSegment();
@@ -120,7 +119,7 @@ public class OsmWayAligner {
     /**
      * Sort a list of nodes in the direction of a segment.
      * The x coordinates are used for comparison, unless the segment is vertical, in which case the Y coordinate will be used.
-     * 
+     *
      * @param nodes The nodes to sort
      * @param segment The segment
      * @return
@@ -131,9 +130,9 @@ public class OsmWayAligner {
     }
 
     private class DirectionalNodeComparator implements Comparator<Node> {
-        private Comparator<Double> lonComparator;
-        private Comparator<Double> latComparator;
-        
+        private final Comparator<Double> lonComparator;
+        private final Comparator<Double> latComparator;
+
         public DirectionalNodeComparator(WaySegment segment) {
             int lonSignum = Integer.signum(Double.compare(segment.getNode2().getCoor().lon(), segment.getNode1().getCoor().lon()));
             lonComparator = new SignumDoubleComparator(lonSignum);
@@ -149,10 +148,10 @@ public class OsmWayAligner {
             }
             return result;
         }
-        
+
         private class SignumDoubleComparator implements Comparator<Double> {
             final int signum;
-            
+
             public SignumDoubleComparator(int signum) {
                 this.signum = signum;
             }
@@ -170,18 +169,18 @@ public class OsmWayAligner {
             if (node.hasKeys()) {
                 specialNodes.add(node);
             }
-//            if (!node.getReferrers().isEmpty()) {
-//                connectedNodes.add(node);
-//            }
+            //            if (!node.getReferrers().isEmpty()) {
+            //                connectedNodes.add(node);
+            //            }
             for (OsmPrimitive referrer : node.getReferrers()) {
                 if (referrer == way) continue;
-                if (!IsBuilding.test(referrer)) {
-//                    if (! connectedBuildings.containsKey(referrer)) {
-//                        ConnectedBuilding cb = new ConnectedBuilding(node, referrer);
-//                        connectedBuildings.put(referrer, cb);
-//                    }
-//                }
-//                else {
+                if (!BuildingEntityType.isBuildingWay(referrer)) {
+                    //                    if (! connectedBuildings.containsKey(referrer)) {
+                    //                        ConnectedBuilding cb = new ConnectedBuilding(node, referrer);
+                    //                        connectedBuildings.put(referrer, cb);
+                    //                    }
+                    //                }
+                    //                else {
                     otherConnections.add(referrer);
                 }
             }
@@ -197,10 +196,10 @@ public class OsmWayAligner {
     private boolean hasIssues() {
         return !issues.isEmpty();
     }
-    
+
     private static class IsRelevantNode implements Predicate<Node> {
-        private Predicate<Way> isRelevantWay;
-        
+        private final Predicate<Way> isRelevantWay;
+
         public IsRelevantNode(Predicate<Way> isRelevantWay) {
             super();
             this.isRelevantWay = isRelevantWay;
@@ -218,7 +217,7 @@ public class OsmWayAligner {
             return false;
         }
     }
-    
+
     enum Issue {
         UnclosedWay,
         SpecialNodes,
