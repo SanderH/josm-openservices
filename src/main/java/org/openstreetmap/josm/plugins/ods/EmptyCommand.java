@@ -3,10 +3,15 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.Collection;
 
 import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.tools.I18n;
 
 public class EmptyCommand extends Command {
+
+    public EmptyCommand(DataSet data) {
+        super(data);
+    }
 
     @Override
     public String getDescriptionText() {

@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -36,7 +36,7 @@ public class AlignBuildingAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Layer layer = Main.getLayerManager().getActiveLayer();
+        Layer layer = MainApplication.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         // This action should only occur when the OpenData layer is active
 
@@ -44,7 +44,7 @@ public class AlignBuildingAction extends OdsAction {
         Collection<Way> ways = osmLayer.data.getSelectedWays().stream()
                 .filter(BuildingEntityType::isBuildingWay).collect(Collectors.toList());
         if (ways.isEmpty()) {
-            JOptionPane.showMessageDialog(Main.main.panel, I18n.tr(
+            JOptionPane.showMessageDialog(MainApplication.getMainPanel(), I18n.tr(
                     "Please select at least one way that is part of a building."));
             return;
         }
@@ -59,7 +59,7 @@ public class AlignBuildingAction extends OdsAction {
 
     @Override
     public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
-        Layer newLayer = Main.getLayerManager().getActiveLayer();
+        Layer newLayer = MainApplication.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(newLayer);
         this.setEnabled(layerManager != null);
     }

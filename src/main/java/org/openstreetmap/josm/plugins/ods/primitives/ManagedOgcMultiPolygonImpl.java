@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
@@ -19,9 +18,9 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
  *
  */
 public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements ManagedOgcMultiPolygon {
-    private Collection<ManagedPolygon> managedPolygons;
+    private final Collection<ManagedPolygon> managedPolygons;
     private Double area = null;
-    
+
     public ManagedOgcMultiPolygonImpl(Collection<ManagedPolygon> managedPolygons,
             Map<String, String> keys) {
         super(getLayerManager(managedPolygons), createRelationMembers(managedPolygons), keys);
@@ -53,7 +52,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         }
         return relation;
     }
-    
+
     private static List<ManagedRelationMember> createRelationMembers(Collection<ManagedPolygon> managedPolygons) {
         List<ManagedRelationMember> members = new ArrayList<>(managedPolygons.size());
         for (ManagedPolygon polygon : managedPolygons) {
@@ -61,7 +60,7 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         }
         return members;
     }
-    
+
     private static LayerManager getLayerManager(Collection<ManagedPolygon> managedPolygons) {
         assert !managedPolygons.isEmpty();
         Iterator<ManagedPolygon> it = managedPolygons.iterator();
@@ -82,14 +81,14 @@ public class ManagedOgcMultiPolygonImpl extends ManagedRelationImpl implements M
         }
         return area;
     }
-    
-//    @Override
-//    protected BBox calculateBBox() {
-//        Iterator<ManagedPolygon> it = managedPolygons.iterator();
-//        BBox bbox = it.next().getBBox();
-//        while (it.hasNext()) {
-//            bbox.add(it.next().getBBox());
-//        }
-//        return bbox;
-//    }
+
+    //    @Override
+    //    protected BBox calculateBBox() {
+    //        Iterator<ManagedPolygon> it = managedPolygons.iterator();
+    //        BBox bbox = it.next().getBBox();
+    //        while (it.hasNext()) {
+    //            bbox.add(it.next().getBBox());
+    //        }
+    //        return bbox;
+    //    }
 }

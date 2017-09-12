@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.tools.Logging;
 
 public class TaskRunner {
     private static final int NTHREADS = 4;
@@ -58,7 +58,7 @@ public class TaskRunner {
                     //                        failed = true;
                     //                    }
                 } catch (Exception e) {
-                    Main.error(e);
+                    Logging.error(e);
                     //                    messages.add("An unexpected exception occurred. please check the logs.");
                     //                    failed = true;
                 }
@@ -93,7 +93,7 @@ public class TaskRunner {
                     //                        failed = true;
                     //                    }
                 } catch (Exception e) {
-                    Main.error(e);
+                    Logging.error(e);
                     //                    messages.add("An unexpected exception occurred. please check the logs.");
                     //                    failed = true;
                 }

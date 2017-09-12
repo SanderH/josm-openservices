@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
@@ -9,6 +8,7 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.storage.Index;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
+import org.openstreetmap.josm.tools.Logging;
 
 public class PcHnrAddressableMatcher implements Matcher {
     private final OdsModule module;
@@ -53,7 +53,7 @@ public class PcHnrAddressableMatcher implements Matcher {
             createMatch(odAddressNode, nodes[0]);
         }
         else {
-            Main.warn("Duplicate match");
+            Logging.warn("Duplicate match");
         }
     }
 
@@ -64,7 +64,7 @@ public class PcHnrAddressableMatcher implements Matcher {
         //            odAddressNode.setMatch(match);
         //            return;
         //        }
-        Main.warn("Complex match");
+        Logging.warn("Complex match");
         //        match.analyze();
         //        match.updateMatchTags();
     }

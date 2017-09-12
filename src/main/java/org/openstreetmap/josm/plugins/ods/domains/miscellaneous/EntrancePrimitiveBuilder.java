@@ -3,12 +3,12 @@ package org.openstreetmap.josm.plugins.ods.domains.miscellaneous;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataEntrance;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class EntrancePrimitiveBuilder extends AbstractEntityPrimitiveBuilder<OpenDataEntrance> {
 
@@ -27,7 +27,7 @@ public class EntrancePrimitiveBuilder extends AbstractEntityPrimitiveBuilder<Ope
                 primitive.setEntity(entity);
             }
             else {
-                Main.warn(I18n.tr("Primitive is null for ''{0}''.", entity.getClass().getSimpleName()));
+                Logging.warn(I18n.tr("Primitive is null for ''{0}''.", entity.getClass().getSimpleName()));
             }
         }
     }

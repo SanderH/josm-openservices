@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.jts;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -11,10 +11,10 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class SegmentIterator {
-    private GeoUtil geoUtil;
-    private LinearRing ring;
+    private final GeoUtil geoUtil;
+    private final LinearRing ring;
     // Use an arrayList because we use the get(i) method a lot.
-    private ArrayList<Coordinate> coords;
+    private final ArrayList<Coordinate> coords;
     private boolean roundTrip = true;
     // Set to true if the order of the coordinates in the coords array
     // is reversed with respect to the order in the supplied linear ring
@@ -103,7 +103,7 @@ public class SegmentIterator {
     /**
      * Change the start point of the current segment. If the new coordinate is
      * the same, nothing happens.
-     * 
+     *
      * @param coord
      */
     public void updateStartPoint(Coordinate coord) {
@@ -117,7 +117,7 @@ public class SegmentIterator {
     /**
      * Change the end point of the current segment. If the new coordinate is the
      * same, nothing happens.
-     * 
+     *
      * @param coord
      */
     public void updateEndPoint(Coordinate coord) {
@@ -136,13 +136,13 @@ public class SegmentIterator {
         modified = true;
     }
 
-//    public static void remove() {
-//        throw new UnsupportedOperationException();
-//    }
+    //    public static void remove() {
+    //        throw new UnsupportedOperationException();
+    //    }
 
     /**
      * Get the previous index with respect to the currentLs index
-     * 
+     *
      * @return
      */
     private int previousIndex() {
@@ -151,7 +151,7 @@ public class SegmentIterator {
 
     /**
      * Get the previous index with respect to the supplied index
-     * 
+     *
      * @return
      */
     private int previousIndex(int i) {
@@ -164,7 +164,7 @@ public class SegmentIterator {
 
     /**
      * Get the next index with respect to the currentLs index
-     * 
+     *
      * @return
      */
     private int nextIndex() {
@@ -173,7 +173,7 @@ public class SegmentIterator {
 
     /**
      * Get the next index with respect to the supplied index
-     * 
+     *
      * @return
      */
     private int nextIndex(int i) {
@@ -195,7 +195,7 @@ public class SegmentIterator {
             return geoUtil.toLinearRing(coords);
         }
         catch (IllegalArgumentException e) {
-            Main.warn("Invalid ring. Not fixed.");
+            Logging.warn("Invalid ring. Not fixed.");
             return ring;
         }
     }

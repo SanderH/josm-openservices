@@ -26,6 +26,7 @@ import org.geotools.util.logging.Logging;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.UploadAction;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.download.DownloadDialog;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -110,7 +111,7 @@ public class OpenDataServicesPlugin extends Plugin {
 
     private void initializeMenu() {
         if (menu == null) {
-            menu = Main.main.menu.addMenu("ODS", "ODS", KeyEvent.VK_UNDEFINED,
+            menu = MainApplication.getMenu().addMenu("ODS", "ODS", KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
             moduleMenu = new JMenu(I18n.tr("Enable"));
         }
@@ -170,16 +171,16 @@ public class OpenDataServicesPlugin extends Plugin {
                 new ComponentAdapter() {
                     @Override
                     public void componentShown(ComponentEvent e) {
-                        if (!Main.isDisplayingMapView())
+                        if (!MainApplication.isDisplayingMapView())
                             return;
-                        Layer activeLayer = Main.getLayerManager().getActiveLayer();
+                        Layer activeLayer = MainApplication.getLayerManager().getActiveLayer();
                         if (activeLayer.getName().startsWith("ODS")
                                 || activeLayer.getName().startsWith("OSM")) {
-                            for (Layer layer : Main.getLayerManager().getLayers()) {
+                            for (Layer layer : MainApplication.getLayerManager().getLayers()) {
                                 if (layer instanceof OsmDataLayer
                                         && !(layer.getName().startsWith("ODS"))
                                         && !(layer.getName().startsWith("OSM"))) {
-                                    Main.getLayerManager().setActiveLayer(layer);
+                                    MainApplication.getLayerManager().setActiveLayer(layer);
                                     return;
                                 }
                             }
@@ -188,8 +189,8 @@ public class OpenDataServicesPlugin extends Plugin {
                         }
                         Layer newLayer = new OsmDataLayer(new DataSet(),
                                 OsmDataLayer.createNewName(), null);
-                        Main.getLayerManager().addLayer(newLayer);
-                        Main.getLayerManager().setActiveLayer(newLayer);
+                        MainApplication.getLayerManager().addLayer(newLayer);
+                        MainApplication.getLayerManager().setActiveLayer(newLayer);
                     }
                 }
                 );

@@ -11,8 +11,8 @@ import java.util.Map;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
@@ -82,7 +82,7 @@ public abstract class OdsModule implements LayerChangeListener {
             this.openDataLayerManager = createOpenDataLayerManager();
             initializeOsmEntityBuilders();
             initializeOsmRelationManagers();
-            Main.getLayerManager().addLayerChangeListener(this);
+            MainApplication.getLayerManager().addLayerChangeListener(this);
             initialized = true;
         }
     }
@@ -271,7 +271,7 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     void activateOsmLayer() {
-        Main.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
+        MainApplication.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
     }
 
     @Override

@@ -177,7 +177,6 @@ public class OsmLayerListener implements DataSetListener, Runnable {
 
     @Override
     public void dataChanged(DataChangedEvent event) {
-        int i=7;
         // TODO Auto-generated method stub
 
     }
@@ -254,7 +253,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             if (nodes.size() == 1) {
                 Node targetNode = nodes.get(0);
                 if (!targetNode.hasKeys() && !targetNode.isDeleted()) {
-                    Command cmd = MergeNodesAction.mergeNodes(layerManager.getOsmDataLayer(),
+                    Command cmd = MergeNodesAction.mergeNodes(
                             Collections.singleton(newNode), targetNode, targetNode);
                     // TODO Do we need an Undo option for this command?
                     cmd.executeCommand();

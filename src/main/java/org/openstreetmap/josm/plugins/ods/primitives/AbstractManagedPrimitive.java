@@ -156,11 +156,11 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     public Command put(String key, String value) {
         OsmPrimitive osm = getPrimitive();
         if (osm == null) {
-            return new EmptyCommand();
+            return new EmptyCommand(layerManager.getOsmDataLayer().data);
         }
         if (key.startsWith(ODS.KEY.BASE)) {
             osm.put(key, value);
-            return new EmptyCommand();
+            return new EmptyCommand(layerManager.getOsmDataLayer().data);
         }
         return new ChangePropertyCommand(osm, key, value);
     }

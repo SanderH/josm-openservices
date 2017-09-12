@@ -32,21 +32,21 @@ import com.vividsolutions.jts.io.WKTReader;
  * This class provides methods to convert Josm geometries to JTS
  * geometries. No coordinate transformation is performed.
  * All source and target coordinates are in WGS84
- * 
+ *
  * TODO make method names more uniform
- * 
+ *
  * @author gertjan
  *
  */
 public class GeoUtil {
     public final static int OSM_SRID = 4326;
     private final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel();
-//            10000000);
+    //            10000000);
     public final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
             OSM_PRECISION_MODEL, OSM_SRID);
     public final static WKTReader OSM_WKT_READER = new WKTReader(OSM_GEOMETRY_FACTORY);
     private static GeoUtil instance = new GeoUtil();
-    
+
     public GeoUtil() {
         // Hide public constructor
     }
@@ -54,32 +54,32 @@ public class GeoUtil {
     public static GeoUtil getInstance() {
         return instance;
     }
-    
+
     public static Coordinate toCoordinate(Node node) {
         return toCoordinate(node.getCoor());
     }
-    
+
     public static Coordinate toCoordinate(LatLon latLon) {
         return new Coordinate(latLon.getX(), latLon.getY());
     }
-    
+
     public static Envelope toEnvelope(LatLon ll) {
         return new Envelope(ll.lon(), ll.lon(), ll.lat(), ll.lat());
     }
-    
+
     public static Envelope toEnvelope(BBox bbox) {
         return new Envelope(bbox.getTopLeftLon(), bbox.getBottomRightLon(),
                 bbox.getBottomRightLat(), bbox.getTopLeftLat());
     }
-    
+
     public Point toPoint(Node node) {
-        return toPoint(toCoordinate(node));    
+        return toPoint(toCoordinate(node));
     }
-    
+
     public Point toPoint(LatLon latLon) {
-        return toPoint(toCoordinate(latLon));    
+        return toPoint(toCoordinate(latLon));
     }
-    
+
     @SuppressWarnings("static-method")
     public Point toPoint(Coordinate coord) {
         return OSM_GEOMETRY_FACTORY.createPoint(coord);
@@ -88,11 +88,11 @@ public class GeoUtil {
     public static LatLon toLatLon(Point point) {
         return new LatLon(point.getY(), point.getX());
     }
-    
+
     public static LatLon toLatLon(Coordinate c) {
         return new LatLon(c.y, c.x);
     }
-    
+
     public Polygon toPolygon(Bounds bounds) {
         Coordinate[] coords = new Coordinate[5];
         coords[0] = new Coordinate(bounds.getMinLon(), bounds.getMinLat());
@@ -107,15 +107,15 @@ public class GeoUtil {
     public LineSegment toSegment(Pair<Node, Node> nodePair) {
         return new LineSegment(toCoordinate(nodePair.a), toCoordinate(nodePair.b));
     }
-    
+
 
     public Polygon toPolygon(Way way) throws IllegalArgumentException {
         LinearRing shell;
         try {
             shell = toLinearRing(way);
-        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
+        } catch (UnclosedWayException e) {
             throw new IllegalArgumentException(
-                "The way that describes this polygon is not closed");
+                    "The way that describes this polygon is not closed");
         }
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
     }
@@ -124,7 +124,7 @@ public class GeoUtil {
         LinearRing shell = toLinearRing(coords);
         return toPolygon(shell, interiorRings);
     }
-    
+
     public Polygon toPolygon(LinearRing shell, LinearRing[] interiorRings) {
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, interiorRings);
     }
@@ -143,7 +143,7 @@ public class GeoUtil {
         builder.build();
         return builder.getGeometry();
     }
-    
+
     public LineString toLineString(Way way) {
         Coordinate[] coords = new Coordinate[way.getNodes().size()];
         int i=0;
@@ -155,7 +155,7 @@ public class GeoUtil {
 
     public LineString toLineString(List<Coordinate> coords) {
         return OSM_GEOMETRY_FACTORY.createLineString(
-            coords.toArray(new Coordinate[0]));
+                coords.toArray(new Coordinate[0]));
     }
 
     public LinearRing toLinearRing(Way way) throws UnclosedWayException {
@@ -173,7 +173,7 @@ public class GeoUtil {
 
     public LinearRing toLinearRing(List<Coordinate> coords) {
         return OSM_GEOMETRY_FACTORY.createLinearRing(
-            coords.toArray(new Coordinate[0]));
+                coords.toArray(new Coordinate[0]));
     }
 
     public Polygon createPolygon(LinearRing shell, List<LinearRing> innerRings) {
@@ -201,14 +201,14 @@ public class GeoUtil {
     }
 
     private Polygon createPolygon(PolyData polyData) {
-//        LinearRing shell = createLinearRing(polyData.)
+        //        LinearRing shell = createLinearRing(polyData.)
         return null;
     }
 
     /**
      * Create a Josm Bounds object from a LinearRing.
      * The LinearRing coordinate are expected to be in WGS84
-     *  
+     *
      * @param boundary
      * @return
      */
@@ -230,17 +230,17 @@ public class GeoUtil {
     }
 
 
-//    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {
-//        MultiPolygon mpg;
-//        try {
-//            mpg = toMultiPolygon(relation);
-//        } catch (InvalidMultiPolygonException e) {
-//            throw new InvalidPolygonException(e.getPrimitive(), e.getMessage());
-//        }
-//        if (mpg.getNumGeometries() == 1) {
-//            return (Polygon) mpg.getGeometryN(0);
-//        }
-//        throw new InvalidPolygonException(relation,
-//            "Can't create a polygon Object from a relation that represents a multipolygon");
-//    }
+    //    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {
+    //        MultiPolygon mpg;
+    //        try {
+    //            mpg = toMultiPolygon(relation);
+    //        } catch (InvalidMultiPolygonException e) {
+    //            throw new InvalidPolygonException(e.getPrimitive(), e.getMessage());
+    //        }
+    //        if (mpg.getNumGeometries() == 1) {
+    //            return (Polygon) mpg.getGeometryN(0);
+    //        }
+    //        throw new InvalidPolygonException(relation,
+    //            "Can't create a polygon Object from a relation that represents a multipolygon");
+    //    }
 }

@@ -21,17 +21,18 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 /**
  * A Proj4j based implementation of CRSUtils. The opengis Mathtransform has
  * issues with EPSG:28992
- * 
+ *
  * @author gertjan
- * 
+ *
  */
 public class CRSUtilProj4j extends CRSUtil {
     private final static Long OSM_SRID = 4326L;
     private final static JTSCoordinateTransformFactory ctFactory = new Proj4jCRSTransformFactory();
-//    private final static Double OSM_SCALE = 10000000;
+    //    private final static Double OSM_SCALE = 10000000;
     private final static Double OSM_SCALE = null;
+    // TODO Replace static field with static function (2x)
     private final static PrecisionModel OSM_PRECISION_MODEL =
-        (OSM_SCALE == null ? new PrecisionModel() : new PrecisionModel(OSM_SCALE));
+            (OSM_SCALE == null ? new PrecisionModel() : new PrecisionModel(OSM_SCALE));
     public final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
             OSM_PRECISION_MODEL, OSM_SRID.intValue());
     private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<>();
@@ -120,7 +121,7 @@ public class CRSUtilProj4j extends CRSUtil {
     /**
      * Create a ReferencedEnvelope from a Josm bounds object, using the supplied
      * CoordinateReferenceSystem
-     * 
+     *
      * @param crs
      * @param bounds
      * @return

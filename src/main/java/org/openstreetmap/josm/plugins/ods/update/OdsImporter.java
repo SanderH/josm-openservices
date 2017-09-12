@@ -174,7 +174,7 @@ public class OdsImporter {
             Way newWay = new Way();
             newWay.setKeys(odWay.getKeys());
             newWay.setNodes(nodes);
-            commands.add(new AddCommand(layer, newWay));
+            commands.add(new AddCommand(layer.data, newWay));
         }
 
         public void addNode(Node odNode) {
@@ -195,7 +195,7 @@ public class OdsImporter {
             if (node == null) {
                 node = new Node();
                 node.load(odNode.save());
-                commands.add(new AddCommand(layer, node));
+                commands.add(new AddCommand(layer.data, node));
                 if (merge) {
                     nodeMap.put(odNode, node);
                 }

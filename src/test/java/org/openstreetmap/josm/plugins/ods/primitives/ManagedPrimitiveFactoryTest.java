@@ -5,15 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.TestLayerManager;
 import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
@@ -24,7 +21,7 @@ public class ManagedPrimitiveFactoryTest {
     private ManagedPrimitiveFactory factory;
 
     @Before
-    public void setup() throws IOException, IllegalDataException {
+    public void setup() {
         testData = new TestData(this);
         LayerManager layerManager = new TestLayerManager(testData.getDataLayer());
         factory = new ManagedPrimitiveFactory(layerManager);

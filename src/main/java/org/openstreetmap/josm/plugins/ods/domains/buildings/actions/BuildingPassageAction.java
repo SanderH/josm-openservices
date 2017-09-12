@@ -22,6 +22,7 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
@@ -33,13 +34,13 @@ import org.openstreetmap.josm.tools.I18n;
 
 /**
  * Creates a building passage for a highway crossing a building
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
- * 
+ *
  */
 public class BuildingPassageAction extends OdsAction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -48,21 +49,21 @@ public class BuildingPassageAction extends OdsAction {
      */
     public BuildingPassageAction(OdsModule module) {
         super(module, tr("Building passage"),
-            tr("Create a tunnel=building_building passage for a highway crossing a building."));
+                tr("Create a tunnel=building_building passage for a highway crossing a building."));
         putValue("help", ht("/Action/BuildingPassage"));
     }
 
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        DataSet dataSet = Main.getLayerManager().getEditDataSet();
+        DataSet dataSet = MainApplication.getLayerManager().getEditDataSet();
         if (dataSet == null) return;
         Collection<OsmPrimitive> selection = dataSet.getSelected();
         BuildingHighwayPair pair = getPair(selection);
         if (pair == null) {
             new Notification(tr("Please select exactly 1 building and 1 highway."))
-                    .setIcon(JOptionPane.INFORMATION_MESSAGE)
-                    .setDuration(Notification.TIME_SHORT).show();
+            .setIcon(JOptionPane.INFORMATION_MESSAGE)
+            .setDuration(Notification.TIME_SHORT).show();
             return;
         }
         List<Command> cmds = new LinkedList<>();
@@ -99,8 +100,8 @@ public class BuildingPassageAction extends OdsAction {
         passageWay.setNodes(passageChunk);
         passageWay.setKeys(highway.getKeys());
         passageWay.put("tunnel", "building_passage");
-        cmds.add(new AddCommand(shortWay));
-        cmds.add(new AddCommand(passageWay));
+        cmds.add(new AddCommand(dataSet, shortWay));
+        cmds.add(new AddCommand(dataSet, passageWay));
         // Undo the intersections command, so we can add it to the combined command
         intersectionsCommand.undoCommand();
         cmds.add(0, intersectionsCommand);
@@ -108,27 +109,27 @@ public class BuildingPassageAction extends OdsAction {
         Main.main.undoRedo.add(cmd);
     }
 
-//    @Override
-//    protected void updateEnabledState() {
-//        DataSet dataSet = Main.getLayerManager().getEditDataSet();
-//        if (dataSet == null) {
-//            setEnabled(false);
-//            return;
-//        }
-//        Collection<OsmPrimitive> selection = dataSet.getSelected();
-//        updateEnabledState(selection);
-//    }
-//
-//    @Override
-//    protected void updateEnabledState(
-//            Collection<? extends OsmPrimitive> selection) {
-//        BuildingHighwayPair pair = getPair(selection);
-//        setEnabled(pair != null);
-//    }
+    //    @Override
+    //    protected void updateEnabledState() {
+    //        DataSet dataSet = Main.getLayerManager().getEditDataSet();
+    //        if (dataSet == null) {
+    //            setEnabled(false);
+    //            return;
+    //        }
+    //        Collection<OsmPrimitive> selection = dataSet.getSelected();
+    //        updateEnabledState(selection);
+    //    }
+    //
+    //    @Override
+    //    protected void updateEnabledState(
+    //            Collection<? extends OsmPrimitive> selection) {
+    //        BuildingHighwayPair pair = getPair(selection);
+    //        setEnabled(pair != null);
+    //    }
 
     /**
      * Get the selected building and highway.
-     * 
+     *
      * @param selection
      * @return
      * A BuildingHighwayPair if exactly 1 building and 1 higway are selected.
@@ -159,18 +160,18 @@ public class BuildingPassageAction extends OdsAction {
         }
         return new BuildingHighwayPair(building, highway);
     }
-    
+
     @Override
     public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
-        Layer newLayer = Main.getLayerManager().getActiveLayer();
+        Layer newLayer = MainApplication.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(newLayer);
         this.setEnabled(layerManager != null && layerManager.isOsm());
     }
 
-    
+
     /**
      * The building and highway to create a building passage for.
-     * 
+     *
      * @author Gertjan Idema <mail@gertjanidema.nl>
      *
      */

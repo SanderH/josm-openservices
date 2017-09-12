@@ -6,13 +6,13 @@ import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class EntityStatistics {
     private OdsModule module;
@@ -28,7 +28,7 @@ public class EntityStatistics {
             else {
                 logModuleStatistics(writer);
             }
-            Main.info(writer.toString());
+            Logging.info(writer.toString());
         } catch (IOException e) {
             // Deliberately ignored
         }

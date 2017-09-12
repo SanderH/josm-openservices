@@ -28,7 +28,7 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 
 public class DefaultGeometryUpdater implements GeometryUpdater {
-    private final OsmDataLayer osmDataLayer;
+    final OsmDataLayer osmDataLayer;
     private final Predicate<StraightMatch<?>> condition;
 
     public DefaultGeometryUpdater(OdsModule module,
@@ -50,7 +50,7 @@ public class DefaultGeometryUpdater implements GeometryUpdater {
         private final Set<Node> existingNodes = new HashSet<>();
         private final Set<Node> newNodes = new HashSet<>();
         private final Map<Node, Node> nodeMap = new HashMap<>();
-        private final Set<Entity> updatedEntities = new HashSet<>();
+        private final Set<Entity<?>> updatedEntities = new HashSet<>();
         private final Set<Way> updatedWays = new HashSet<>();
 
         public Updater(List<StraightMatch<?>> matches) {
@@ -117,7 +117,7 @@ public class DefaultGeometryUpdater implements GeometryUpdater {
             Main.main.undoRedo.add(cmd);
         }
 
-        private void updateGeometry(Entity osmEntity, Entity odBuilding) {
+        private void updateGeometry(Entity<?> osmEntity, Entity<?> odBuilding) {
             ManagedPrimitive osmPrimitive = osmEntity.getPrimitive();
             ManagedPrimitive odPrimitive = odBuilding.getPrimitive();
             // Only update osm ways to start with

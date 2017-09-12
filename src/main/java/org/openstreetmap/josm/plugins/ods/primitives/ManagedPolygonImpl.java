@@ -11,23 +11,21 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.tools.Geometry;
 
 public class ManagedPolygonImpl extends AbstractManagedPrimitive implements ManagedPolygon {
     private Relation relation;
-    private Entity entity;
-    private ManagedRing exteriorRing;
-    private Collection<ManagedRing> interiorRings;
-    private Map<String, String> keys;
+    private final ManagedRing exteriorRing;
+    private final Collection<ManagedRing> interiorRings;
+    private final Map<String, String> keys;
     private double area;
-    
+
     public ManagedPolygonImpl(LayerManager layerManager, ManagedRing exteriorRing,
             Collection<ManagedRing> interiorRings,
             Map<String, String> keys) {
         super(layerManager);
         this.exteriorRing = exteriorRing;
-        this.interiorRings = (interiorRings != null ? interiorRings : new ArrayList<>(0)); 
+        this.interiorRings = (interiorRings != null ? interiorRings : new ArrayList<>(0));
         this.keys = keys;
     }
 
@@ -40,7 +38,7 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive implements Mana
     public ManagedRing getExteriorRing() {
         return exteriorRing;
     }
-    
+
     @Override
     public Collection<ManagedRing> getInteriorRings() {
         return interiorRings;
@@ -53,11 +51,6 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive implements Mana
     @Override
     public boolean contains(ManagedNode mNode) {
         return Geometry.isNodeInsideMultiPolygon(mNode.getNode(), relation, null);
-    }
-
-    @Override
-    public Entity getEntity() {
-        return entity;
     }
 
     @Override
@@ -83,7 +76,7 @@ public class ManagedPolygonImpl extends AbstractManagedPrimitive implements Mana
         }
         return rel;
     }
-    
+
     @Override
     public double getArea() {
         if (area == 0) updateArea();

@@ -63,26 +63,26 @@ implements OdEntity<T> {
 
     @Override
     public void updateMatchTags() {
-        String match = "unknown";
+        String value = "unknown";
         if (getMatch() != null) {
-            match = "up to date";
+            value = "up to date";
         }
         if (isDeleted()) {
-            match = "deleted";
+            value = "deleted";
         }
         if (isDeletionRequired()) {
-            match = "deletion required";
+            value = "deletion required";
         }
         if (isMissing()) {
-            match = "missing";
+            value = "missing";
         }
         if (isCreationRequired()) {
-            match = "creation required";
+            value = "creation required";
         }
 
         if (isCreationRequired()) {
-            match = "creation required";
+            value = "creation required";
         }
-        getPrimitive().put(ODS.KEY.MATCH, match);
+        getPrimitive().put(ODS.KEY.MATCH, value);
     }
 }

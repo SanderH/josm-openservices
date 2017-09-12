@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -21,6 +20,7 @@ import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.osm.LayerUpdater;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
+import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Downloader that retrieves open data objects from 1 or more services
@@ -141,7 +141,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
                     if (e instanceof NullPointerException) {
                         messages.add("A null pointer exception occurred. This is allways a programming error\n" +
                                 "please check the logs.");
-                        Main.error(e);
+                        Logging.error(e);
                     }
                     else {
                         messages.add(e.getMessage());

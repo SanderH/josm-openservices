@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoUtils;
 import org.openstreetmap.josm.plugins.ods.storage.query.DefaultQueryBuilder;
 import org.openstreetmap.josm.plugins.ods.storage.query.Query;
@@ -16,6 +15,7 @@ import org.openstreetmap.josm.plugins.ods.storage.query.QueryExecutor;
 import org.openstreetmap.josm.plugins.ods.storage.query.QueryExecutorFactory;
 import org.openstreetmap.josm.plugins.ods.storage.query.QueryPredicate;
 import org.openstreetmap.josm.plugins.ods.storage.query.ResultSet;
+import org.openstreetmap.josm.tools.Logging;
 
 public class Repository {
     private final ObjectStores objectStores = new ObjectStores();
@@ -51,7 +51,7 @@ public class Repository {
             }
         }
         else {
-            Main.warn("Can't create index for class ''{0}'' with these properties: {1}", type, properties);
+            Logging.warn("Can't create index for class ''{0}'' with these properties: {1}", type, properties);
         }
     }
 

@@ -15,6 +15,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
  *
  */
 public class OdsUpdater {
+    @SuppressWarnings("unused")
     private final OdsModule module;
     private final Set<Way> updatedWays = new HashSet<>();
 

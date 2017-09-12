@@ -37,27 +37,27 @@ import net.opengis.ows11.ValueType;
 
 /**
  * Class to represent a WFS odsFeatureSource host.
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public class WFSHost extends GtHost {
     /**
      * We use two separate data stores. The reason for this is that currently Geotools stores the timeout as a parameter
      * in the data store.
-     * A large time-out in the initialization phase would cause 
+     * A large time-out in the initialization phase would cause
      */
     private WFSDataStore dataStore;
     private final int initTimeout;
     private final int dataTimeout;
     private boolean supportsPaging = false;
-    
+
     public WFSHost(String name, String urlString, Integer maxFeatures, int initTimeout, int dataTimeout) {
         super(name, urlString, maxFeatures);
         this.initTimeout = initTimeout;
         this.dataTimeout = dataTimeout;
     }
-    
+
     public boolean isSupportsPaging() {
         return supportsPaging;
     }
@@ -85,21 +85,21 @@ public class WFSHost extends GtHost {
 
     /**
      * Retrieve a new DataStore for this host with the default timeout
-     * 
+     *
      * @return the DataStore object
-     * @throws OdsException 
+     * @throws OdsException
      */
     @Override
     public DataStore getDataStore() throws OdsException {
         return dataStore;
     }
-    
+
     /**
      * Create a new DataStore for this host with the given timeout
-     * 
+     *
      * @param timeout A timeout in milliseconds
      * @return the DataStore object
-     * @throws OdsException 
+     * @throws OdsException
      */
     private WFSDataStore createDataStore(Integer timeout) throws OdsException {
         Map<String, Object> connectionParameters = new HashMap<>();
@@ -150,7 +150,7 @@ public class WFSHost extends GtHost {
         }
         return ds;
     }
-    
+
     private void processWFSCapabilities(WFSGetCapabilities wfsCapabilities) {
         CapabilitiesBaseType capabilitiesType = (CapabilitiesBaseType) wfsCapabilities.getParsedCapabilities();
         OperationsMetadataType metaData = capabilitiesType.getOperationsMetadata();
@@ -167,13 +167,13 @@ public class WFSHost extends GtHost {
             String sDefault = (valueType == null ? null :valueType.getValue());
             switch (domainType.getName()) {
             case "ImplementsResultPaging":
-                supportsPaging = Boolean.parseBoolean(sDefault); 
+                supportsPaging = Boolean.parseBoolean(sDefault);
                 break;
             }
         }
     }
 
-    private void processOperations(EList<?> operations) {
+    private static void processOperations(EList<?> operations) {
         @SuppressWarnings("unchecked")
         Iterator<OperationType> it = (Iterator<OperationType>) operations.iterator();
         while (it.hasNext()) {
@@ -186,15 +186,15 @@ public class WFSHost extends GtHost {
         }
     }
 
-    private void processGetFeatureConstraints(EList<?> constraints) {
+    private static void processGetFeatureConstraints(EList<?> constraints) {
         @SuppressWarnings("unchecked")
         Iterator<DomainType> it = (Iterator<DomainType>) constraints.iterator();
         while (it.hasNext()) {
             DomainType constraint = it.next();
             switch (constraint.getName()) {
             case "CountDefault":
-                String sValue = constraint.getDefaultValue().getValue();
-//                this.setMaxFeatures(Integer.parseInt(sValue));
+                //                String sValue = constraint.getDefaultValue().getValue();
+                //                this.setMaxFeatures(Integer.parseInt(sValue));
             }
         }
     }

@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
@@ -20,6 +19,7 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class OsmLayerDownloader implements LayerDownloader {
     DownloadRequest request;
@@ -151,7 +151,7 @@ public class OsmLayerDownloader implements LayerDownloader {
                 updateRelations();
                 return null;
             } catch (Exception e) {
-                Main.error(e);
+                Logging.error(e);
                 throw e;
             }
         }

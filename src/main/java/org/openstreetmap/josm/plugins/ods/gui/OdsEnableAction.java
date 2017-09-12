@@ -7,11 +7,13 @@ import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.ModuleActivationException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class OdsEnableAction extends AbstractAction {
 
@@ -32,25 +34,25 @@ public class OdsEnableAction extends AbstractAction {
         try {
             ods.activate(module);
             Layer activeLayer = null;
-            if (Main.map != null) {
-                activeLayer = Main.getLayerManager().getActiveLayer();
+            if (MainApplication.getMap() != null) {
+                activeLayer = MainApplication.getLayerManager().getActiveLayer();
             }
             if (activeLayer != null) {
-                Main.getLayerManager().setActiveLayer(activeLayer);
+                MainApplication.getLayerManager().setActiveLayer(activeLayer);
             }
             Bounds bounds = new Bounds(
                     Main.pref.get("openservices.download.bounds"), ";");
             // Zoom to the last used bounds
-            Main.map.mapView.zoomTo(bounds);
+            MainApplication.getMap().mapView.zoomTo(bounds);
         }
         catch (ModuleActivationException e) {
             if (e == ModuleActivationException.CANCELLED) {
                 return;
             }
-            Main.error(e, false);
+            Logging.error(e);
             String msg = I18n.tr("The module could not be activated because of the following error(s):") +
                     "\n" + e.getMessage();
-            JOptionPane.showMessageDialog(Main.main.panel, msg, "Module not available", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MainApplication.getMainPanel(), msg, "Module not available", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -1,12 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Locale;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OverpassDownloadReader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -15,9 +13,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class OverpassHost implements OsmHost {
-    private static final String OVERPASS_QUERY = 
+    private static final String OVERPASS_QUERY =
             "(node({{bbox}});rel(bn)->.x;way({{bbox}});" +
-            "node(w)->.x;rel(bw));out meta;";
+                    "node(w)->.x;rel(bw));out meta;";
 
     @Override
     public String getHostString() {
@@ -30,25 +28,25 @@ public class OverpassHost implements OsmHost {
 
     @Override
     public OsmServerReader getServerReader(DownloadRequest request) throws MalformedURLException {
-//        URL url = getURL(OVERPASS_QUERY, request.getBoundary());
-//        return new OsmServerLocationReader(url.toString());
-      return new OverpassDownloadReader(request.getBoundary().getBounds(),
-              getHostString(), OVERPASS_QUERY);
+        //        URL url = getURL(OVERPASS_QUERY, request.getBoundary());
+        //        return new OsmServerLocationReader(url.toString());
+        return new OverpassDownloadReader(request.getBoundary().getBounds(),
+                getHostString(), OVERPASS_QUERY);
     }
 
     @Override
     public boolean supportsPolygon() {
         return true;
     }
-    
-    private URL getURL(String query, Boundary boundary) throws MalformedURLException {
-        String bbox = getBoundary(boundary);
-        String q = query.replaceAll("\\$bbox", bbox);
-        q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
-        q = q.replace(";$", "");
-        Main.info("Host: " + getHostString());
-        return new URL(String.format("%s/interpreter?data=%s;out meta;", getHostString(), q));
-    }
+
+    //    private URL getURL(String query, Boundary boundary) throws MalformedURLException {
+    //        String bbox = getBoundary(boundary);
+    //        String q = query.replaceAll("\\$bbox", bbox);
+    //        q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
+    //        q = q.replace(";$", "");
+    //        Logging.info("Host: " + getHostString());
+    //        return new URL(String.format("%s/interpreter?data=%s;out meta;", getHostString(), q));
+    //    }
 
     /**
      * Create an overpass bounding box string from a JTS boundary object
@@ -64,14 +62,14 @@ public class OverpassHost implements OsmHost {
 
     /**
      * Create an overpass bounding box String from a JTS Bounds object.
-     *  
+     *
      * @param bounds
      * @return
      */
     private static String getBBox(Bounds bounds) {
         return String.format(Locale.ENGLISH, "%f,%f,%f,%f", bounds
-             .getMin().getY(), bounds.getMin().getX(), bounds.getMax()
-             .getY(), bounds.getMax().getX());
+                .getMin().getY(), bounds.getMin().getX(), bounds.getMax()
+                .getY(), bounds.getMax().getX());
     }
 
     /**
@@ -90,7 +88,7 @@ public class OverpassHost implements OsmHost {
         sb.append("\"");
         return sb.toString();
     }
-    
+
     private static String formatCoordinate(Double lat, Double lon) {
         return String.format(Locale.ENGLISH, "%f %f ", lat, lon);
     }

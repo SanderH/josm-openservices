@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 
+// TODO Create an interface
 public class PojoPropertyHandlerFactory {
 
     public static <T1, T2> PropertyHandler<T1, T2> createPropertyHandler(Class<T1> objectClass, Class<T2> attrClass, String name) {
@@ -12,7 +13,8 @@ public class PojoPropertyHandlerFactory {
         return result;
     }
 
-    public static <T1> PropertyHandler<T1, ?> createPropertyHandler(Class<T1> objType, String attributeName) {
+    @SuppressWarnings("static-method")
+    public <T1> PropertyHandler<T1, ?> createPropertyHandler(Class<T1> objType, String attributeName) {
         Method getter = PojoUtils.getAttributeGetter(objType, attributeName);
         if (getter != null) {
             Class<?> attrType = PojoUtils.getNonPrimitiveClass(getter.getReturnType());

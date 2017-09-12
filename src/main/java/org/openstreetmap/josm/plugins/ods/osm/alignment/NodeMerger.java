@@ -10,11 +10,9 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
 @Deprecated
 public class NodeMerger {
-    private OsmDataLayer dataLayer;
-    
+
     public NodeMerger(OsmDataLayer dataLayer) {
         super();
-        this.dataLayer = dataLayer;
     }
 
     public Command getMergeCommand(Node first, Node second, TargetLocation target) {
@@ -31,11 +29,11 @@ public class NodeMerger {
             targetNode = second;
             nodeToReplace = first;
         }
-        Command cmd = MergeNodesAction.mergeNodes(dataLayer,
+        Command cmd = MergeNodesAction.mergeNodes(
                 Collections.singleton(nodeToReplace), targetNode, targetPosition);
         return cmd;
     }
-    
+
     private static Node getTargetLocation(Node first, Node second, TargetLocation target) {
         switch (target) {
         case FIRST:
@@ -55,7 +53,7 @@ public class NodeMerger {
             return getCenter(first,  second);
         }
     }
-    
+
     private static Node getCenter(Node node1, Node node2) {
         LatLon targetLatLon = node1.getCoor().getCenter(node2.getCoor()).getRoundedToOsmPrecision();
         return new Node(targetLatLon);

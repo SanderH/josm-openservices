@@ -3,10 +3,10 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.actions;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
@@ -17,7 +17,7 @@ import org.openstreetmap.josm.tools.I18n;
 public class AlignBuildingsAction extends OdsAction {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -27,7 +27,7 @@ public class AlignBuildingsAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DataSet ds = Main.getLayerManager().getEditDataSet();
+        DataSet ds = MainApplication.getLayerManager().getEditDataSet();
         Collection<OsmPrimitive> primitives = ds.getAllSelected();
         OsmPrimitive building1 = null;
         OsmPrimitive building2 = null;
@@ -39,8 +39,8 @@ public class AlignBuildingsAction extends OdsAction {
             new Notification(I18n.tr("Please select 2 buildings.")).show();
             return;
         }
-//        BuildingAligner aligner = new BuildingAligner(0.05, true);
-//        aligner.align(building1, building2);
+        //        BuildingAligner aligner = new BuildingAligner(0.05, true);
+        //        aligner.align(building1, building2);
     }
 
     private static OsmPrimitive getBuilding(Collection<OsmPrimitive> primitives, int i) {

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.tools.Logging;
 
 public interface Downloader {
     public void setup(DownloadRequest request) throws OdsException;
@@ -44,7 +44,7 @@ public interface Downloader {
                     try {
                         downloader.download();
                     } catch (Exception e) {
-                        Main.error(e);
+                        Logging.error(e);
                         throw e;
                     }
                     return null;

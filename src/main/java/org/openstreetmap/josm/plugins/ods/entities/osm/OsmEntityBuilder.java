@@ -34,7 +34,7 @@ public interface OsmEntityBuilder {
      * @param primitive
      * @return
      */
-    public Entity buildOsmEntity(OsmPrimitive primitive) throws InvalidGeometryException;
+    public Entity<?> buildOsmEntity(OsmPrimitive primitive) throws InvalidGeometryException;
 
     /**
      * Update the ods Entity for the passed osm primitive if such

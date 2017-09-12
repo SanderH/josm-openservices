@@ -6,8 +6,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -33,10 +33,10 @@ public class OdsUpdateAction extends OdsAction {
         OdsImporter importer = new OdsImporter(getModule());
         OdsUpdater updater = new OdsUpdater(getModule());
 
-        Layer layer = Main.getLayerManager().getActiveLayer();
+        Layer layer = MainApplication.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         if (layerManager == null || layerManager.isOsm()) {
-            JOptionPane.showMessageDialog(Main.main.panel,
+            JOptionPane.showMessageDialog(MainApplication.getMainPanel(),
                     I18n.tr("This operation is only allowed on the ODS layer;"));
             return;
         }
@@ -53,12 +53,12 @@ public class OdsUpdateAction extends OdsAction {
         }
 
         layerManager.getOsmDataLayer().data.clearSelection();
-        Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+        MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
     }
 
     @Override
     public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
-        Layer newLayer = Main.getLayerManager().getActiveLayer();
+        Layer newLayer = MainApplication.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(newLayer);
         this.setEnabled(layerManager != null && !layerManager.isOsm());
     }

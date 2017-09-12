@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -16,6 +15,7 @@ import org.openstreetmap.josm.data.osm.event.PrimitivesRemovedEvent;
 import org.openstreetmap.josm.data.osm.event.RelationMembersChangedEvent;
 import org.openstreetmap.josm.data.osm.event.TagsChangedEvent;
 import org.openstreetmap.josm.data.osm.event.WayNodesChangedEvent;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.osm.ManagedNodeSet;
@@ -75,13 +75,13 @@ implements LayerManager, DataSetListener {
     public void activate() {
         if (!active) {
             Layer oldLayer = null;
-            if (Main.map != null) {
-                oldLayer = Main.getLayerManager().getActiveLayer();
+            if (MainApplication.getMap() != null) {
+                oldLayer = MainApplication.getLayerManager().getActiveLayer();
             }
             osmDataLayer = createOsmDataLayer();
-            Main.getLayerManager().addLayer(osmDataLayer);
+            MainApplication.getLayerManager().addLayer(osmDataLayer);
             if (oldLayer != null) {
-                Main.getLayerManager().setActiveLayer(oldLayer);
+                MainApplication.getLayerManager().setActiveLayer(oldLayer);
             }
             this.active = true;
         }
@@ -107,8 +107,8 @@ implements LayerManager, DataSetListener {
             primitiveMap.clear();
             //            getRepository().clear();
             active = false;
-            if (Main.getLayerManager().containsLayer(this.osmDataLayer)) {
-                Main.getLayerManager().removeLayer(this.osmDataLayer);
+            if (MainApplication.getLayerManager().containsLayer(this.osmDataLayer)) {
+                MainApplication.getLayerManager().removeLayer(this.osmDataLayer);
             }
         }
     }

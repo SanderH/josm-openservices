@@ -17,7 +17,6 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -38,6 +37,7 @@ import org.openstreetmap.josm.plugins.ods.io.Task;
 import org.openstreetmap.josm.plugins.ods.properties.EntityMapper;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -175,7 +175,7 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
         if (downloadedFeatures.isEmpty()) {
             if (dataSource.isRequired()) {
                 String featureType = dataSource.getFeatureType();
-                Main.info(I18n.tr("The selected download area contains no {0} objects.",
+                Logging.info(I18n.tr("The selected download area contains no {0} objects.",
                         featureType));
             }
         }
@@ -228,7 +228,7 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
                 getStatus().failed(e.getMessage());
                 return null;
             } catch (Exception e) {
-                Main.error(e);
+                Logging.error(e);
                 throw e;
             }
         }
@@ -236,7 +236,7 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
         private boolean isRequestInsideBoundary() {
             ReferencedEnvelope bounds = featureSource.getInfo().getBounds();
             if (bounds.isNull()) {
-                Main.info(I18n.tr("Feature source '{0}' doesn't report a boundary", featureSource.getName()));
+                Logging.info(I18n.tr("Feature source '{0}' doesn't report a boundary", featureSource.getName()));
                 return true;
             }
             Envelope wgsBounds = crsUtil.toOsm(bounds, bounds.getCoordinateReferenceSystem());

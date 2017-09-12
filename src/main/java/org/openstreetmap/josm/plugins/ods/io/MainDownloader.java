@@ -10,14 +10,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Main downloader that retrieves data from multiple sources. Currently only a OSM source
@@ -108,7 +109,7 @@ public class MainDownloader {
             computeBboxAndCenterScale(bounds);
             pm.finishTask();
         } catch (OdsException e) {
-            Main.error(e);
+            Logging.error(e);
             throw e;
         } catch (CancellationException e) {
             pm.finishTask();
@@ -190,7 +191,7 @@ public class MainDownloader {
                     else {
                         messages.add(e.getMessage());
                     }
-                    Main.error(e);
+                    Logging.error(e);
                 }
             }
             if (!messages.isEmpty()) {
@@ -208,7 +209,7 @@ public class MainDownloader {
     protected static void computeBboxAndCenterScale(Bounds bounds) {
         if (bounds != null) {
             new BoundingXYVisitor().visit(bounds);
-            Main.map.mapView.zoomTo(bounds);
+            MainApplication.getMap().mapView.zoomTo(bounds);
         }
     }
 

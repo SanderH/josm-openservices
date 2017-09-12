@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.tools.Logging;
 
 public interface Task extends Callable<Void>, Comparable<Task> {
     public final Collection<Class<? extends Task>> NO_DEPENDENCIES = Collections.emptyList();
@@ -44,7 +44,7 @@ public interface Task extends Callable<Void>, Comparable<Task> {
             Constructor<? extends Task> ctor = clazz.getDeclaredConstructor(enclosingClass);
             return ctor.newInstance(enclosingInstance);
         } catch (Exception e) {
-            Main.error(e);
+            Logging.error(e);
             throw new RuntimeException(e);
         }
     }

@@ -39,7 +39,7 @@ public class DefaultEntityUpdater implements EntityUpdater {
         //        List<GeometryDifference> geometryDifferences = new LinkedList<>();
         //        List<StatusDifference> statusDifferences = new LinkedList<>();
         //        List<TagDifference> tagDifferences = new LinkedList<>();
-        Set<Entity> updatedEntities = new HashSet<>();
+        Set<Entity<?>> updatedEntities = new HashSet<>();
         //        for (Match match : matches) {
         //            // TODO We probably could use a Visitor pattern here
         //            for (Difference difference : match.getDifferences()) {
