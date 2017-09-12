@@ -2,8 +2,18 @@ package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeEntityType;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
+import org.openstreetmap.josm.plugins.ods.matching.StraightMatch;
+import org.openstreetmap.josm.plugins.ods.storage.Index;
+import org.openstreetmap.josm.plugins.ods.storage.IndexImpl;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class SameBuildingAddressableMatcher implements Matcher {
@@ -19,42 +29,42 @@ public class SameBuildingAddressableMatcher implements Matcher {
         // Empty implementation. No action required
     }
 
-    //    @Override
-    //    public Class<Addressable> getType() {
-    //        return Addressable.class;
-    //    }
-
     @Override
     public void run() {
         Repository repository = module.getRepository();
-        repository.getAll(Building.class).forEach(building -> {
-            //            Match match = building.getMatch();
-            //            if (match != null) {
-            //                //                matchAddresses(building, match);
-            //            }
+        repository.query(OpenDataBuilding.class).forEach(building -> {
+            Od2OsmMatch<BuildingEntityType> match = building.getMatch();
+            if (match != null) {
+                matchAddresses(building, match);
+            }
         });
     }
 
-    //    private static void matchAddresses(Building odBuilding, Match match) {
-    //        Building osmBuilding = match.getMainMatch();
-    //        Index<AddressNode> index = new IndexImpl<>(AddressNode.PC_FULL_HNR_INDEX_KEY);
-    //        osmBuilding.getAddressNodes().forEach(index::insert);
-    //        for (AddressNode odAddressNode : odBuilding.getAddressNodes()) {
-    //            index.getAllByTemplate(odAddressNode).forEach(osmAddressNode -> {
-    //                matchAddressNodes(odAddressNode, osmAddressNode);
-    //            });
-    //        }
-    //    }
+    private static void matchAddresses(OpenDataBuilding odBuilding, Od2OsmMatch<BuildingEntityType> match) {
+        if (match instanceof StraightMatch<?>) {
+            StraightMatch<BuildingEntityType> straightMatch = (StraightMatch<BuildingEntityType>) match;
+            OsmBuilding osmBuilding = (OsmBuilding) straightMatch.getOsmEntity();
+            Index<OsmAddressNode> index = new IndexImpl<>(OsmAddressNode.class, AddressNode.PC_FULL_HNR_INDEX_KEY);
+            osmBuilding.getAddressNodes().forEach(index::insert);
+            for (OpenDataAddressNode odAddressNode : odBuilding.getAddressNodes()) {
+                Object id = AddressNode.PC_FULL_HNR_INDEX_FUNCTION.apply(odAddressNode);
+                index.getAll(id).forEach(osmAddressNode -> {
+                    matchAddressNodes(odAddressNode, osmAddressNode);
+                });
+            }
+        }
+    }
 
-    //    private static void matchAddressNodes(AddressNode odEntity, AddressNode osmEntity) {
-    //        Match match = osmEntity.getMatch();
-    //        if (!osmEntity.getMatch().isPresent()) {
-    //            @SuppressWarnings("unused")
-    //            StraightMatch<AddressNode> match = new StraightMatch<>(osmEntity);
-    //        }
-    //        //        match.analyze();
-    //        //        match.updateMatchTags();
-    //    }
+    private static void matchAddressNodes(OpenDataAddressNode odEntity, OsmAddressNode osmEntity) {
+        Od2OsmMatch<AddressNodeEntityType> match = odEntity.getMatch();
+        if (match != null && osmEntity.getMatch() == match) {
+            return;
+        }
+        if (match == null && osmEntity.getMatch() == null) {
+            @SuppressWarnings("unused")
+            StraightMatch<AddressNodeEntityType> straightMatch = new StraightMatch<>(osmEntity, odEntity);
+        }
+    }
 
     @Override
     public void reset() {

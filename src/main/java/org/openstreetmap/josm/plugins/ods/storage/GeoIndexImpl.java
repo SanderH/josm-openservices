@@ -4,22 +4,31 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
+
+import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 public class GeoIndexImpl<T> implements GeoIndex<T> {
-    private Quadtree quadTree = new Quadtree();
+    private final GeoIndexKey<T> indexKey;
     private final Class<T> clazz;
     private final Method getGeometryMethod;
     private final String property;
+    private Quadtree quadTree = new Quadtree();
 
     public GeoIndexImpl(Class<T> clazz, String property) {
         super();
+        Method method = PojoUtils.getAttributeGetter(clazz, property);
+        assert method != null;
+        assert (Geometry.class.isAssignableFrom(method.getReturnType()));
+
         this.clazz = clazz;
         this.property = property;
         getGeometryMethod = createGetGeometryMethod();
+        indexKey = new GeoIndexKey<>(clazz, property);
     }
 
     @Override
@@ -117,7 +126,47 @@ public class GeoIndexImpl<T> implements GeoIndex<T> {
 
     @Override
     public IndexKey<T> getIndexFunction() {
-        // TODO Auto-generated method stub
-        return null;
+        return indexKey;
+    }
+
+    public static class GeoIndexKey<T> implements IndexKey<T> {
+        private final Class<T> baseClass;
+        private final String geoProperty;
+
+        public GeoIndexKey(Class<T> baseClass, String geoProperty) {
+            super();
+            this.baseClass = baseClass;
+            this.geoProperty = geoProperty;
+        }
+
+        @Override
+        public Class<T> getBaseClass() {
+            return baseClass;
+        }
+
+        @Override
+        public Object getKey(T t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <T2 extends T> IndexKey<T2> forSubClass(Class<T2> subClass) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(baseClass, geoProperty);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (! (obj instanceof GeoIndexKey)) return false;
+            @SuppressWarnings("unchecked")
+            GeoIndexKey<T> other = (GeoIndexKey<T>) obj;
+            return Objects.equals(other.baseClass, this.baseClass) &&
+                    Objects.equals(other.geoProperty, this.geoProperty);
+        }
     }
 }

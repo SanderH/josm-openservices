@@ -5,19 +5,19 @@ import java.util.Map;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Entrance;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataEntrance;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.tools.I18n;
 
-public class EntrancePrimitiveBuilder extends AbstractEntityPrimitiveBuilder<Entrance> {
-    
+public class EntrancePrimitiveBuilder extends AbstractEntityPrimitiveBuilder<OpenDataEntrance> {
+
     public EntrancePrimitiveBuilder(LayerManager layerManager) {
-        super(layerManager, Entrance.class);
+        super(OpenDataEntrance.class);
     }
 
     @Override
-    public void createPrimitive(Entrance entity) {
+    public void createPrimitive(OpenDataEntrance entity) {
         if (entity.getPrimitive() == null && entity.getGeometry() != null) {
             Map<String, String> tags = new HashMap<>();
             tags.put("entrance", entity.getType());

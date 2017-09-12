@@ -9,12 +9,13 @@ import java.util.Objects;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeGroup;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 
 /**
  * This processor finds overlapping nodes in the data and distributes them, so
@@ -26,8 +27,8 @@ import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
  * @author Gertjan Idema
  *
  */
-public class AddressNodeDistributor implements OdsProcessor {
-    private final OdsModule module = OdsProcessor.getModule();
+public class AddressNodeDistributor extends AbstractTask {
+    private final OdsModule module = OpenDataServicesPlugin.getModule();
     private Comparator<? super AddressNode> comparator = new DefaultNodeComparator();
 
     public AddressNodeDistributor() {
@@ -39,9 +40,10 @@ public class AddressNodeDistributor implements OdsProcessor {
     }
 
     @Override
-    public void run() {
-        module.getRepository().getAll(OpenDataBuilding.class)
+    public Void call() {
+        module.getRepository().query(OpenDataBuilding.class)
         .forEach(this::distributeNodes);
+        return null;
     }
 
     public void distributeNodes(OpenDataBuilding building) {

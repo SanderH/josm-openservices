@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.storage;
 
 public class TestClasses {
-    static class Foo {
+    public static class Foo {
         private final Integer x;
         private final String s;
 
@@ -20,7 +20,7 @@ public class TestClasses {
         }
     }
 
-    static class Bar extends Foo {
+    public static class Bar extends Foo {
 
         public Bar(Integer x, String s) {
             super(x, s);

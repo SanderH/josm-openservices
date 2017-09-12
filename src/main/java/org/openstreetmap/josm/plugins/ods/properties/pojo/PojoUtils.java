@@ -1,8 +1,26 @@
 package org.openstreetmap.josm.plugins.ods.properties.pojo;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PojoUtils {
+    private final static Map<Class<?>, Class<?>> PRIMITIVE_CLASSES = createPrimitiveClassMap();
+
+    private static Map<Class<?>, Class<?>> createPrimitiveClassMap() {
+        Map<Class<?>, Class<?>> map = new HashMap<>();
+        map.put(Boolean.class, Boolean.TYPE);
+        map.put(Byte.class, Byte.TYPE);
+        map.put(Short.class, Short.TYPE);
+        map.put(Integer.class, Integer.TYPE);
+        map.put(Long.class, Long.TYPE);
+        map.put(Float.class, Float.TYPE);
+        map.put(Double.class, Double.TYPE);
+        map.put(Character.class, Character.TYPE);
+        return Collections.unmodifiableMap(map);
+    }
+
     public static String getPropertyName(Method method, String prefix) {
         String methodName = method.getName();
         assert methodName.startsWith(prefix);
@@ -10,6 +28,10 @@ public class PojoUtils {
         int pos = prefix.length();
         return methodName.substring(pos, 1).toLowerCase()
                 + methodName.substring(pos + 1);
+    }
+
+    public static boolean hasAttribute(Class<?> classType, String attribute) {
+        return getAttributeGetter(classType, attribute) != null;
     }
 
     public static Method getAttributeGetter(Class<?> classType, String attribute) {
@@ -31,7 +53,7 @@ public class PojoUtils {
         }
         return method;
     }
-    
+
     public static Method getGetter(Class<?> classType, String methodName, Class<?> attrType) {
         try {
             Method method = classType.getMethod(methodName, new Class<?>[] {});
@@ -43,37 +65,46 @@ public class PojoUtils {
             return null;
         }
     }
-    
+
     public static Method getGetter(Class<?> classType, String methodName) {
         try {
-            return classType.getMethod(methodName, new Class<?>[] {});
+            return classType.getMethod(methodName);
         } catch (NoSuchMethodException e) {
             return null;
         }
     }
-    
+
     public static Method getAttributeSetter(Class<?> classType, String attribute, Class<?> attrType) {
         String methodName = getMethodName(attribute, "set");
         return getSetter(classType, methodName, attrType);
     }
-    
-//    public static Method getSetter(Class<?> classType, String methodName, Class<?> attrType) {
-//        Class<?> clazz = classType;
-//        while (clazz != Object.class) {
-//            try {
-//                return clazz.getMethod(methodName, new Class<?>[] {attrType});
-//            }
-//            catch (@SuppressWarnings("unused") NoSuchMethodException e) {
-//                clazz = clazz.getSuperclass();
-//            }
-//        }
-//        return null;
-//    }
-    
+
+    //    public static Method getSetter(Class<?> classType, String methodName, Class<?> attrType) {
+    //        Class<?> clazz = classType;
+    //        while (clazz != Object.class) {
+    //            try {
+    //                return clazz.getMethod(methodName, new Class<?>[] {attrType});
+    //            }
+    //            catch (@SuppressWarnings("unused") NoSuchMethodException e) {
+    //                clazz = clazz.getSuperclass();
+    //            }
+    //        }
+    //        return null;
+    //    }
+
     public static Method getSetter(Class<?> classType, String methodName, Class<?> attrType) {
         // First check if there is a setter for the exact type of the attribute
         try {
             return classType.getMethod(methodName, new Class<?>[] {attrType});
+        } catch (NoSuchMethodException e) {
+            // No action required.
+        }
+        // Now check if there is a corresponding primitive type with a setter
+        try {
+            Class<?> primitiveType = PRIMITIVE_CLASSES.get(attrType);
+            if (primitiveType != null) {
+                return classType.getMethod(methodName, new Class<?>[] {primitiveType});
+            }
         } catch (NoSuchMethodException e) {
             // No action required.
         }
@@ -90,10 +121,10 @@ public class PojoUtils {
     public static String getMethodName(String property, String prefix) {
         StringBuilder sb = new StringBuilder(prefix);
         sb.append(property.substring(0, 1).toUpperCase())
-                .append(property.substring(1));
+        .append(property.substring(1));
         return sb.toString();
     }
-    
+
     public static Class<?> getNonPrimitiveClass(Class<?> clazz) {
         if (!clazz.isPrimitive()) return clazz;
         switch (clazz.getName()) {

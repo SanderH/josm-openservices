@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +59,7 @@ public abstract class OdsModule implements LayerChangeListener {
     private OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
     private OsmLayerManager osmLayerManager;
-    private final MatcherManager matcherManager = new MatcherManager(this);
+    private final MatchingProcessor matchingProcessor = new MatchingProcessor(this);
 
     //    String osmQuery;
     private boolean initialized = false;
@@ -173,7 +174,9 @@ public abstract class OdsModule implements LayerChangeListener {
         }
     }
 
-
+    public Collection<EntityType> getEntityTypes() {
+        return entityTypes.values();
+    }
 
     public List<OsmEntityBuilder> getEntityBuilders() {
         return entityBuilders;
@@ -207,8 +210,8 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmLayerManager;
     }
 
-    public MatcherManager getMatcherManager() {
-        return matcherManager;
+    public MatchingProcessor getMatchingProcessor() {
+        return matchingProcessor;
     }
 
     public LayerManager getLayerManager(Layer activeLayer) {
@@ -331,7 +334,8 @@ public abstract class OdsModule implements LayerChangeListener {
      * Clean up the module.
      */
     private void cleanUp() {
-        matcherManager.reset();
+        repository.clear();
+        matchingProcessor.reset();
         osmLayerManager.reset();
         openDataLayerManager.reset();
         entityBuilders.clear();

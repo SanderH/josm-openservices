@@ -12,7 +12,9 @@ import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.NodeData;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.EmptyCommand;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
@@ -21,7 +23,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     //    private Set<ManagedPrimitive<?>> referrers;
     private final long uniqueId = (new NodeData()).getUniqueId();
     private Map<String, String> keys;
-    private Entity entity = null;
+    private Entity<?> entity = null;
 
     public AbstractManagedPrimitive(LayerManager layerManager) {
         this(layerManager, new HashMap<>());
@@ -117,12 +119,12 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
 
 
     @Override
-    public <E extends Entity> void setEntity(E entity) {
+    public <E extends Entity<?>> void setEntity(E entity) {
         this.entity = entity;
     }
 
     @Override
-    public Entity getEntity() {
+    public Entity<?> getEntity() {
         return entity;
     }
 
@@ -153,10 +155,14 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     @Override
     public Command put(String key, String value) {
         OsmPrimitive osm = getPrimitive();
-        if (osm != null) {
-            return new ChangePropertyCommand(osm, key, value);
+        if (osm == null) {
+            return new EmptyCommand();
         }
-        return null;
+        if (key.startsWith(ODS.KEY.BASE)) {
+            osm.put(key, value);
+            return new EmptyCommand();
+        }
+        return new ChangePropertyCommand(osm, key, value);
     }
 
     @Override

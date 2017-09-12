@@ -12,19 +12,18 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedNodeImpl;
 /**
  * Collection of Managed nodes. Newly added nodes will be merged with existing ones if
  * the coordinates are the same after they have been rounded to OSM precision..
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class ManagedNodeSet {
-    private LayerManager layerManager;
-    private Map<LatLon, ManagedNode> nodes = new HashMap<>();
-    
+    private final LayerManager layerManager;
+    private final Map<LatLon, ManagedNode> nodes = new HashMap<>();
+
     public ManagedNodeSet(LayerManager layerManager) {
         super();
         this.layerManager = layerManager;
     }
-
 
     public ManagedNode add(LatLon latLon, Map<String, String> tags, boolean merge) {
         LatLon ll = latLon.getRoundedToOsmPrecision();
@@ -41,5 +40,9 @@ public class ManagedNodeSet {
             odsNode.putAll(tags);
         }
         return odsNode;
+    }
+
+    public void reset() {
+        nodes.clear();
     }
 }

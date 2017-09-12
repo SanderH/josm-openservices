@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoUtils;
+
 public class PropertiesIndexFunction<T> implements Function<T, Object> {
     private final Class<T> baseClass;
     private final List<String> properties;
@@ -37,34 +39,14 @@ public class PropertiesIndexFunction<T> implements Function<T, Object> {
         }
     }
 
+    // TODO Make sure all properties exist
     private Method[] createGetters() {
         Method[] theGetters = new Method[properties.size()];
         int i=0;
         for (String property : properties) {
-            theGetters[i++] = createGetter(property);
+            theGetters[i++] = PojoUtils.getAttributeGetter(baseClass, property);
         }
         return theGetters;
-    }
-
-    private Method createGetter(String property) {
-        for (Method method : baseClass.getMethods()) {
-            if (method.getParameterCount() > 0) {
-                continue;
-            }
-            Class<?> returnType = method.getReturnType();
-            if (returnType == Void.class) {
-                continue;
-            }
-            String name = method.getName();
-            if (name.startsWith("get") && name.substring(3).equalsIgnoreCase(property)) {
-                return method;
-            }
-            if (name.startsWith("is") && name.substring(2).equalsIgnoreCase(property)) {
-                return method;
-            }
-        }
-        throw new IllegalArgumentException(String.format(
-                "Propert '%s' in class '%s' could not be found" , baseClass.getName(), property));
     }
 
     @Override

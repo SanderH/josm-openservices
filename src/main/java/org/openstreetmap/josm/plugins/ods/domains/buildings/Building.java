@@ -24,7 +24,7 @@ public interface Building extends Entity<BuildingEntityType> {
      * @return empty collection if no address nodes are associated with this
      *         building.
      */
-    public Set<AddressNode> getAddressNodes();
+    public Set<? extends AddressNode> getAddressNodes();
 
     public TypeOfBuilding getBuildingType();
 

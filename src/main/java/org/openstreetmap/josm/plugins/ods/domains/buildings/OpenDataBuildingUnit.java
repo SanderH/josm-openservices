@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.AbstractOdEntity;
 
-public class OpenDataBuildingUnit extends AbstractEntity<BuildingUnitEntityType> implements BuildingUnit {
+public class OpenDataBuildingUnit extends AbstractOdEntity<BuildingUnitEntityType> implements BuildingUnit {
     private final List<OpenDataAddressNode> addressNodes = new LinkedList<>();
     private TypeOfBuilding type;
     private Double area;

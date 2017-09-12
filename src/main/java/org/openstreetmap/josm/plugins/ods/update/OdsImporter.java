@@ -102,7 +102,7 @@ public class OdsImporter {
     }
 
     private void updateMatching() {
-        for (Matcher matcher : module.getMatcherManager().getMatchers()) {
+        for (Matcher matcher : module.getMatchingProcessor().getMatchers()) {
             matcher.run();
         }
     }

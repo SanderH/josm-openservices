@@ -88,7 +88,7 @@ implements LayerManager, DataSetListener {
     }
 
     @Override
-    public void reset() {
+    public final void reset() {
         if (isActive()) {
             deActivate();
         }

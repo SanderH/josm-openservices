@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.Collection;
 import java.util.List;
 
+import org.openstreetmap.josm.plugins.ods.entities.EntityPrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -42,4 +43,6 @@ public interface OdsModuleConfiguration {
     List<Class<? extends OsmEntityBuilder>> getOsmEntityBuilders();
 
     List<Class<? extends OsmEntityRelationManager>> getOsmRelationManagers();
+
+    Collection<Class<? extends EntityPrimitiveBuilder<?>>> getPrimitiveBuilders();
 }

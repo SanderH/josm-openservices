@@ -2,7 +2,10 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.List;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
@@ -19,15 +22,14 @@ import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OsmLayerDownloader implements LayerDownloader {
-    private DownloadRequest request;
-    @SuppressWarnings("unused")
-    private DownloadResponse response;
+    DownloadRequest request;
+    DownloadResponse response;
     private final DownloadSource downloadSource=  DownloadSource.OVERPASS;
     private OsmServerReader osmServerReader;
-    private OsmLayerManager layerManager;
+    OsmLayerManager layerManager;
     private final OdsModule module;
     private OsmHost host;
-    private DataSet dataSet;
+    DataSet dataSet;
 
     static enum DownloadSource {
         OSM,
@@ -102,51 +104,22 @@ public class OsmLayerDownloader implements LayerDownloader {
         }
     }
 
-    @Override
-    public PrepareResponse prepare() {
-        // Nothing to prepare
-        return null;
-    }
-
-
+    //    @Override
+    //    public PrepareResponse prepare() {
+    //        // Nothing to prepare
+    //        return null;
+    //    }
+    //
+    //
     /**
      * Process the down loaded OSM primitives
+     * @return
      *
      * @see org.openstreetmap.josm.plugins.ods.io.Downloader#process()
      */
     @Override
-    public void process() {
-        merge();
-        buildEntities();
-        updateRelations();
-    }
-
-    /**
-     * Merge the down loaded OSM primitives into the existing
-     * OSM layer.
-     */
-    private void merge() {
-        layerManager.getOsmDataLayer().mergeFrom(dataSet);
-        Boundary boundary = request.getBoundary();
-        DataSource ds = new DataSource(boundary.getBounds(), "OSM");
-        layerManager.getOsmDataLayer().data.addDataSource(ds);
-    }
-
-    /**
-     * Build ods Entities from the down loaded OSM primitives.
-     */
-    private void buildEntities() {
-        OsmEntitiesBuilder entitiesBuilder = layerManager.getEntitiesBuilder();
-        entitiesBuilder.build();
-    }
-
-    /**
-     * Update relations between the down loaded entities.
-     */
-    private void updateRelations() {
-        for (OsmEntityRelationManager relationManager : layerManager.getRelationManagers()) {
-            relationManager.createRelations();
-        }
+    public List<Task> process() {
+        return Collections.singletonList(new InnerProcessTask());
     }
 
     private DataSet parseDataSet() throws OsmTransferException {
@@ -160,5 +133,55 @@ public class OsmLayerDownloader implements LayerDownloader {
     @Override
     public void cancel() {
         osmServerReader.cancel();
+    }
+
+    @Override
+    public List<PrepareTask> prepare() {
+        // Nothing to prepare
+        return Collections.emptyList();
+    }
+
+    public class InnerProcessTask extends ProcessTask {
+
+        @Override
+        public Void call() throws Exception {
+            try {
+                merge();
+                buildEntities();
+                updateRelations();
+                return null;
+            } catch (Exception e) {
+                Main.error(e);
+                throw e;
+            }
+        }
+
+        /**
+         * Merge the down loaded OSM primitives into the existing
+         * OSM layer.
+         */
+        private void merge() {
+            layerManager.getOsmDataLayer().mergeFrom(dataSet);
+            Boundary boundary = request.getBoundary();
+            DataSource ds = new DataSource(boundary.getBounds(), "OSM");
+            layerManager.getOsmDataLayer().data.addDataSource(ds);
+        }
+
+        /**
+         * Build ods Entities from the down loaded OSM primitives.
+         */
+        private void buildEntities() {
+            OsmEntitiesBuilder entitiesBuilder = layerManager.getEntitiesBuilder();
+            entitiesBuilder.build();
+        }
+
+        /**
+         * Update relations between the down loaded entities.
+         */
+        private void updateRelations() {
+            for (OsmEntityRelationManager relationManager : layerManager.getRelationManagers()) {
+                relationManager.createRelations();
+            }
+        }
     }
 }

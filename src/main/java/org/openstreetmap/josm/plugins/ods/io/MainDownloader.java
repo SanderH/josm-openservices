@@ -14,9 +14,8 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -39,6 +38,7 @@ public class MainDownloader {
     private List<LayerDownloader> enabledDownloaders;
 
     private final ExecutorService executor;
+    private final TaskRunner prepareTaskRunner = new TaskRunner();
 
     //    private Status status = new Status();
 
@@ -110,6 +110,9 @@ public class MainDownloader {
         } catch (OdsException e) {
             Main.error(e);
             throw e;
+        } catch (CancellationException e) {
+            pm.finishTask();
+            return;
         }
     }
 
@@ -140,11 +143,15 @@ public class MainDownloader {
         }
     }
 
-    private void prepare() throws OdsException, CancellationException, InterruptedException {
-        runTasks(Downloader.getPrepareTasks(enabledDownloaders));
+    private void prepare() throws CancellationException {
+        List<PrepareTask> tasks = new LinkedList<>();
+        for (LayerDownloader downloader : enabledDownloaders) {
+            tasks.addAll(downloader.prepare());
+        }
+        prepareTaskRunner.runTasks(tasks, false);
     }
 
-    private void download() throws OdsException, CancellationException, InterruptedException {
+    private void download() throws OdsException, CancellationException {
         runTasks(Downloader.getDownloadTasks(enabledDownloaders));
     }
 
@@ -157,16 +164,20 @@ public class MainDownloader {
      */
     protected void process(DownloadResponse response) throws OdsException, CancellationException, InterruptedException {
         runTasks(Downloader.getProcessTasks(enabledDownloaders));
-        for (Matcher matcher : getModule().getMatcherManager().getMatchers()) {
-            matcher.run();
-        }
+        getModule().getMatchingProcessor().run();
+        updateMatchTags();
     }
 
-    private void runTasks(List<Callable<Void>> tasks) throws OdsException, InterruptedException, CancellationException {
+    private void updateMatchTags() {
+        getModule().getRepository().query(OdEntity.class).forEach(entity -> {
+            entity.updateMatchTags();
+        });
+    }
+
+    private void runTasks(List<Callable<Void>> tasks) throws OdsException, CancellationException {
         try {
             List<Future<Void>> futures = executor.invokeAll(tasks, 10, TimeUnit.MINUTES);
             List<String> messages = new LinkedList<>();
-            boolean cancelled = false;
             for (Future<Void> future : futures) {
                 try {
                     future.get();
@@ -186,9 +197,10 @@ public class MainDownloader {
                 throw new OdsException(String.join("\n",  messages));
             }
         } catch (InterruptedException | CancellationException e) {
-            for (Downloader dl : enabledDownloaders) {
-                dl.cancel();
-            }
+            cancel();
+            return;
+        } catch (Exception e) {
+            // TODO Do some logging
             throw e;
         }
     }

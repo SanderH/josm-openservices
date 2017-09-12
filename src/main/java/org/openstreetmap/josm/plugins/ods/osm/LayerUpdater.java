@@ -30,7 +30,7 @@ public class LayerUpdater {
     public void run() {
         dataSet.beginUpdate();
         Repository repository = module.getRepository();
-        repository.getAll(OdEntity.class).forEach(entity -> {
+        repository.query(OdEntity.class).forEach(entity -> {
             if (entity.getPrimitive() != null) {
                 update(entity.getPrimitive());
             }

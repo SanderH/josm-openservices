@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.opendata;
+package org.openstreetmap.josm.plugins.ods.io;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -14,34 +14,29 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.entities.PrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.io.DefaultPrepareResponse;
-import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-import org.openstreetmap.josm.plugins.ods.io.Downloader;
-import org.openstreetmap.josm.plugins.ods.io.Host;
-import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
-import org.openstreetmap.josm.plugins.ods.io.PrepareResponse;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.osm.LayerUpdater;
+import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 /**
  * Downloader that retrieves open data objects from 1 or more services
  * and collects them in one layer.
- *  
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public abstract class OpenDataLayerDownloader implements LayerDownloader {
     private static final int NTHREADS = 10;
 
-    private final OdsModule module;
-    private final List<FeatureDownloader> downloaders;
+    final OdsModule module;
+    final List<FeatureDownloader> downloaders;
     private ExecutorService executor;
     private List<Future<Void>> futures;
-    private DownloadRequest request;
+    DownloadRequest request;
     private DownloadResponse response;
     boolean cancelled = false;
 
@@ -58,7 +53,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
     public void setResponse(DownloadResponse response) {
         this.response = response;
     }
-    
+
     public DownloadResponse getResponse() {
         return response;
     }
@@ -86,52 +81,49 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
             throw new OdsException("", messages);
         }
     }
-    
+
     protected Collection<? extends Host> getHosts() {
         return module.getConfiguration().getHosts();
     }
 
-    @Override
-    public PrepareResponse prepare() throws OdsException {
-        runTasks(Downloader.getPrepareTasks(downloaders));
-        return new DefaultPrepareResponse();
-    }
-    
+    //    @Override
+    //    public PrepareResponse prepare() throws OdsException {
+    //        runTasks(Downloader.getPrepareTasks(downloaders));
+    //        return new DefaultPrepareResponse();
+    //    }
+
     @Override
     public void download() throws OdsException {
         runTasks(Downloader.getDownloadTasks(downloaders));
         this.response = new DownloadResponse(request);
     }
-    
+
     @Override
-    public void process() throws OdsException {
+    public List<? extends Task> process() {
         Thread.currentThread().setName("OpenDataLayerDownloader process");
-        runTasks(Downloader.getProcessTasks(downloaders));
-        getPrimitiveBuilder().run(getResponse());
-        updateBoundaries();
-        runProcessors();
-        updateLayer();
+        Repository repository = new Repository();
+        List<Task> tasks = new LinkedList<>();
+        for (Downloader downloader : downloaders) {
+            tasks.addAll(downloader.process());
+        }
+        List<Class<? extends Task>> taskdefs = new LinkedList<>();
+        taskdefs.addAll(getProcessors());
+        taskdefs.add(BuildPrimitivesTask.class);
+        taskdefs.add(UpdateBoundariesTask.class);
+        return Task.createTasks(taskdefs, this);
     }
 
-    private void updateBoundaries() {
-        Boundary boundary = request.getBoundary();
-        DataSource ds = new DataSource(boundary.getBounds(), "Import");
-        module.getOpenDataLayerManager().extendBoundary(request.getBoundary().getMultiPolygon());
-        OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
-        osmDataLayer.data.addDataSource(ds);
-    }
-    
-    private void runProcessors() throws OdsException {
-        for (Class<? extends OdsProcessor> processorClass : getProcessors()) {
-            OdsProcessor processor;
-            try {
-                processor = processorClass.newInstance();
-                processor.run();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new OdsException(e);
-            }
-        }
-    }
+    //    private void runProcessors() throws OdsException {
+    //        for (Class<? extends OdsProcessor> processorClass : getProcessors()) {
+    //            OdsProcessor processor;
+    //            try {
+    //                processor = processorClass.newInstance();
+    //                processor.run();
+    //            } catch (InstantiationException | IllegalAccessException e) {
+    //                throw new OdsException(e);
+    //            }
+    //        }
+    //    }
 
     private void runTasks(List<Callable<Void>> tasks) throws OdsException {
         executor = Executors.newFixedThreadPool(NTHREADS);
@@ -157,7 +149,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
                 }
             }
             if (!messages.isEmpty()) {
-//                cancel();
+                //                cancel();
                 throw new OdsException(String.join("\n",  messages));
             }
             executor.shutdownNow();
@@ -169,17 +161,59 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         }
     }
 
-    protected abstract List<Class<? extends OdsProcessor>> getProcessors();
+    protected abstract List<Class<? extends Task>> getProcessors();
 
     @Override
     public void cancel() {
         executor.shutdownNow();
     }
-    
-    protected void updateLayer() {
-        LayerUpdater updater = new LayerUpdater(this.module);
-        updater.run();
+
+    protected PrimitiveBuilder getPrimitiveBuilder() {
+        return new PrimitiveBuilder(getModule());
     }
 
-    protected abstract PrimitiveBuilder getPrimitiveBuilder();
+    @Override
+    public List<PrepareTask> prepare() {
+        List<PrepareTask> tasks = new LinkedList<>();
+        for (FeatureDownloader downloader : downloaders) {
+            tasks.addAll(downloader.prepare());
+        }
+        return tasks;
+    }
+
+    public class BuildPrimitivesTask extends AbstractTask {
+        @Override
+        public Collection<Class<? extends Task>> getDependencies() {
+            return super.getDependencies();
+        }
+
+        @Override
+        public Void call() throws Exception {
+            getPrimitiveBuilder().run(getResponse());
+            return null;
+        }
+    }
+
+    public class UpdateBoundariesTask extends AbstractTask {
+
+        @Override
+        public Void call() throws Exception {
+            Boundary boundary = request.getBoundary();
+            DataSource ds = new DataSource(boundary.getBounds(), "Import");
+            module.getOpenDataLayerManager().extendBoundary(request.getBoundary().getMultiPolygon());
+            OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
+            osmDataLayer.data.addDataSource(ds);
+            return null;
+        }
+    }
+
+    public static class UpdateLayerTask extends AbstractTask {
+        private final OdsModule module = OpenDataServicesPlugin.getModule();
+        @Override
+        public Void call() throws Exception {
+            LayerUpdater updater = new LayerUpdater(module);
+            updater.run();
+            return null;
+        }
+    }
 }

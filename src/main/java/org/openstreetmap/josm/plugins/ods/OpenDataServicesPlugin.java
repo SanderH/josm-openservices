@@ -37,12 +37,13 @@ import org.openstreetmap.josm.tools.I18n;
 
 public class OpenDataServicesPlugin extends Plugin {
     public static OpenDataServicesPlugin INSTANCE;
+    public static boolean DEBUGGING = false;
 
     private final static String INFO_URL = "http://www.gertjanidema.nl/ods/ods.json";
     private JsonObject metaInfo;
 
     // All available modules
-    private List<OdsModule> modules = new LinkedList<>();
+    private final List<OdsModule> modules = new LinkedList<>();
     // The currently active module, or null if no module is active
     private OdsModule activeModule;
     private JMenu menu;
@@ -50,6 +51,7 @@ public class OpenDataServicesPlugin extends Plugin {
 
     public OpenDataServicesPlugin(PluginInformation info) {
         super(info);
+        DEBUGGING = "true".equals(System.getenv("ods-debug"));
         try {
             Logging.GEOTOOLS.setLoggerFactory(JosmLoggerFactory.getInstance());
             Logging.ALL.setLoggerFactory(JosmLoggerFactory.getInstance());
@@ -62,7 +64,7 @@ public class OpenDataServicesPlugin extends Plugin {
             throw new java.lang.RuntimeException(
                     I18n.tr("The Open Data Services plug-in has allready been started"));
         }
-        
+
         INSTANCE = this;
         readInfo();
         checkVersion(info);
@@ -71,6 +73,9 @@ public class OpenDataServicesPlugin extends Plugin {
         UploadAction.registerUploadHook(new DiscardOdsTagsHook());
     }
 
+    public static OdsModule getModule() {
+        return INSTANCE == null ? null : INSTANCE.getActiveModule();
+    }
 
     public void registerModule(OdsModule module) {
         modules.add(module);
@@ -84,12 +89,12 @@ public class OpenDataServicesPlugin extends Plugin {
     public OdsModule getActiveModule() {
         return activeModule;
     }
-    
+
     public void activate(OdsModule module) throws ModuleActivationException {
         if (activeModule == null) {
             module.activate();
             menu.remove(0);
-//                menu.add(new OdsDisableAction(this));
+            //                menu.add(new OdsDisableAction(this));
             menu.repaint();
             this.activeModule = module;
         }
@@ -114,7 +119,7 @@ public class OpenDataServicesPlugin extends Plugin {
         }
         menu.add(moduleMenu);
     }
-    
+
     public JMenu getMenu() {
         return menu;
     }
@@ -122,13 +127,13 @@ public class OpenDataServicesPlugin extends Plugin {
     public void checkVersion(PluginInformation info) {
         if (metaInfo == null) return;
         String latestVersion = metaInfo.getJsonObject("version").getString("latest");
-        if (!info.version.equals(latestVersion)) {
+        if (!info.version.equals(latestVersion) && !DEBUGGING) {
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("Your ODS version ({0}) is out of date.\n" +
-                 "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
+                    "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
 
         }
     }
-    
+
     private void readInfo() {
         URL url;
         try {
@@ -138,10 +143,10 @@ public class OpenDataServicesPlugin extends Plugin {
             throw new RuntimeException(e);
         }
         try (
-             InputStream is = url.openStream();
-             Reader inputStreamReader = new InputStreamReader(is);
-             JsonReader reader = Json.createReader(inputStreamReader);
-        )  {
+                InputStream is = url.openStream();
+                Reader inputStreamReader = new InputStreamReader(is);
+                JsonReader reader = Json.createReader(inputStreamReader);
+                )  {
             metaInfo = reader.readObject().getJsonObject("ods");
             if (metaInfo == null) {
                 JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
@@ -149,11 +154,11 @@ public class OpenDataServicesPlugin extends Plugin {
             }
         } catch (IOException | JsonParsingException e) {
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
-                "Cause: {0}\n" + 
-                "Your ODS version may be out of date", e.getMessage()), "No version info", JOptionPane.WARNING_MESSAGE);
+                    "Cause: {0}\n" +
+                    "Your ODS version may be out of date", e.getMessage()), "No version info", JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     /*
      * When Josm's default download is called, the results shouldn't end up in
      * one of the OpenService layers. To achieve this, we intercept the
@@ -162,31 +167,31 @@ public class OpenDataServicesPlugin extends Plugin {
      */
     private static void addDownloadDialogListener() {
         DownloadDialog.getInstance().addComponentListener(
-            new ComponentAdapter() {
-                @Override
-                public void componentShown(ComponentEvent e) {
-                    if (!Main.isDisplayingMapView())
-                        return;
-                    Layer activeLayer = Main.getLayerManager().getActiveLayer();
-                    if (activeLayer.getName().startsWith("ODS")
-                            || activeLayer.getName().startsWith("OSM")) {
-                        for (Layer layer : Main.getLayerManager().getLayers()) {
-                            if (layer instanceof OsmDataLayer
-                                    && !(layer.getName().startsWith("ODS"))
-                                    && !(layer.getName().startsWith("OSM"))) {
-                                Main.getLayerManager().setActiveLayer(layer);
-                                return;
+                new ComponentAdapter() {
+                    @Override
+                    public void componentShown(ComponentEvent e) {
+                        if (!Main.isDisplayingMapView())
+                            return;
+                        Layer activeLayer = Main.getLayerManager().getActiveLayer();
+                        if (activeLayer.getName().startsWith("ODS")
+                                || activeLayer.getName().startsWith("OSM")) {
+                            for (Layer layer : Main.getLayerManager().getLayers()) {
+                                if (layer instanceof OsmDataLayer
+                                        && !(layer.getName().startsWith("ODS"))
+                                        && !(layer.getName().startsWith("OSM"))) {
+                                    Main.getLayerManager().setActiveLayer(layer);
+                                    return;
+                                }
                             }
+                        } else if (activeLayer instanceof OsmDataLayer) {
+                            return;
                         }
-                    } else if (activeLayer instanceof OsmDataLayer) {
-                        return;
+                        Layer newLayer = new OsmDataLayer(new DataSet(),
+                                OsmDataLayer.createNewName(), null);
+                        Main.getLayerManager().addLayer(newLayer);
+                        Main.getLayerManager().setActiveLayer(newLayer);
                     }
-                    Layer newLayer = new OsmDataLayer(new DataSet(),
-                            OsmDataLayer.createNewName(), null);
-                    Main.getLayerManager().addLayer(newLayer);
-                    Main.getLayerManager().setActiveLayer(newLayer);
                 }
-            }
-        );
+                );
     }
 }

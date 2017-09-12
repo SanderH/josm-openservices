@@ -6,35 +6,37 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class IndexImpl<T> implements Index<T> {
+    private final Class<T> clazz;
     private final Map<Object, IdentitySet<T>> map = new HashMap<>();
-    //    private final Class<T> clazz;
-    //    private final List<String> properties;
-    //    private final Method[] getters;
-    //    private final Function<T, ?>[] getters;
-    private final IndexKey<T> indexKey;
+    private final IndexKey<? super T> indexKey;
 
     public IndexImpl(IndexKey<T> indexFunction) {
         super();
+        this.indexKey = indexFunction;
+        this.clazz = indexFunction.getBaseClass();
+    }
+
+    public IndexImpl(Class<T> clazz, IndexKey<? super T> indexFunction) {
+        super();
+        this.clazz = clazz;
         this.indexKey = indexFunction;
     }
 
     @SafeVarargs
     public IndexImpl(Class<T> clazz, String ... properties) {
         super();
-        //        this.properties = Arrays.asList(properties);
+        this.clazz = clazz;
         this.indexKey = IndexKeyFactory.createPropertyIndexKey(clazz, properties);
-        //        this.properties = Arrays.asList(properties);
-        //        this.getters = createGetters();
     }
 
     @Override
-    public IndexKey<T> getIndexFunction() {
+    public IndexKey<? super T> getIndexFunction() {
         return indexKey;
     }
 
     @Override
     public Class<T> getType() {
-        return indexKey.getBaseClass();
+        return clazz;
     }
 
     @Override
@@ -91,4 +93,9 @@ public class IndexImpl<T> implements Index<T> {
     public void clear() {
         map.clear();
     }
+
+    //    @Override
+    //    public <T2 extends T> Index<T2> filter(Class<T2> subClass) {
+    //        return new SubclassIndex<>(this, subClass);
+    //    }
 }

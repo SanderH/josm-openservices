@@ -5,8 +5,7 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.AbstractLayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedNode;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
@@ -41,7 +40,7 @@ public class Osm_Building_AddressNode_RelationManager implements OsmEntityRelati
      */
     @Override
     public void createRelations() {
-        module.getRepository().getAll(OsmBuilding.class)
+        module.getRepository().query(OsmBuilding.class)
         .forEach(this::createRelations);
     }
 
@@ -50,14 +49,14 @@ public class Osm_Building_AddressNode_RelationManager implements OsmEntityRelati
      *
      * @param building
      */
-    public void createRelations(Building building) {
+    public void createRelations(OsmBuilding building) {
         ManagedPrimitive mPrimitive = building.getPrimitive();
         BBox bbox = building.getPrimitive().getBBox();
         for (Node node : getDataSet().searchNodes(bbox)) {
             ManagedNode mNode = (ManagedNode) getLayerManager().getManagedPrimitive(node);
             if (mNode != null && mPrimitive.contains(mNode)) {
-                if (mNode.getEntity() instanceof AddressNode) {
-                    AddressNode addressNode = (AddressNode) mNode.getEntity();
+                if (mNode.getEntity() instanceof OsmAddressNode) {
+                    OsmAddressNode addressNode = (OsmAddressNode) mNode.getEntity();
                     addressNode.addBuilding(building);
                     building.getAddressNodes().add(addressNode);
                 }

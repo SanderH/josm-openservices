@@ -5,34 +5,28 @@ import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class PrimitiveBuilder {
-    private final OdsModule module;
-    private final List<EntityPrimitiveBuilder<? extends Entity<?>>> entityBuilders = new LinkedList<>();
+    private final List<EntityPrimitiveBuilder<?>> entityBuilders = new LinkedList<>();
 
     public PrimitiveBuilder(OdsModule module) {
         super();
-        this.module = module;
-    }
-
-    public <T extends Entity<?>> void register(Class<T> clazz, EntityPrimitiveBuilder<T> builder) {
-        entityBuilders.add(builder);
-    }
-
-    public void run(DownloadResponse response) {
-        for (EntityPrimitiveBuilder<? extends Entity<?>> builder : entityBuilders) {
-            buildPrimitives(builder);
+        for (Class<? extends EntityPrimitiveBuilder<?>> clazz : module.getConfiguration().getPrimitiveBuilders()) {
+            try {
+                entityBuilders.add(clazz.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    private <E extends Entity<?>> void buildPrimitives(EntityPrimitiveBuilder<E> entityBuilder) {
-        Repository repository = module.getRepository();
-        repository.getAll(entityBuilder.getEntityClass())
-        .forEach(entity -> {
-            if (entity.getPrimitive() == null) {
-                entityBuilder.createPrimitive(entity);
-            }
-        });
+    //    public void register(EntityPrimitiveBuilder<?> builder) {
+    //        entityBuilders.add(builder);
+    //    }
+    //
+    public void run(DownloadResponse response) {
+        for (EntityPrimitiveBuilder<?> builder : entityBuilders) {
+            builder.run();
+        }
     }
 }

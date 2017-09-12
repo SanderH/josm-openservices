@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.geotools.data.Query;
@@ -15,7 +16,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
@@ -23,6 +23,7 @@ import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
@@ -31,7 +32,9 @@ import org.openstreetmap.josm.plugins.ods.geotools.impl.GtFeatureReaderImpl;
 import org.openstreetmap.josm.plugins.ods.io.DefaultPrepareResponse;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-import org.openstreetmap.josm.plugins.ods.io.PrepareResponse;
+import org.openstreetmap.josm.plugins.ods.io.PrepareTask;
+import org.openstreetmap.josm.plugins.ods.io.ProcessTask;
+import org.openstreetmap.josm.plugins.ods.io.Task;
 import org.openstreetmap.josm.plugins.ods.properties.EntityMapper;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 import org.openstreetmap.josm.tools.I18n;
@@ -40,18 +43,19 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class GtDownloader<T extends EntityType> implements FeatureDownloader {
-    private final GtDataSource dataSource;
-    private List<PropertyName> properties;
-    private final CRSUtil crsUtil;
-    private DownloadRequest request;
+    // These fields are available to the subclasses
+    final GtDataSource dataSource;
+    final CRSUtil crsUtil;
+    SimpleFeatureSource featureSource;
+    Query baseQuery;
+    DownloadRequest request;
+
+    //    private List<PropertyName> properties;
     @SuppressWarnings("unused")
     private DownloadResponse response;
-    private SimpleFeatureSource featureSource;
-    private Query baseQuery;
-    //    DefaultFeatureCollection downloadedFeatures = new DefaultFeatureCollection();
     DefaultFeatureCollection downloadedFeatures;
-    private final Repository repository;
-    private final EntityMapper<SimpleFeature, T> entityMapper;
+    final Repository repository = new Repository();
+    final EntityMapper<SimpleFeature, Entity<T>> entityMapper;
     private Normalisation normalisation = Normalisation.FULL;
 
     @SuppressWarnings("unchecked")
@@ -59,15 +63,14 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
             T EntityType) {
         this.dataSource = dataSource;
         this.crsUtil = module.getCrsUtil();
-        this.entityMapper = (EntityMapper<SimpleFeature, T>) dataSource.getEntityMapper();
-        this.repository = module.getRepository();
+        this.entityMapper = (EntityMapper<SimpleFeature, Entity<T>>) dataSource.getEntityMapper();
+        this.repository.clear();
     }
 
     @Override
     public void setNormalisation(Normalisation normalisation) {
         this.normalisation = normalisation;
     }
-
 
     @Override
     public void setup(DownloadRequest request) {
@@ -80,77 +83,13 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
     }
 
     @Override
-    public PrepareResponse prepare() throws OdsException {
-        Thread.currentThread().setName(dataSource.getFeatureType() + " prepare");
-        DefaultPrepareResponse prepareResponse = new DefaultPrepareResponse();
-
-        GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource.getOdsFeatureSource();
-        gtFeatureSource.initialize();
-        featureSource = gtFeatureSource.getFeatureSource();
-        if (!isRequestInsideBoundary()) {
-            prepareResponse.setOutsideBoundary(true);
-            return prepareResponse;
-        }
-        // Create the base query
-        baseQuery = createBaseQuery();
-        return prepareResponse;
+    public Repository getRepository() {
+        return repository;
     }
 
-    /**
-     * Create the base query for this request. The base query is based on the dataSource query with the
-     * following additions:
-     * - Add geometry filter for the boundary.
-     * - Add the query CRS
-     * - Add the list of properties
-     * @return
-     */
-    private Query createBaseQuery() {
-        // Clone the query, so we can moderate the filter by setting the download area.
-        Query query = new Query(dataSource.getQuery());
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-        Name geometryProperty = featureSource.getSchema()
-                .getGeometryDescriptor().getName();
-        Filter filter = query.getFilter();
-        filter = ff.intersects(ff.property(geometryProperty), ff.literal(getArea()));
-        Filter dataFilter = dataSource.getQuery().getFilter();
-        if (dataFilter != null) {
-            filter = ff.and(filter, dataFilter);
-        }
-        query.setFilter(filter);
-        query.setCoordinateSystem(featureSource.getSchema().getCoordinateReferenceSystem());
-        if (properties != null) {
-            baseQuery.setProperties(properties);
-        }
-        return query;
-    }
-
-    private boolean isRequestInsideBoundary() {
-        ReferencedEnvelope bounds = featureSource.getInfo().getBounds();
-        if (bounds.isNull()) {
-            Main.info(I18n.tr("Feature source '{0}' doesn't report a boundary", featureSource.getName()));
-            return true;
-        }
-        Envelope wgsBounds = crsUtil.toOsm(bounds, bounds.getCoordinateReferenceSystem());
-        return wgsBounds.intersects(request.getBoundary().getEnvelope());
-    }
-
-    /**
-     * Get the download area and transform to the desired
-     * CoordinateReferenceSystem
-     *
-     * @return The transformed geometry
-     */
-    private Geometry getArea() {
-        CoordinateReferenceSystem targetCRS = featureSource.getInfo().getCRS();
-        Geometry area = request.getBoundary().getMultiPolygon();
-        if (!targetCRS.equals(CRSUtil.OSM_CRS)) {
-            try {
-                area = crsUtil.fromOsm(area, targetCRS);
-            } catch (CRSException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return area;
+    @Override
+    public List<PrepareTask> prepare() {
+        return Collections.singletonList(new PrepareTaskImpl());
     }
 
     //    @Override
@@ -254,26 +193,122 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
 
 
     @Override
-    public void process() {
-        Thread.currentThread().setName(dataSource.getFeatureType() + " process");
-        for (SimpleFeature feature : downloadedFeatures) {
-            entityMapper.mapAndConsume(feature, repository::add);
-            if (Thread.currentThread().isInterrupted()) {
-                repository.clear();
-                break;
-            }
-        }
-        // Clean-up
-        downloadedFeatures.clear();
+    public List<Task> process() {
+        return Collections.singletonList(new ProcessTaskImpl());
     }
+
 
     public OdsDataSource getDataSource() {
         return dataSource;
     }
 
-
     @Override
     public void cancel() {
         Thread.currentThread().interrupt();
+    }
+
+    public class PrepareTaskImpl extends PrepareTask {
+        @Override
+        public Void call() {
+            try {
+                Thread.currentThread().setName(dataSource.getFeatureType() + " prepare");
+                DefaultPrepareResponse prepareResponse = new DefaultPrepareResponse();
+
+                GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource.getOdsFeatureSource();
+                gtFeatureSource.initialize();
+                featureSource = gtFeatureSource.getFeatureSource();
+                if (!isRequestInsideBoundary()) {
+                    prepareResponse.setOutsideBoundary(true);
+                    getStatus().failed(I18n.tr("The selected area is outside de boundary of the data source"));
+                }
+                // Create the base query
+                baseQuery = createBaseQuery();
+                return null;
+            } catch (OdsException e) {
+                getStatus().failed(e.getMessage());
+                return null;
+            } catch (Exception e) {
+                Main.error(e);
+                throw e;
+            }
+        }
+
+        private boolean isRequestInsideBoundary() {
+            ReferencedEnvelope bounds = featureSource.getInfo().getBounds();
+            if (bounds.isNull()) {
+                Main.info(I18n.tr("Feature source '{0}' doesn't report a boundary", featureSource.getName()));
+                return true;
+            }
+            Envelope wgsBounds = crsUtil.toOsm(bounds, bounds.getCoordinateReferenceSystem());
+            return wgsBounds.intersects(request.getBoundary().getEnvelope());
+        }
+
+        /**
+         * Create the base query for this request. The base query is based on the dataSource query with the
+         * following additions:
+         * - Add geometry filter for the boundary.
+         * - Add the query CRS
+         * - Add the list of properties
+         * @return
+         */
+        private Query createBaseQuery() {
+            // Clone the query, so we can moderate the filter by setting the download area.
+            Query query = new Query(dataSource.getQuery());
+            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+            Name geometryProperty = featureSource.getSchema()
+                    .getGeometryDescriptor().getName();
+            Filter filter = query.getFilter();
+            filter = ff.intersects(ff.property(geometryProperty), ff.literal(getArea()));
+            Filter dataFilter = dataSource.getQuery().getFilter();
+            if (dataFilter != null) {
+                filter = ff.and(filter, dataFilter);
+            }
+            query.setFilter(filter);
+            query.setCoordinateSystem(featureSource.getSchema().getCoordinateReferenceSystem());
+            //            if (properties != null) {
+            //                baseQuery.setProperties(properties);
+            //            }
+            return query;
+        }
+
+        /**
+         * Get the download area and transform to the desired
+         * CoordinateReferenceSystem
+         *
+         * @return The transformed geometry
+         */
+        private Geometry getArea() {
+            CoordinateReferenceSystem targetCRS = featureSource.getInfo().getCRS();
+            Geometry area = request.getBoundary().getMultiPolygon();
+            if (!targetCRS.equals(CRSUtil.OSM_CRS)) {
+                try {
+                    area = crsUtil.fromOsm(area, targetCRS);
+                } catch (CRSException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return area;
+        }
+    }
+
+    public class ProcessTaskImpl extends ProcessTask {
+        @Override
+        public Void call() throws Exception {
+            Thread.currentThread().setName(dataSource.getFeatureType() + " process");
+            try {
+                for (SimpleFeature feature : downloadedFeatures) {
+                    Entity<T> entity = entityMapper.map(feature);
+                    repository.add(entity);
+                    if (Thread.currentThread().isInterrupted()) {
+                        break;
+                    }
+                }
+            }
+            finally {
+                // Clean-up
+                downloadedFeatures.clear();
+            }
+            return null;
+        }
     }
 }

@@ -6,7 +6,7 @@ public interface Index<T> {
 
     public Class<T> getType();
 
-    public IndexKey<T> getIndexFunction();
+    public IndexKey<? super T> getIndexFunction();
 
     //    public List<String> getProperties();
 
@@ -23,4 +23,6 @@ public interface Index<T> {
     public void remove(T entity);
 
     public void clear();
+
+    //    public <T2 extends T> Index<T2> filter(Class<T2> subClass);
 }

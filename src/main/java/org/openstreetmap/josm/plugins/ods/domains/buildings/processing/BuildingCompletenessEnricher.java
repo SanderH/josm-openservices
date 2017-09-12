@@ -4,10 +4,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygonal;
@@ -19,8 +20,8 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class BuildingCompletenessEnricher implements OdsProcessor {
-    private final OdsModule module = OdsProcessor.getModule();
+public class BuildingCompletenessEnricher extends AbstractTask {
+    private final OdsModule module = OpenDataServicesPlugin.getModule();
     List<PreparedPolygon> boundaries = new LinkedList<>();
 
     public BuildingCompletenessEnricher() {
@@ -28,15 +29,16 @@ public class BuildingCompletenessEnricher implements OdsProcessor {
     }
 
     @Override
-    public void run() {
+    public Void call() {
         OpenDataLayerManager layerManager = module.getOpenDataLayerManager();
         Geometry boundary = layerManager.getBoundary();
         for (int i = 0; i < boundary.getNumGeometries(); i++) {
             Polygonal polygonal = (Polygonal) boundary.getGeometryN(i);
             boundaries.add(new PreparedPolygon(polygonal));
         }
-        module.getRepository().getAll(OpenDataBuilding.class)
+        module.getRepository().query(OpenDataBuilding.class)
         .forEach(this::enrich);
+        return null;
     }
 
     public void enrich(Building building) {

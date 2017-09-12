@@ -8,36 +8,50 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Repository {
-    Map<Class<?>, ObjectStore<?>> stores = new HashMap<>();
+import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoUtils;
+import org.openstreetmap.josm.plugins.ods.storage.query.DefaultQueryBuilder;
+import org.openstreetmap.josm.plugins.ods.storage.query.Query;
+import org.openstreetmap.josm.plugins.ods.storage.query.QueryExecutor;
+import org.openstreetmap.josm.plugins.ods.storage.query.QueryExecutorFactory;
+import org.openstreetmap.josm.plugins.ods.storage.query.QueryPredicate;
+import org.openstreetmap.josm.plugins.ods.storage.query.ResultSet;
 
-    public <T> void register(Class<T> type) {
-        register(type, (String[])null);
-    }
+public class Repository {
+    private final ObjectStores objectStores = new ObjectStores();
+    private final QueryExecutors queryExecutors = new QueryExecutors();
 
     public <T> void register(Class<T> type, String ... properties) {
-        UniqueIndex<T> primaryIndex;
-        if (properties != null) {
-            primaryIndex = new UniqueIndexImpl<>(type, properties);
-        }
-        else {
-            primaryIndex = new IdentityIndex<>(type);
-        }
-        if (!stores.containsKey(type)) {
+        if (!objectStores.contains(type)) {
+            UniqueIndex<T> primaryIndex;
+            if (properties.length == 0) {
+                primaryIndex = new IdentityIndex<>(type);
+            }
+            else {
+                primaryIndex = new UniqueIndexImpl<>(type, properties);
+            }
             ObjectStore<T> store = new ObjectStore<>(this, primaryIndex);
-            stores.put(type, store);
+            objectStores.put(type, store);
         }
     }
 
-    @SuppressWarnings("unchecked")
     public <E extends Object> ObjectStore<E> getStore(Class<E> type) {
-        return (ObjectStore<E>) stores.get(type);
+        return objectStores.get(type);
     }
 
     public <E extends Object> void addIndex(Class<E> type, String ... properties) {
-        ObjectStore<E> store = getStore(type);
-        if (store != null) {
-            store.createIndex(properties);
+        boolean valid = true;
+        for (String property : properties) {
+            valid &= PojoUtils.hasAttribute(type, property);
+        }
+        if (valid) {
+            ObjectStore<E> store = getStore(type);
+            if (store != null) {
+                store.createIndex(properties);
+            }
+        }
+        else {
+            Main.warn("Can't create index for class ''{0}'' with these properties: {1}", type, properties);
         }
     }
 
@@ -61,15 +75,14 @@ public class Repository {
         ObjectStore<E> store = getStore(type);
         if (store == null) {
             store = createObjectStore(type);
-            stores.put(type, store);
+            objectStores.put(type, store);
         }
         store.add(entity);
     }
 
-    private <E extends Object> ObjectStore<E> createObjectStore(
+    private synchronized <E extends Object> ObjectStore<E> createObjectStore(
             Class<E> type) {
-        @SuppressWarnings("unchecked")
-        ObjectStore<E> store = (ObjectStore<E>) stores.get(type);
+        ObjectStore<E> store = objectStores.get(type);
         if (store ==null) {
             store = new ObjectStore<>(this, type);
             for (Class<?> superClass : getSuperClasses(type)) {
@@ -103,10 +116,10 @@ public class Repository {
         return (primaryIndex != null ? primaryIndex : new IdentityIndex<>(type));
     }
 
-    public <E> Index<E> getIndex(Class<E> entityClass, String ...properties) {
-        ObjectStore<E> store = getStore(entityClass);
-        return store == null ? null : store.getIndex(properties);
-    }
+    //    public <E> Index<E> getIndex(Class<E> entityClass, String ...properties) {
+    //        ObjectStore<E> store = getStore(entityClass);
+    //        return store == null ? null : store.getIndex(properties);
+    //    }
 
     /**
      * Get the index for the specified indexKey.
@@ -136,29 +149,6 @@ public class Repository {
         return store.getAll(true);
     }
 
-    public Stream<?> getAll() {
-        return getAll(Object.class);
-    }
-    //    public Stream<Object> getAll() {
-    //        @SuppressWarnings("unchecked")
-    //        Stream<? extends Object>[] streams = new Stream[stores.size()];
-    //        int i=0;
-    //        for (ObjectStore<?> store : stores.values()) {
-    //            streams[i] = store.getAll();
-    //        }
-    //        return Stream.of(streams).flatMap(s->s);
-    //    }
-    //            @Override
-    //            public Iterator<Object> iterator() {
-    //                List<Iterator<?>> iterators = new LinkedList<>();
-    //                for (ObjectStore<?> store : stores.values()) {
-    //                    iterators.add(store.getAll(false).iterator());
-    //                }
-    //                return new NestedIterator<>(iterators);
-    //            }
-    //        };
-    //    }
-
     public <T> T getByPrimary(Class<T> type, Object value) {
         ObjectStore<T> store = getStore(type);
         return store.getByPrimary(value);
@@ -182,9 +172,8 @@ public class Repository {
     }
 
     public void clear() {
-        for (ObjectStore<?> store : stores.values()) {
-            store.clear();
-        }
+        objectStores.clear();
+        queryExecutors.clear();
     }
 
     public <T> Stream<T> query(Class<T> type, String property, Object value) {
@@ -197,12 +186,77 @@ public class Repository {
         return index.getAll(value);
     }
 
-    public <T> Stream<T> query(Class<T> type, String[] properties, Object[] values) {
-        ObjectStore<T> store = getStore(type);
-        if (store == null) {
-            return Stream.empty();
+    //    public <T> Stream<T> query(Class<T> type, String[] properties, Object[] values) {
+    //        ObjectStore<T> store = getStore(type);
+    //        if (store == null) {
+    //            return Stream.empty();
+    //        }
+    //        Index<T> index = store.getIndex(properties);
+    //        return index.getAll(values);
+    //    }
+
+    private static class ObjectStores {
+        Map<Class<?>, ObjectStore<?>> stores = new HashMap<>();
+
+        ObjectStores() {}
+
+        public boolean contains(Class<?> type) {
+            return stores.containsKey(type);
         }
-        Index<T> index = store.getIndex(properties);
-        return index.getAll(values);
+
+        public void clear() {
+            stores.values().forEach(s -> s.clear());
+        }
+
+        public <T> void put(Class<T> type, ObjectStore<T> store) {
+            stores.put(type,  store);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> ObjectStore<T> get(Class<T> type) {
+            return (ObjectStore<T>) stores.get(type);
+        }
+    }
+
+    private static class QueryExecutors {
+        Map<Query<?>, QueryExecutor<?>> executors = new HashMap<>();
+
+        QueryExecutors() {}
+
+        public void clear() {
+            executors.clear();
+        }
+
+        public <T> void put(Query<T> query, QueryExecutor<T> executor) {
+            executors.put(query,  executor);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> QueryExecutor<T> get(Query<T> query) {
+            return (QueryExecutor<T>) executors.get(query);
+        }
+    }
+
+    public <T> ResultSet<T> run(Query<T> query) {
+        QueryExecutor<T> executor = queryExecutors.get(query);
+        if (executor == null) {
+            executor = QueryExecutorFactory.create(this, query);
+            queryExecutors.put(query, executor);
+        }
+        return executor.run(new HashMap<String, Object>());
+    }
+
+    public Query<Object> query() {
+        return query(Object.class, Query.TRUE);
+    }
+
+    public <T> Query<T> query(Class<T> type) {
+        return query(type, Query.TRUE);
+    }
+
+    public <T> Query<T> query(Class<T> type, QueryPredicate predicate) {
+        DefaultQueryBuilder<T> builder = new DefaultQueryBuilder<>(this, type);
+        builder.setFilter(predicate);
+        return builder.getQuery();
     }
 }

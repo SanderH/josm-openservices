@@ -1,11 +1,16 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
+import org.openstreetmap.josm.plugins.ods.io.Task;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 
@@ -21,14 +26,21 @@ import org.openstreetmap.josm.plugins.ods.storage.Repository;
  * @author gertjan
  *
  */
-public class BuildingUnitToBuildingConnector implements OdsProcessor {
-    private final OdsModule module;
+public class BuildingUnitToBuildingConnector extends AbstractTask {
+    private static List<Class<? extends Task>> dependencies =
+            Arrays.asList();
+    private final OdsModule module = OpenDataServicesPlugin.getModule();
     private Consumer<BuildingUnit> unmatchedBuildingUnitHandler;
 
     public BuildingUnitToBuildingConnector() {
         super();
-        this.module = OdsProcessor.getModule();
     }
+
+    @Override
+    public Collection<Class<? extends Task>> getDependencies() {
+        return dependencies;
+    }
+
 
     public void setUnmatchedBuildingUnitHandler(
             Consumer<BuildingUnit> unmatchedBuildingUnitHandler) {
@@ -36,9 +48,10 @@ public class BuildingUnitToBuildingConnector implements OdsProcessor {
     }
 
     @Override
-    public void run() {
-        module.getRepository().getAll(BuildingUnit.class)
+    public Void call() {
+        module.getRepository().query(BuildingUnit.class)
         .forEach(this::matchBuildingUnitToBuilding);
+        return null;
     }
 
     /**

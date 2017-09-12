@@ -1,14 +1,20 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-public class MatcherManager {
-    private final Set<Matcher> matchers = new HashSet<>();
+public class MatchingProcessor {
+    private final List<Matcher> matchers = new ArrayList<>();
 
-    public MatcherManager(OdsModule module) {
+    public MatchingProcessor(OdsModule module) {
         reset();
+    }
+
+    public void run() {
+        for (Matcher matcher : getMatchers()) {
+            matcher.run();
+        }
     }
 
     public void reset() {

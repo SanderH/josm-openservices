@@ -4,10 +4,11 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.io.OdsProcessor;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
@@ -25,8 +26,8 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public class OdAddressToBuildingConnector implements OdsProcessor {
-    private final OdsModule module = OdsProcessor.getModule();
+public class OdAddressToBuildingConnector extends AbstractTask {
+    private final OdsModule module = OpenDataServicesPlugin.getModule();
     private Consumer<AddressNode> unmatchedAddressNodeHandler = (t -> {/**/});
 
     public OdAddressToBuildingConnector() {
@@ -39,9 +40,10 @@ public class OdAddressToBuildingConnector implements OdsProcessor {
     }
 
     @Override
-    public void run() {
-        module.getRepository().getAll(OpenDataAddressNode.class)
+    public Void call() {
+        module.getRepository().query(OpenDataAddressNode.class)
         .forEach(this::match);
+        return null;
     }
 
     /**
@@ -49,14 +51,14 @@ public class OdAddressToBuildingConnector implements OdsProcessor {
      *
      * @param addressNode
      */
-    public void match(AddressNode addressNode) {
+    public void match(OpenDataAddressNode addressNode) {
         Repository repository = module.getRepository();
         if (addressNode.getBuilding() == null) {
             Geometry geometry = addressNode.getGeometry();
             if (geometry != null && repository instanceof GeoRepository) {
-                Iterator<Building> matchedbuildings = ((GeoRepository)repository).queryIntersection(Building.class, "geometry", geometry).iterator();
+                Iterator<OpenDataBuilding> matchedbuildings = ((GeoRepository)repository).queryIntersection(OpenDataBuilding.class, "geometry", geometry).iterator();
                 if (matchedbuildings.hasNext()) {
-                    Building building = matchedbuildings.next();
+                    OpenDataBuilding building = matchedbuildings.next();
                     addressNode.addBuilding(building);
                     building.getAddressNodes().add(addressNode);
                 }

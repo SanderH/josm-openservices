@@ -6,13 +6,13 @@ import java.lang.reflect.Method;
 import org.openstreetmap.josm.plugins.ods.properties.PropertyHandler;
 
 public class PojoPropertyHandlerFactory {
-    
-    public <T1, T2> PropertyHandler<T1, T2> createPropertyHandler(Class<T1> objectClass, Class<T2> attrClass, String name) {
+
+    public static <T1, T2> PropertyHandler<T1, T2> createPropertyHandler(Class<T1> objectClass, Class<T2> attrClass, String name) {
         PropertyHandler<T1, T2> result = new PojoPropertyHandler<>(objectClass, attrClass, name);
         return result;
     }
 
-    public <T1> PropertyHandler<T1, ?> createPropertyHandler(Class<T1> objType, String attributeName) {
+    public static <T1> PropertyHandler<T1, ?> createPropertyHandler(Class<T1> objType, String attributeName) {
         Method getter = PojoUtils.getAttributeGetter(objType, attributeName);
         if (getter != null) {
             Class<?> attrType = PojoUtils.getNonPrimitiveClass(getter.getReturnType());
@@ -21,17 +21,17 @@ public class PojoPropertyHandlerFactory {
         return null;
     }
 
-    public class PojoPropertyHandler<T1, T2> implements PropertyHandler<T1, T2> {
+    public static class PojoPropertyHandler<T1, T2> implements PropertyHandler<T1, T2> {
         private final Class<T2> attrType;
-        private Method setter;
-        private Method getter;
-        
+        private final Method setter;
+        private final Method getter;
+
         public PojoPropertyHandler(Class<T1> objType, Class<T2> attrType, String name) {
             super();
             this.attrType = attrType;
             getter = PojoUtils.getAttributeGetter(objType, name, attrType);
             setter = PojoUtils.getAttributeSetter(objType, name, attrType);
-       }
+        }
 
         @Override
         public Class<T2> getType() {

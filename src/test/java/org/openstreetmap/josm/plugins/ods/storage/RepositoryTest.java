@@ -2,6 +2,8 @@ package org.openstreetmap.josm.plugins.ods.storage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
 
 import java.util.Set;
 
@@ -9,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openstreetmap.josm.plugins.ods.storage.TestClasses.Bar;
 import org.openstreetmap.josm.plugins.ods.storage.TestClasses.Foo;
+import org.openstreetmap.josm.plugins.ods.storage.query.Query;
 
 public class RepositoryTest {
     private Repository repo;
@@ -51,7 +54,8 @@ public class RepositoryTest {
         repo.add(foo);
         repo.add(bar);
         Set<Object> set = new IdentitySet<>();
-        repo.getAll().forEach(f->{set.add(f);});
+        Query<Object> query = repo.query();
+        repo.run(query).stream().forEach(f->{set.add(f);});
         assertEquals(2, set.size());
         assertTrue(set.contains(foo));
         assertTrue(set.contains(bar));
@@ -63,7 +67,7 @@ public class RepositoryTest {
         repo.add(foo);
         repo.add(bar);
         Set<Foo> set = new IdentitySet<>();
-        repo.getAll(Foo.class).forEach(f->{set.add(f);});
+        repo.query(Foo.class).forEach(f->{set.add(f);});
         assertEquals(2, set.size());
         assertTrue(set.contains(foo));
         assertTrue(set.contains(bar));
@@ -75,7 +79,7 @@ public class RepositoryTest {
         repo.add(foo);
         repo.add(bar);
         Set<Object> set = new IdentitySet<>();
-        repo.getAll(Object.class).forEach(f->{set.add(f);});
+        repo.query(Object.class).forEach(f->{set.add(f);});
         assertEquals(2, set.size());
         assertTrue(set.contains(foo));
         assertTrue(set.contains(bar));
@@ -87,8 +91,9 @@ public class RepositoryTest {
         repo.addIndex(Foo.class, "s");
         repo.add(foo);
         repo.add(bar);
-        Set<Object> set = new IdentitySet<>();
-        repo.query(Foo.class, "s", "test").forEach(f->{set.add(f);});
+        Set<Foo> set = new IdentitySet<>();
+        Query<Foo> query = repo.query(Foo.class, EQUALS(ATTR("s"), "test"));
+        repo.run(query).stream().forEach(f->{set.add(f);});
         assertEquals(2, set.size());
         assertTrue(set.contains(foo));
         assertTrue(set.contains(bar));

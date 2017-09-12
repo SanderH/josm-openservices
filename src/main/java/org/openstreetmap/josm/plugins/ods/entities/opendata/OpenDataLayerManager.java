@@ -13,12 +13,12 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * imported from an open data source.
  * As opposed to the OsmDataLayerManager that manages data from
  * the OSM server.
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public class OpenDataLayerManager extends AbstractLayerManager {
-    private ManagedNodeSet managedNodes = new ManagedNodeSet(this);
+    private final ManagedNodeSet managedNodes = new ManagedNodeSet(this);
     private Geometry boundary;
 
     public OpenDataLayerManager(String name) {
@@ -48,5 +48,11 @@ public class OpenDataLayerManager extends AbstractLayerManager {
         } else {
             this.boundary = this.boundary.union(bounds);
         }
+    }
+
+    @Override
+    public void deActivate() {
+        super.deActivate();
+        managedNodes.reset();
     }
 }

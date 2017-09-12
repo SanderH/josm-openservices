@@ -17,11 +17,11 @@ public interface ManagedPrimitive {
     public void setPrimitive(OsmPrimitive primitive);
     public OsmPrimitive getPrimitive();
     public Collection<ManagedPrimitive> getReferrers();
-    public <E extends Entity> void setEntity(E entity);
+    public <E extends Entity<?>> void setEntity(E entity);
     public boolean isIncomplete();
     public boolean contains(ManagedNode mNode);
 
-    public Entity getEntity();
+    public Entity<?> getEntity();
 
     /**
      * Create the OsmPrimitive(s) in the OSM DataSet. And add the reference to the newly

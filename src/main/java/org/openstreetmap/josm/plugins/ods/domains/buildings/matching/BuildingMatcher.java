@@ -43,7 +43,7 @@ public class BuildingMatcher implements Matcher {
 
     private void matchById() {
         repository = module.getRepository();
-        repository.getAll(OpenDataBuilding.class).forEach(odBuilding -> {
+        repository.query(OpenDataBuilding.class).forEach(odBuilding -> {
             Od2OsmMatch<BuildingEntityType> match = odBuilding.getMatch();
             // TODO Handle duplicate matches, maybe use a validator.
             if (match != null) return;

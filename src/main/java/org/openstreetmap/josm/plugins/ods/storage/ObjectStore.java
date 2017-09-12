@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.storage;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,16 +11,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.openstreetmap.josm.plugins.ods.storage.query.ResultSet;
+import org.openstreetmap.josm.plugins.ods.storage.query.ResultSetImpl;
 import org.openstreetmap.josm.plugins.ods.util.ChainedIterator;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-class ObjectStore<T> {
+public class ObjectStore<T> {
     private final Repository repository;
     private final Class<T> type;
     private final UniqueIndex<T> primaryIndex;
-    private final Map<IndexKey<T>, Index<T>> indexes = new HashMap<>();
+    private final Map<IndexKey<? super T>, Index<T>> indexes = new HashMap<>();
     private final Set<ObjectStore<? super T>> superStores = new HashSet<>();
     private final Set<ObjectStore<? extends T>> childStores = new HashSet<>();
     private Geometry boundary;
@@ -150,9 +152,6 @@ class ObjectStore<T> {
         for (Index<T> index : indexes.values()) {
             index.insert(object);
         }
-        for (ObjectStore<? super T> superStore : superStores) {
-            superStore.addToIndex(object);
-        }
     }
 
     public Geometry getBoundary() {
@@ -173,14 +172,6 @@ class ObjectStore<T> {
     public UniqueIndex<T> getPrimaryIndex() {
         return primaryIndex;
     }
-
-    //    public Iterator<T> iterator() {
-    //        return getPrimaryIndex().iterator();
-    //    }
-    //
-    //    public Stream<T> stream() {
-    //        return getPrimaryIndex().stream();
-    //    }
 
     public boolean contains(T entity) {
         return getPrimaryIndex().contains(entity);
@@ -216,17 +207,12 @@ class ObjectStore<T> {
         boundary = null;
     }
 
-    public Index<T> getIndex(String ... properties) {
-        return indexes.get(Arrays.asList(properties));
-    }
-
     private void createSuperStores() {
         for (Class<? super T> superClass : Repository.getSuperClasses(type)) {
             ObjectStore<? super T> superStore = repository.getStore(superClass);
             if (superStore == null) {
-                superStore = new ObjectStore<>(repository, superClass);
-                repository.stores.put(superClass, superStore);
-                addSuperStore(superStore);
+                repository.register(superClass);
+                addSuperStore(repository.getStore(superClass));
             }
         }
     }
@@ -248,5 +234,16 @@ class ObjectStore<T> {
             }
         }
         return (primary != null ? primary : new IdentityIndex<>(type2));
+    }
+
+    public ResultSet<T> getAllResults(boolean withChildClasses) {
+        List<UniqueIndex<? extends T>> indexes1 = new ArrayList<>(childStores.size() + 1);
+        indexes1.add(primaryIndex);
+        if (withChildClasses) {
+            childStores.forEach(childStore -> {
+                indexes1.add(childStore.getPrimaryIndex());
+            });
+        }
+        return new ResultSetImpl<>(indexes1);
     }
 }
