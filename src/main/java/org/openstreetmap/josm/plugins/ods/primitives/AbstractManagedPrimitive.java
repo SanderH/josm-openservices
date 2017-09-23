@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openstreetmap.josm.command.ChangePropertyCommand;
@@ -12,7 +13,6 @@ import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.NodeData;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.EmptyCommand;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -89,13 +89,16 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     }
 
     @Override
-    public Command putAll(Map<String, String> tags) {
+    public Optional<Command> putAll(Map<String, String> tags) {
         OsmPrimitive osm = getPrimitive();
-
-        if (osm != null) {
-            return new ChangePropertyCommand(Collections.singleton(osm), tags);
+        if (osm == null) {
+            return Optional.empty();
         }
-        return null;
+        if (osm.getDataSet() != null) {
+            return Optional.of(new ChangePropertyCommand(Collections.singleton(osm), tags));
+        }
+        osm.setKeys(tags);
+        return Optional.empty();
     }
 
     @Override
@@ -153,16 +156,19 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     }
 
     @Override
-    public Command put(String key, String value) {
+    public Optional<Command> put(String key, String value) {
         OsmPrimitive osm = getPrimitive();
         if (osm == null) {
-            return new EmptyCommand(layerManager.getOsmDataLayer().data);
+            return Optional.empty();
         }
         if (key.startsWith(ODS.KEY.BASE)) {
             osm.put(key, value);
-            return new EmptyCommand(layerManager.getOsmDataLayer().data);
+            return Optional.empty();
         }
-        return new ChangePropertyCommand(osm, key, value);
+        if (osm.getDataSet() != null) {
+            return Optional.of(new ChangePropertyCommand(osm, key, value));
+        }
+        return Optional.empty();
     }
 
     @Override

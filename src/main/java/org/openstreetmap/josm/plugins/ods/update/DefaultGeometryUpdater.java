@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.openstreetmap.josm.Main;
@@ -23,37 +22,33 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.matching.StraightMatch;
+import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
-import org.openstreetmap.josm.plugins.ods.primitives.SimpleManagedPolygon;
 
 public class DefaultGeometryUpdater implements GeometryUpdater {
     final OsmDataLayer osmDataLayer;
-    private final Predicate<StraightMatch<?>> condition;
 
-    public DefaultGeometryUpdater(OdsModule module,
-            Predicate<StraightMatch<?>> condition) {
+    public DefaultGeometryUpdater(OdsModule module) {
         this.osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        this.condition = condition;
     }
 
     @Override
-    public UpdateResult run(List<StraightMatch<?>> allMatches) {
-        List<StraightMatch<?>> matches = allMatches.stream().filter(condition)
+    public UpdateResult run(List<Match> allMatches) {
+        List<Match> matches = allMatches.stream().filter(m -> m.getGeometryDifference() != null)
                 .collect(Collectors.toList());
         Updater updater = new Updater(matches);
         return updater.run();
     }
 
     private class Updater {
-        private final List<StraightMatch<?>> matches;
+        private final List<Match> matches;
         private final Set<Node> existingNodes = new HashSet<>();
         private final Set<Node> newNodes = new HashSet<>();
         private final Map<Node, Node> nodeMap = new HashMap<>();
         private final Set<Entity<?>> updatedEntities = new HashSet<>();
         private final Set<Way> updatedWays = new HashSet<>();
 
-        public Updater(List<StraightMatch<?>> matches) {
+        public Updater(List<Match> matches) {
             this.matches = matches;
         }
 
@@ -66,20 +61,20 @@ public class DefaultGeometryUpdater implements GeometryUpdater {
         }
 
         private void collectNodes() {
-            for (StraightMatch<?> match : this.matches) {
-                SimpleManagedPolygon polygon = (SimpleManagedPolygon) match
-                        .getOsmEntity().getPrimitive();
-                Iterator<Node> it = polygon.getNodeIterator();
-                while (it.hasNext()) {
-                    existingNodes.add(it.next());
-                }
-                polygon = (SimpleManagedPolygon) match.getOpenDataEntity()
-                        .getPrimitive();
-                it = polygon.getNodeIterator();
-                while (it.hasNext()) {
-                    newNodes.add(it.next());
-                }
-            }
+            //            for (Match match : this.matches) {
+            //                SimpleManagedPolygon polygon = (SimpleManagedPolygon) match
+            //                        .getOsmEntity().getPrimitive();
+            //                Iterator<Node> it = polygon.getNodeIterator();
+            //                while (it.hasNext()) {
+            //                    existingNodes.add(it.next());
+            //                }
+            //                polygon = (SimpleManagedPolygon) match.getOpenDataEntity()
+            //                        .getPrimitive();
+            //                it = polygon.getNodeIterator();
+            //                while (it.hasNext()) {
+            //                    newNodes.add(it.next());
+            //                }
+            //            }
         }
 
         private void matchNodes() {
@@ -99,9 +94,9 @@ public class DefaultGeometryUpdater implements GeometryUpdater {
         }
 
         private void updateGeometries() {
-            for (StraightMatch<?> match : matches) {
-                updateGeometry(match.getOsmEntity(), match.getOpenDataEntity());
-            }
+            //            for (Match match : matches) {
+            //                updateGeometry(match.getOsmEntity(), match.getOpenDataEntity());
+            //            }
         }
 
         private void cleanUp() {

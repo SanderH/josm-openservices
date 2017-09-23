@@ -1,12 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.storage;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoUtils;
 import org.openstreetmap.josm.plugins.ods.storage.query.DefaultQueryBuilder;
@@ -133,26 +130,26 @@ public class Repository {
         return store == null ? null : store.getIndex(indexKey);
     }
 
-    public <E> Iterator<? extends E> iterator(Class<E> entityClass) {
-        ObjectStore<E> store = getStore(entityClass);
-        if (store == null) {
-            return Collections.emptyIterator();
-        }
-        return store.iterator(true);
-    }
-
-    public <E> Stream<? extends E> getAll(Class<E> entityClass) {
-        ObjectStore<E> store = getStore(entityClass);
-        if (store == null) {
-            return Stream.empty();
-        }
-        return store.getAll(true);
-    }
-
-    public <T> T getByPrimary(Class<T> type, Object value) {
-        ObjectStore<T> store = getStore(type);
-        return store.getByPrimary(value);
-    }
+    //    public <E> Iterator<? extends E> iterator(Class<E> entityClass) {
+    //        ObjectStore<E> store = getStore(entityClass);
+    //        if (store == null) {
+    //            return Collections.emptyIterator();
+    //        }
+    //        return store.iterator(true);
+    //    }
+    //
+    //    public <E> Stream<? extends E> getAll(Class<E> entityClass) {
+    //        ObjectStore<E> store = getStore(entityClass);
+    //        if (store == null) {
+    //            return Stream.empty();
+    //        }
+    //        return store.getAll(true);
+    //    }
+    //
+    //    public <T> T getByPrimary(Class<T> type, Object value) {
+    //        ObjectStore<T> store = getStore(type);
+    //        return store.getByPrimary(value);
+    //    }
 
     static <T> Set<Class<? super T>> getSuperClasses(Class<?> type) {
         Set<Class<? super T>> superClasses = new HashSet<>();
@@ -176,15 +173,15 @@ public class Repository {
         queryExecutors.clear();
     }
 
-    public <T> Stream<T> query(Class<T> type, String property, Object value) {
-        ObjectStore<T> store = getStore(type);
-        if (store == null) {
-            return Stream.empty();
-        }
-        IndexKey<T> indexKey = IndexKeyFactory.createPropertyIndexKey(type, property);
-        Index<T> index = store.getIndex(indexKey);
-        return index.getAll(value);
-    }
+    //    public <T> Stream<T> query(Class<T> type, String property, Object value) {
+    //        ObjectStore<T> store = getStore(type);
+    //        if (store == null) {
+    //            return Stream.empty();
+    //        }
+    //        IndexKey<T> indexKey = IndexKeyFactory.createPropertyIndexKey(type, property);
+    //        Index<T> index = store.getIndex(indexKey);
+    //        return index.getAll(value);
+    //    }
 
     //    public <T> Stream<T> query(Class<T> type, String[] properties, Object[] values) {
     //        ObjectStore<T> store = getStore(type);

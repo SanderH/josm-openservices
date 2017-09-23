@@ -1,28 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeEntityType;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.matching.GeometryDifference;
-import org.openstreetmap.josm.plugins.ods.matching.StatusDifference;
-import org.openstreetmap.josm.plugins.ods.matching.StraightMatch;
-import org.openstreetmap.josm.plugins.ods.matching.TagDifference;
+import org.openstreetmap.josm.tools.Logging;
 
 public class AddressableMatcher implements Matcher {
-    private final SameBuildingAddressableMatcher byBuildingMatcher;
+    //    private final SameBuildingAddressableMatcher byBuildingMatcher;
     private final PcHnrAddressableMatcher pcHnrMatcher;
 
     public AddressableMatcher(OdsModule module) {
         super();
         // TODO Use (DI?) container to retrieve the fields.
-        this.byBuildingMatcher = new SameBuildingAddressableMatcher(module);
+        //        this.byBuildingMatcher = new SameBuildingAddressableMatcher(module);
         this.pcHnrMatcher = new PcHnrAddressableMatcher(module);
     }
 
@@ -33,8 +23,14 @@ public class AddressableMatcher implements Matcher {
 
     @Override
     public void run() {
-        byBuildingMatcher.run();
-        pcHnrMatcher.run();
+        //        byBuildingMatcher.run();
+        try {
+            pcHnrMatcher.run();
+        }
+        catch (Exception e) {
+            Logging.error(e);
+            throw e;
+        }
     }
 
     //    public void analyze() {
@@ -55,38 +51,36 @@ public class AddressableMatcher implements Matcher {
     //    }
     //
 
-    public static void analizeGeometry(StraightMatch<AddressNodeEntityType> match) {
-        OsmAddressNode osmAddressNode = (OsmAddressNode) match.getOsmEntity();
-        OpenDataAddressNode odAddressNode = (OpenDataAddressNode) match.getOpenDataEntity();
-        Building odBuilding = odAddressNode.getBuilding();
-        Building osmBuilding = osmAddressNode.getBuilding();
-        boolean different = true;
-        if (osmBuilding != null && odBuilding != null) {
-            if (Objects.equals(osmBuilding.getReferenceId(), odBuilding.getReferenceId())) {
-                different = false;
-            }
-        }
-        if (different) {
-            match.setGeometryDifference(new GeometryDifference(match));
-        }
-    }
-
-    private static void analyzeStatus(StraightMatch<AddressNodeEntityType> match) {
-        if (Objects.equals(match.getOpenDataEntity().getStatus(), match.getOsmEntity().getStatus())) {
-            return;
-        }
-        match.setStatusDifference(new StatusDifference(match));
-    }
-
-    private static void analyzeAttributes(StraightMatch<AddressNodeEntityType> match) {
-        OsmAddressNode osmAddressNode = (OsmAddressNode) match.getOsmEntity();
-        OpenDataAddressNode odAddressNode = (OpenDataAddressNode) match.getOpenDataEntity();
-        List<String> differeningKeys = AddressTagMatcher.compare(odAddressNode.getAddress(),
-                osmAddressNode.getAddress());
-        for (String key : differeningKeys) {
-            match.addAttributeDifference(new TagDifference(match, key));
-        }
-    }
+    //    public static void analizeGeometry(StraightMatch<OpenDataAddressNode, OsmAddressNode> match) {
+    //        Building odBuilding = match.getOdEntity().getBuilding();
+    //        Building osmBuilding = match.getOsmEntity().getBuilding();
+    //        boolean different = true;
+    //        if (osmBuilding != null && odBuilding != null) {
+    //            if (Objects.equals(osmBuilding.getReferenceId(), odBuilding.getReferenceId())) {
+    //                different = false;
+    //            }
+    //        }
+    //        if (different) {
+    //            match.setGeometryDifference(new GeometryDifference(match));
+    //        }
+    //    }
+    //
+    //    private static void analyzeStatus(StraightMatch<OpenDataAddressNode, OsmAddressNode> match) {
+    //        if (Objects.equals(match.getOdEntity().getStatus(), match.getOsmEntity().getStatus())) {
+    //            return;
+    //        }
+    //        match.setStatusDifference(new StatusDifference(match));
+    //    }
+    //
+    //    private static void analyzeAttributes(StraightMatch<OpenDataAddressNode, OsmAddressNode> match) {
+    //        OsmAddressNode osmAddressNode = match.getOsmEntity();
+    //        OpenDataAddressNode odAddressNode = match.getOdEntity();
+    //        List<String> differeningKeys = AddressTagMatcher.compare(odAddressNode.getAddress(),
+    //                osmAddressNode.getAddress());
+    //        for (String key : differeningKeys) {
+    //            match.addAttributeDifference(new TagDifference(match, key));
+    //        }
+    //    }
 
     @Override
     public void reset() {

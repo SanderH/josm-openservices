@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.storage;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class ObjectStore<T> {
     private final Set<ObjectStore<? super T>> superStores = new HashSet<>();
     private final Set<ObjectStore<? extends T>> childStores = new HashSet<>();
     private Geometry boundary;
+    private boolean empty = true;
 
     /**
      * Create a new write-only entity store.
@@ -50,6 +52,10 @@ public class ObjectStore<T> {
         this(repository, createIndex(repository, type, properties));
     }
 
+    public boolean isEmpty() {
+        return empty;
+    }
+
     private static <T2> UniqueIndex<T2> createIndex(Repository pRepository, Class<T2> pType, String[] properties) {
         if (properties.length == 0) {
             return createPrimaryIndex(pRepository, pType);
@@ -69,6 +75,10 @@ public class ObjectStore<T> {
 
     public boolean isInterface() {
         return type.isInterface();
+    }
+
+    public boolean isAbstract() {
+        return Modifier.isAbstract(type.getModifiers());
     }
 
     public Iterator<? extends T> iterator() {
@@ -93,16 +103,20 @@ public class ObjectStore<T> {
 
     public Stream<? extends T> getAll(boolean withChildClasses) {
         if (!withChildClasses || childStores.isEmpty()) {
-            return primaryIndex.stream();
+            return isEmpty() ? Stream.empty() : primaryIndex.stream();
+        }
+        List<Stream<? extends T>> streams = new ArrayList<>(childStores.size() + 1);
+        if (!isEmpty()) {
+            streams.add(primaryIndex.stream());
+        }
+        for (ObjectStore<? extends T> store : childStores) {
+            if (!store.isEmpty()) {
+                streams.add(store.getAll(withChildClasses));
+            }
         }
         @SuppressWarnings("unchecked")
-        Stream<? extends T>[] streams = new Stream[childStores.size() + 1];
-        streams[0] = primaryIndex.stream();
-        int i=1;
-        for (ObjectStore<? extends T> store : childStores) {
-            streams[i++] = store.getAll(withChildClasses);
-        }
-        return Stream.of(streams).flatMap(s->s);
+        Stream<? extends T>[] arr = (Stream<? extends T>[])streams.toArray();
+        return Stream.of(arr).flatMap(s->s);
     }
 
     public void addSuperStore(ObjectStore<? super T> store) {
@@ -145,6 +159,7 @@ public class ObjectStore<T> {
 
     public void add(T object) {
         primaryIndex.insert(object);
+        this.empty = false;
         addToIndex(object);
     }
 
@@ -204,6 +219,7 @@ public class ObjectStore<T> {
         for (Index<?> index : indexes.values()) {
             index.clear();
         }
+        empty = true;
         boundary = null;
     }
 
@@ -212,8 +228,9 @@ public class ObjectStore<T> {
             ObjectStore<? super T> superStore = repository.getStore(superClass);
             if (superStore == null) {
                 repository.register(superClass);
-                addSuperStore(repository.getStore(superClass));
+                superStore = repository.getStore(superClass);
             }
+            addSuperStore(repository.getStore(superClass));
         }
     }
 
@@ -245,5 +262,10 @@ public class ObjectStore<T> {
             });
         }
         return new ResultSetImpl<>(indexes1);
+    }
+
+    @Override
+    public String toString() {
+        return "Object store for " + type.getSimpleName();
     }
 }

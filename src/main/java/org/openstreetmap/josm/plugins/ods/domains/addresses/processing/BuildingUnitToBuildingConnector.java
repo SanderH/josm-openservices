@@ -1,5 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +30,7 @@ import org.openstreetmap.josm.plugins.ods.storage.Repository;
  *
  */
 public class BuildingUnitToBuildingConnector extends AbstractTask {
-    private static List<Class<? extends Task>> dependencies =
+    private static final List<Class<? extends Task>> DEPENDENCIES =
             Arrays.asList();
     private final OdsModule module = OpenDataServicesPlugin.getModule();
     private Consumer<BuildingUnit> unmatchedBuildingUnitHandler;
@@ -38,7 +41,7 @@ public class BuildingUnitToBuildingConnector extends AbstractTask {
 
     @Override
     public Collection<Class<? extends Task>> getDependencies() {
-        return dependencies;
+        return DEPENDENCIES;
     }
 
 
@@ -64,7 +67,7 @@ public class BuildingUnitToBuildingConnector extends AbstractTask {
         if (buildingUnit.getBuilding() == null) {
             Object buildingRef = buildingUnit.getBuildingRef();
             if (buildingRef != null) {
-                repository.query(OpenDataBuilding.class, "referenceId", buildingRef)
+                repository.query(OpenDataBuilding.class, EQUALS(buildingRef, ATTR("referenceId")))
                 .forEach(building -> {
                     buildingUnit.setBuilding(building);
                     building.addBuildingUnit(buildingUnit);

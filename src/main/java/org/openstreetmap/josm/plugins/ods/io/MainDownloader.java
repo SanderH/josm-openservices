@@ -2,13 +2,10 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
@@ -31,7 +28,6 @@ import org.openstreetmap.josm.tools.Logging;
 public class MainDownloader {
     private static final int NTHREADS = 10;
     private boolean initialized = false;
-    private boolean cancelled = false;
     private final OdsModule module;
     private OpenDataLayerDownloader openDataLayerDownloader;
     private OsmLayerDownloader osmLayerDownloader;
@@ -40,6 +36,8 @@ public class MainDownloader {
 
     private final ExecutorService executor;
     private final TaskRunner prepareTaskRunner = new TaskRunner();
+    private final TaskRunner downloadTaskRunner = new TaskRunner();
+    private final TaskRunner processTaskRunner = new TaskRunner();
 
     //    private Status status = new Status();
 
@@ -91,19 +89,24 @@ public class MainDownloader {
 
     public void run(ProgressMonitor pm, DownloadRequest request) throws OdsException, InterruptedException {
         pm.indeterminateSubTask(I18n.tr("Setup"));
-        cancelled = false;
         try {
             setup(request);
             pm.indeterminateSubTask(I18n.tr("Preparing"));
-            prepare();
-            if (cancelled) return;
+            TaskStatus status = prepare();
+            if (status.isCancelled() || status.isFailed()) {
+                return;
+            }
             pm.indeterminateSubTask(I18n.tr("Downloading"));
             download();
-            if (cancelled) return;
+            if (status.isCancelled() || status.isFailed()) {
+                return;
+            }
             pm.indeterminateSubTask(I18n.tr("Processing data"));
             DownloadResponse response = new DownloadResponse(request);
             process(response);
-            if (cancelled) return;
+            if (status.isCancelled() || status.isFailed()) {
+                return;
+            }
 
             Bounds bounds = request.getBoundary().getBounds();
             computeBboxAndCenterScale(bounds);
@@ -144,66 +147,40 @@ public class MainDownloader {
         }
     }
 
-    private void prepare() throws CancellationException {
-        List<PrepareTask> tasks = new LinkedList<>();
-        for (LayerDownloader downloader : enabledDownloaders) {
-            tasks.addAll(downloader.prepare());
-        }
+    private TaskStatus prepare() throws CancellationException {
+        List<Task> tasks = LayerDownloader.getPrepareTasks(enabledDownloaders);
         prepareTaskRunner.runTasks(tasks, false);
+        return prepareTaskRunner.getStatus();
     }
 
-    private void download() throws OdsException, CancellationException {
-        runTasks(Downloader.getDownloadTasks(enabledDownloaders));
+    private TaskStatus download() throws CancellationException {
+        List<Task> tasks = LayerDownloader.getDownloadTasks(enabledDownloaders);
+        downloadTaskRunner.runTasks(tasks, false);
+        return downloadTaskRunner.getStatus();
     }
 
     /**
      * Run the processing tasks.
-     * @throws CancellationException
      * @throws ExecutionException
      * @throws InterruptedException
      *
      */
-    protected void process(DownloadResponse response) throws OdsException, CancellationException, InterruptedException {
-        runTasks(Downloader.getProcessTasks(enabledDownloaders));
+    private TaskStatus process(DownloadResponse response) throws CancellationException, InterruptedException {
+        List<Task> tasks = LayerDownloader.getProcessTasks(enabledDownloaders);
+        processTaskRunner.runTasks(tasks, false);
+        TaskStatus status = processTaskRunner.getStatus();
+        if (status.isCancelled() || status.isFailed()) {
+            return status;
+        }
         getModule().getMatchingProcessor().run();
         updateMatchTags();
+        return status;
     }
 
     private void updateMatchTags() {
         getModule().getRepository().query(OdEntity.class).forEach(entity -> {
             entity.updateMatchTags();
         });
-    }
-
-    private void runTasks(List<Callable<Void>> tasks) throws OdsException, CancellationException {
-        try {
-            List<Future<Void>> futures = executor.invokeAll(tasks, 10, TimeUnit.MINUTES);
-            List<String> messages = new LinkedList<>();
-            for (Future<Void> future : futures) {
-                try {
-                    future.get();
-                } catch (ExecutionException executionException) {
-                    Exception e = (Exception) executionException.getCause();
-                    if (e instanceof NullPointerException) {
-                        messages.add(I18n.tr("A null pointer exception occurred. This is allways a programming error. " +
-                                "Please look at the log file for more details"));
-                    }
-                    else {
-                        messages.add(e.getMessage());
-                    }
-                    Logging.error(e);
-                }
-            }
-            if (!messages.isEmpty()) {
-                throw new OdsException(String.join("\n",  messages));
-            }
-        } catch (InterruptedException | CancellationException e) {
-            cancel();
-            return;
-        } catch (Exception e) {
-            // TODO Do some logging
-            throw e;
-        }
     }
 
     protected static void computeBboxAndCenterScale(Bounds bounds) {
@@ -214,11 +191,9 @@ public class MainDownloader {
     }
 
     public void cancel() {
-        cancelled = true;
         for (LayerDownloader downloader : enabledDownloaders) {
             downloader.cancel();
         }
         executor.shutdownNow();
     }
-
 }

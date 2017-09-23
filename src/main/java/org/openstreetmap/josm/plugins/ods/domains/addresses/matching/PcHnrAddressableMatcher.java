@@ -1,19 +1,25 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
-import org.openstreetmap.josm.plugins.ods.storage.Index;
+import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
-import org.openstreetmap.josm.tools.Logging;
+import org.openstreetmap.josm.plugins.ods.storage.query.Query;
 
 public class PcHnrAddressableMatcher implements Matcher {
+    private final AddressableMatchFactory matchFactory = new BagAddressableMatchFactory();
     private final OdsModule module;
-
-    //    private final Map<Object, Match<Addressable>> addressableMatches = new HashMap<>();
 
     public PcHnrAddressableMatcher(OdsModule module) {
         super();
@@ -25,48 +31,44 @@ public class PcHnrAddressableMatcher implements Matcher {
         // Empty implementation. No action required
     }
 
-    //
-    //    @Override
-    //    public Class<Addressable> getType() {
-    //        return Addressable.class;
-    //    }
-    //
     @Override
     public void run() {
         Repository repository = module.getRepository();
-        Index<AddressNode> pcHnrIndex = repository.getIndex(AddressNode.PC_FULL_HNR_INDEX_KEY);
-        //        odRepository.getAll(Addressable.class)
-        //        .filter(a -> a.getMatch(Addressable.class) == null)
-        //        .filter(a -> a.getAddress() != null)
-        //        .forEach(a -> findMatch(pcHnrIndex, a));
-        repository.iterator(OpenDataAddressNode.class).forEachRemaining(addressNode -> {
-            //            if (addressNode.getMatch() == null) {
-            //                findMatch(pcHnrIndex, addressNode);
-            //            }
+        repository.query(OpenDataAddressNode.class).forEach(odAddressNode -> {
+            String postcode = odAddressNode.getAddress().getPostcode();
+            String fullHouseNumber = odAddressNode.getAddress().getFullHouseNumber();
+            if (postcode != null && fullHouseNumber != null) {
+                Query<OsmAddressNode> query = repository.query(OsmAddressNode.class,
+                        EQUALS(ATTR("address.postcode"), postcode).AND(EQUALS(ATTR("address.fullHouseNumber"), fullHouseNumber)));
+                List<? extends OsmAddressNode> osmAddressNodes = query.toList();
+                createMatch(odAddressNode, osmAddressNodes);
+            }
         });
     }
 
-    private static void findMatch(Index<AddressNode> index, OpenDataAddressNode odAddressNode) {
-        OsmAddressNode[] nodes = index.getAllByTemplate(odAddressNode).toArray(OsmAddressNode[]::new);
-        if (nodes.length == 0) return;
-        if (nodes.length == 1) {
-            createMatch(odAddressNode, nodes[0]);
+    private void createMatch(OpenDataAddressNode odAddressNode, List<? extends OsmAddressNode> osmAddressNodes) {
+        if (osmAddressNodes.isEmpty()) return;
+        if (osmAddressNodes.size() == 1) {
+            OsmAddressNode osmAddressNode = osmAddressNodes.get(0);
+            Match match = matchFactory.create(odAddressNode, osmAddressNodes.get(0));
+            odAddressNode.setMatch(match);
+            osmAddressNode.setMatch(match);
+            checkStreet(odAddressNode, osmAddressNode);
         }
         else {
-            Logging.warn("Duplicate match");
+            Match match = matchFactory.create(Collections.singletonList(odAddressNode), osmAddressNodes);
+            odAddressNode.setMatch(match);
+            osmAddressNodes.forEach(n -> n.setMatch(match));
         }
     }
 
-    private static void createMatch(OpenDataAddressNode odAddressNode, OsmAddressNode osmAddressNode) {
-        //        Match match = osmAddressNode.getMatch();
-        //        if (match == null) {
-        //            match = new StraightMatch<>(osmAddressNode, odAddressNode);
-        //            odAddressNode.setMatch(match);
-        //            return;
-        //        }
-        Logging.warn("Complex match");
-        //        match.analyze();
-        //        match.updateMatchTags();
+    private static void checkStreet(OpenDataAddressNode odAddressNode, OsmAddressNode osmAddressNode) {
+        Address odAddress = odAddressNode.getAddress();
+        Address osmAddress = osmAddressNode.getAddress();
+        if (Objects.equals(odAddress.getStreetName(), osmAddress.getStreetName())) {
+            return;
+        }
+        int i = 0;
     }
 
     @Override

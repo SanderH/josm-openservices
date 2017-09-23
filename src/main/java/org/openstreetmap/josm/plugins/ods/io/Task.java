@@ -29,7 +29,7 @@ public interface Task extends Callable<Void>, Comparable<Task> {
         for (Class<? extends Task> clazz : classes) {
             tasks.add(createTask(clazz, enclosingInstance));
         }
-        tasks.sort(null);
+        //        tasks.sort(null);
         return tasks;
     }
 

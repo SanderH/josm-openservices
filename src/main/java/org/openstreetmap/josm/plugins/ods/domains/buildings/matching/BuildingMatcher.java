@@ -3,21 +3,26 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.matching;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.COMPARABLE;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.MATCH;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.NO_MATCH;
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
+import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
+
+import java.util.Collections;
+import java.util.List;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
 import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
-import org.openstreetmap.josm.plugins.ods.matching.StraightMatch;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class BuildingMatcher implements Matcher {
+    // TODO make matchFactory configurable by using dependency injection
+    private final BuildingMatchFactory matchFactory = new BagBuildingMatchFactory();
     private final OdsModule module;
     Repository repository;
     //    Repository osmRepository;
@@ -44,25 +49,22 @@ public class BuildingMatcher implements Matcher {
     private void matchById() {
         repository = module.getRepository();
         repository.query(OpenDataBuilding.class).forEach(odBuilding -> {
-            Od2OsmMatch<BuildingEntityType> match = odBuilding.getMatch();
+            Od2OsmMatch match = odBuilding.getMatch();
             // TODO Handle duplicate matches, maybe use a validator.
             if (match != null) return;
-            Long id = (Long) odBuilding.getReferenceId();
-            OsmBuilding[] osmBuildings = repository
-                    .query(OsmBuilding.class, "referenceId", id)
-                    .toArray(OsmBuilding[]::new);
+            Object id = odBuilding.getReferenceId();
+            List<? extends OsmBuilding> osmBuildings =
+                    repository.query(OsmBuilding.class, EQUALS(id, ATTR("referenceId"))).toList();
             matchBuildings(odBuilding, osmBuildings);
         });
     }
 
-    private static void matchBuildings(OpenDataBuilding odBuilding, OsmBuilding[] osmBuildings) {
-        if (osmBuildings.length == 1) {
-            OsmBuilding osmBuilding = osmBuildings[0];
-            StraightMatch<BuildingEntityType> match =
-                    new StraightMatch<>(osmBuilding, odBuilding);
-            odBuilding.setMatch(match);
-            osmBuilding.setMatch(match);
-        }
+    private void matchBuildings(OpenDataBuilding odBuilding, List<? extends OsmBuilding> osmBuildings) {
+        if (osmBuildings.isEmpty()) return;
+        BuildingMatch match = matchFactory.create(
+                Collections.singleton(odBuilding), osmBuildings);
+        odBuilding.setMatch(match);
+        osmBuildings.forEach(b -> b.setMatch(match));
     }
 
     //    public void analyze() {

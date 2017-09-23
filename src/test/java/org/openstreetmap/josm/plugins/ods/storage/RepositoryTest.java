@@ -5,97 +5,89 @@ import static org.junit.Assert.assertTrue;
 import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
 import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openstreetmap.josm.plugins.ods.storage.TestClasses.AbstractFoo;
 import org.openstreetmap.josm.plugins.ods.storage.TestClasses.Bar;
 import org.openstreetmap.josm.plugins.ods.storage.TestClasses.Foo;
+import org.openstreetmap.josm.plugins.ods.storage.TestClasses.FooFoo;
 import org.openstreetmap.josm.plugins.ods.storage.query.Query;
 
 public class RepositoryTest {
     private Repository repo;
-    private Foo foo;
+    private AbstractFoo fooFoo;
     private Bar bar;
+    private Bar bar2;
 
     @Before
     public void setup() {
         repo = new Repository();
-        foo = new Foo(7, "test");
+        fooFoo = new FooFoo(7, "test");
         bar = new Bar(45, "test");
-    }
-
-    @Test
-    public void testStoreAndRetrieveByIdentity() {
-        repo.add(foo);
-        Foo f =repo.getByPrimary(Foo.class, foo);
-        assertTrue(f == foo);
+        bar2 = new Bar(45, "test");
     }
 
     @Test
     public void testStoreAndRetrieveByKey() {
-        repo.register(Foo.class, "x");
-        repo.add(foo);
-        Foo f = repo.getByPrimary(Foo.class, 7);
-        assertTrue(f == foo);
+        repo.add(fooFoo);
+        Iterator<? extends FooFoo> it = repo.query(FooFoo.class, EQUALS(ATTR("x"), 7)).iterator();
+        assertTrue(it.next() == fooFoo);
     }
 
     @Test
     public void testStoreAndRetrieveSubClassByKey() {
-        repo.register(Foo.class, "x");
         repo.add(bar);
-        Bar b = repo.getByPrimary(Bar.class, 45);
-        assertTrue(b == bar);
+        List<? extends Bar> it = repo.query(Bar.class, EQUALS(ATTR("x"), 45)).toList();
+        assertTrue(it.contains(bar));
     }
 
     @Test
     public void testRetrieveAll() {
-        repo.register(Foo.class, "x");
-        repo.add(foo);
+        repo.add(fooFoo);
         repo.add(bar);
-        Set<Object> set = new IdentitySet<>();
+        repo.add(bar2);
         Query<Object> query = repo.query();
-        repo.run(query).stream().forEach(f->{set.add(f);});
-        assertEquals(2, set.size());
-        assertTrue(set.contains(foo));
-        assertTrue(set.contains(bar));
+        Collection<? extends Object> result = repo.run(query).toSet();
+        assertEquals(3, result.size());
+        assertTrue(result.contains(fooFoo));
+        assertTrue(result.contains(bar));
+        assertTrue(result.contains(bar2));
     }
 
     @Test
     public void testRetrieveAllByType() {
-        repo.register(Foo.class, "x");
-        repo.add(foo);
+        //        repo.register(Foo.class, "x");
+        repo.add(fooFoo);
         repo.add(bar);
-        Set<Foo> set = new IdentitySet<>();
-        repo.query(Foo.class).forEach(f->{set.add(f);});
+        Set<? extends Foo> set = repo.query(Foo.class).toSet();
         assertEquals(2, set.size());
-        assertTrue(set.contains(foo));
+        assertTrue(set.contains(fooFoo));
         assertTrue(set.contains(bar));
     }
 
     @Test
     public void testRetrieveAllBySupertype() {
-        repo.register(Foo.class, "x");
-        repo.add(foo);
+        repo.add(fooFoo);
         repo.add(bar);
         Set<Object> set = new IdentitySet<>();
         repo.query(Object.class).forEach(f->{set.add(f);});
         assertEquals(2, set.size());
-        assertTrue(set.contains(foo));
+        assertTrue(set.contains(fooFoo));
         assertTrue(set.contains(bar));
     }
 
     @Test
     public void testRetrieveAllByQuery() {
-        repo.register(Foo.class, "x");
-        repo.addIndex(Foo.class, "s");
-        repo.add(foo);
+        repo.add(fooFoo);
         repo.add(bar);
-        Set<Foo> set = new IdentitySet<>();
-        Query<Foo> query = repo.query(Foo.class, EQUALS(ATTR("s"), "test"));
-        repo.run(query).stream().forEach(f->{set.add(f);});
+        Set<? extends Foo> set = repo.query(Foo.class, EQUALS(ATTR("s"), "test")).toSet();
         assertEquals(2, set.size());
-        assertTrue(set.contains(foo));
+        assertTrue(set.contains(fooFoo));
         assertTrue(set.contains(bar));
     }
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -35,6 +36,10 @@ public interface Query<T> {
 
     public Iterator<? extends T> iterator();
 
+    public List<? extends T> toList();
+
+    public Set<? extends T> toSet();
+
     public void forEach(Consumer<T> consumer);
 
     public static Expression CONST(Object o) {
@@ -61,7 +66,7 @@ public interface Query<T> {
         return new Equals(e1, e2);
     }
 
-    public static class True implements QueryPredicate {
+    public static class True extends AbstractQueryPredicate {
 
         @Override
         public Collection<QueryParameter> getParameters() {
@@ -85,7 +90,7 @@ public interface Query<T> {
         }
     }
 
-    public static class Equals implements QueryPredicate {
+    public static class Equals extends AbstractQueryPredicate {
         private final Expression expr1;
         private final Expression expr2;
 

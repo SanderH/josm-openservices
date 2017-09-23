@@ -2,7 +2,9 @@ package org.openstreetmap.josm.plugins.ods.storage.query;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openstreetmap.josm.plugins.ods.storage.UniqueIndex;
@@ -33,15 +35,15 @@ public class ResultSetImpl<T> implements ResultSet<T> {
     @Override
     public Iterator<? extends T> iterator() {
         return stream().filter(predicate).iterator();
-        //        if (indexes.size() == 1) {
-        //            return indexes.get(0).iterator();
-        //        }
-        //        List<Iterator<? extends T>> iterators = new ArrayList<>(indexes.size());
-        //        for (UniqueIndex<? extends T> index : indexes) {
-        //            iterators.add(index.iterator());
-        //        }
-        //        @SuppressWarnings("unchecked")
-        //        Iterator<? extends T> it = new IteratorChain(iterators);
-        //        return it;
+    }
+
+    @Override
+    public List<? extends T> toList() {
+        return stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<? extends T> toSet() {
+        return stream().collect(Collectors.toSet());
     }
 }

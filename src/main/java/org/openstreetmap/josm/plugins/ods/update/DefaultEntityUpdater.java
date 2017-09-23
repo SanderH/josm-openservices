@@ -11,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.matching.GeometryDifference;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
-import org.openstreetmap.josm.plugins.ods.matching.StraightMatch;
+import org.openstreetmap.josm.plugins.ods.matching.Osm2OdMatch;
 
 public class DefaultEntityUpdater implements EntityUpdater {
     private final OdsModule module;
@@ -34,7 +34,7 @@ public class DefaultEntityUpdater implements EntityUpdater {
     //
 
     @Override
-    public UpdateResult update(List<Match> matches) {
+    public UpdateResult update(List<Osm2OdMatch> matches) {
         updatedWays.clear();
         //        List<GeometryDifference> geometryDifferences = new LinkedList<>();
         //        List<StatusDifference> statusDifferences = new LinkedList<>();
@@ -73,7 +73,7 @@ public class DefaultEntityUpdater implements EntityUpdater {
         //        updateMatching();
     }
 
-    protected List<Command> updateAttributes(List<StraightMatch<?>> matches) {
+    protected List<Command> updateAttributes(List<Match> matches) {
         List<Command> commands = new LinkedList<>();
         //        for (StraightMatch<?> match : matches) {
         //            for (Difference difference : match.getDifferences()) {

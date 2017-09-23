@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -154,7 +155,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
-    public Command putAll(Map<String, String> tags) {
+    public Optional<Command> putAll(Map<String, String> tags) {
         return managedWay.putAll(tags);
     }
 
@@ -164,7 +165,7 @@ public class SimpleManagedRing extends AbstractManagedPrimitive implements Manag
     }
 
     @Override
-    public Command put(String key, String value) {
+    public Optional<Command> put(String key, String value) {
         return managedWay.put(key, value);
     }
 

@@ -6,11 +6,11 @@ import java.util.List;
 import org.openstreetmap.josm.command.Command;
 
 public class GeometryDifference implements Difference {
-    private final Osm2OdMatch<?> match;
+    private final Osm2OdMatch match;
 
-    public GeometryDifference(StraightMatch<?> match2) {
+    public GeometryDifference(Osm2OdMatch match) {
         super();
-        this.match = match2;
+        this.match = match;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class GeometryDifference implements Difference {
         return Collections.emptyList();
     }
 
-    public Osm2OdMatch<?> getMatch() {
+    public Osm2OdMatch getMatch() {
         return match;
     }
 }

@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeGroup;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
+import org.openstreetmap.josm.plugins.ods.io.OpenDataLayerDownloader;
+import org.openstreetmap.josm.plugins.ods.io.Task;
 
 /**
  * This processor finds overlapping nodes in the data and distributes them, so
@@ -28,12 +32,20 @@ import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
  *
  */
 public class AddressNodeDistributor extends AbstractTask {
+    private final static Collection<Class<? extends Task>> DEPENDENCIES = Arrays.asList(OpenDataLayerDownloader.BuildPrimitivesTask.class);
     private final OdsModule module = OpenDataServicesPlugin.getModule();
     private Comparator<? super AddressNode> comparator = new DefaultNodeComparator();
 
     public AddressNodeDistributor() {
         super();
     }
+
+    @Override
+    public Collection<Class<? extends Task>> getDependencies() {
+        return DEPENDENCIES;
+    }
+
+
 
     public void setComparator(Comparator<? super AddressNode> comparator) {
         this.comparator = comparator;

@@ -2,8 +2,7 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -22,13 +21,13 @@ import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
 public class OsmLayerDownloader implements LayerDownloader {
+    private final OdsModule module;
+    final DownloadSource downloadSource=  DownloadSource.OVERPASS;
     DownloadRequest request;
     DownloadResponse response;
-    private final DownloadSource downloadSource=  DownloadSource.OVERPASS;
-    private OsmServerReader osmServerReader;
+    OsmServerReader osmServerReader;
     OsmLayerManager layerManager;
-    private final OdsModule module;
-    private OsmHost host;
+    OsmHost host;
     DataSet dataSet;
 
     static enum DownloadSource {
@@ -72,58 +71,25 @@ public class OsmLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public void download() throws OdsException {
-        try {
-            dataSet = parseDataSet();
-            if (downloadSource == DownloadSource.OSM) {
-                MultiPolygonFilter filter = new MultiPolygonFilter(request.getBoundary().getMultiPolygon());
-                dataSet = filter.filter(dataSet);
-            }
-        }
-        catch(OsmTransferException e) {
-            if (e instanceof OsmApiException) {
-                switch (((OsmApiException) e).getResponseCode()) {
-                case 400:
-                    throw new OdsException(
-                            I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."), e);
-                case 404:
-                    throw new OdsException(
-                            I18n.tr("No OSM server could be found at this location: {0}",
-                                    host.getHostString().toString()), e);
-                case 504:
-                    throw new OdsException(
-                            I18n.tr("A timeout occurred for the OSM server at this location: {0}",
-                                    host.getHostString().toString()), e);
-                default:
-                    throw new OdsException(I18n.tr(e.getMessage()), e);
-                }
-            }
-            else if (e.getCause() instanceof UnknownHostException) {
-                throw new OdsException(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()), e);
-            }
-        }
+    public Optional<Task> prepare() {
+        // Nothing to prepare
+        return Optional.empty();
     }
 
-    //    @Override
-    //    public PrepareResponse prepare() {
-    //        // Nothing to prepare
-    //        return null;
-    //    }
-    //
-    //
+    @Override
+    public Optional<Task> download() {
+        return Optional.of(new DownloadTask());
+    }
+
     /**
-     * Process the down loaded OSM primitives
+     * Process the downloaded OSM primitives
      * @return
      *
      * @see org.openstreetmap.josm.plugins.ods.io.Downloader#process()
      */
     @Override
-    public List<Task> process() {
-        return Collections.singletonList(new InnerProcessTask());
-    }
-
-    private DataSet parseDataSet() throws OsmTransferException {
-        return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
+    public Optional<Task> process() {
+        return Optional.of(new ProcessTask());
     }
 
     public DataSet getDataSet() {
@@ -135,13 +101,52 @@ public class OsmLayerDownloader implements LayerDownloader {
         osmServerReader.cancel();
     }
 
-    @Override
-    public List<PrepareTask> prepare() {
-        // Nothing to prepare
-        return Collections.emptyList();
-    }
+    class DownloadTask extends AbstractTask {
 
-    public class InnerProcessTask extends ProcessTask {
+        @Override
+        public Void call() throws Exception {
+            try {
+                dataSet = parseDataSet();
+                if (downloadSource == DownloadSource.OSM) {
+                    MultiPolygonFilter filter = new MultiPolygonFilter(request.getBoundary().getMultiPolygon());
+                    dataSet = filter.filter(dataSet);
+                }
+            }
+            catch(OsmTransferException e) {
+                if (e instanceof OsmApiException) {
+                    switch (((OsmApiException) e).getResponseCode()) {
+                    case 400:
+                        getStatus().failed(I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."));
+                        break;
+                    case 404:
+                        getStatus().failed(I18n.tr("No OSM server could be found at this location: {0}",
+                                host.getHostString().toString()));
+                        break;
+                    case 504:
+                        getStatus().failed(I18n.tr("A timeout occurred for the OSM server at this location: {0}",
+                                host.getHostString().toString()));
+                        break;
+                    default:
+                        getStatus().failed(I18n.tr(e.getMessage()));
+                        Logging.error(e);
+                    }
+                }
+                else if (e.getCause() instanceof UnknownHostException) {
+                    getStatus().failed((I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString())));
+                }
+            }
+            catch (Exception e) {
+                Logging.error(e);
+                throw e;
+            }
+            return null;
+        }
+
+        private DataSet parseDataSet() throws OsmTransferException {
+            return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
+        }
+    }
+    public class ProcessTask extends AbstractTask {
 
         @Override
         public Void call() throws Exception {

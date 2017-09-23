@@ -1,22 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import java.util.List;
-
-public interface Match {
-
-    public void clearDifferences();
-
-    public boolean hasDifferences();
-
-    public StatusDifference getStatusDifference();
-
-    public void setStatusDifference(StatusDifference statusDifference);
-
-    public GeometryDifference getGeometryDifference();
-
-    public void setGeometryDifference(GeometryDifference geometryDifference);
-
-    public List<TagDifference> getAttributeDifferences();
-
-    public void addAttributeDifference(TagDifference difference);
+public interface Match extends Od2OsmMatch, Osm2OdMatch {
+    //
 }

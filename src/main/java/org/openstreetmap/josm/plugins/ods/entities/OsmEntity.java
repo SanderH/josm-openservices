@@ -4,7 +4,7 @@ import org.openstreetmap.josm.plugins.ods.matching.Osm2OdMatch;
 
 public interface OsmEntity<T extends EntityType> extends Entity<T> {
 
-    public Osm2OdMatch<T> getMatch();
+    public Osm2OdMatch getMatch();
 
     /**
      * Check if a matching entity with a modified geometry is available from

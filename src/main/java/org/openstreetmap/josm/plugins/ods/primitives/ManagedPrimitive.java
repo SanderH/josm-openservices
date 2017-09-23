@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.primitives;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -34,9 +35,9 @@ public interface ManagedPrimitive {
      */
     public OsmPrimitive create(DataSet dataSet);
 
-    public Command put(String key, String value);
+    public Optional<Command> put(String key, String value);
+    public Optional<Command> putAll(Map<String, String> tags);
     public String get(String key);
-    public Command putAll(Map<String, String> tags);
     public Map<String, String> getKeys();
     public void remove(String string);
     public BBox getBBox();

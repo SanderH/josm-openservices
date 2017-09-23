@@ -6,52 +6,45 @@ import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openstreetmap.josm.plugins.ods.storage.TestClasses.AbstractFoo;
 import org.openstreetmap.josm.plugins.ods.storage.TestClasses.Bar;
-import org.openstreetmap.josm.plugins.ods.storage.TestClasses.Foo;
+import org.openstreetmap.josm.plugins.ods.storage.TestClasses.FooFoo;
 
 public class ObjectStoreTest {
     private Repository repo;
-    private Foo foo;
+    private AbstractFoo abstractFoo;
     private Bar bar;
 
     @Before
     public void setup() {
         repo = new Repository();
-        foo = new Foo(7, "test");
+        abstractFoo = new FooFoo(7, "test");
         bar = new Bar(45, "test");
     }
 
     @Test
     public void testStoreAndRetreiveAll() {
-        ObjectStore<Foo> store = new ObjectStore<>(repo, Foo.class);
-        store.add(foo);
-        Iterator<? extends Foo> allFoos = store.stream().iterator();
+        ObjectStore<AbstractFoo> store = new ObjectStore<>(repo, AbstractFoo.class);
+        store.add(abstractFoo);
+        Iterator<? extends AbstractFoo> allFoos = store.stream().iterator();
         assertTrue(allFoos.hasNext());
-        Foo f = allFoos.next();
-        assertTrue(f == foo);
+        AbstractFoo f = allFoos.next();
+        assertTrue(f == abstractFoo);
     }
 
     @Test
     public void testStoreAndRetreiveByIdentity() {
-        ObjectStore<Foo> store = new ObjectStore<>(repo, Foo.class);
-        store.add(foo);
-        Foo f = store.getByPrimary(foo);
-        assertTrue(f == foo);
+        ObjectStore<AbstractFoo> store = new ObjectStore<>(repo, AbstractFoo.class);
+        store.add(abstractFoo);
+        AbstractFoo f = store.getByPrimary(abstractFoo);
+        assertTrue(f == abstractFoo);
     }
 
     @Test
     public void testStoreAndRetreiveByKey() {
-        ObjectStore<Foo> store = new ObjectStore<>(repo, Foo.class, "x");
-        store.add(foo);
-        Foo f = store.getByPrimary(7);
-        assertTrue(f == foo);
-    }
-
-    @Test
-    public void testStoreAndRetreiveSubClassByKey() {
-        ObjectStore<Foo> fooStore = new ObjectStore<>(repo, Foo.class, "x");
-        fooStore.add(bar);
-        Foo f = fooStore.getByPrimary(45);
-        assertTrue(f == bar);
+        ObjectStore<AbstractFoo> store = new ObjectStore<>(repo, AbstractFoo.class, "x");
+        store.add(abstractFoo);
+        AbstractFoo f = store.getByPrimary(7);
+        assertTrue(f == abstractFoo);
     }
 }

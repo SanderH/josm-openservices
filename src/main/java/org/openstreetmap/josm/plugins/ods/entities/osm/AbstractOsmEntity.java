@@ -7,18 +7,18 @@ import org.openstreetmap.josm.plugins.ods.matching.Osm2OdMatch;
 
 public abstract class AbstractOsmEntity<T extends EntityType> extends AbstractEntity<T> implements OsmEntity<T> {
 
-    private Osm2OdMatch<T> match;
+    private Osm2OdMatch match;
     private boolean geometryUpdateRequired;
     private boolean statusUpdateRequired;
     private boolean taggingUpdateRequired;
     private boolean noEntity;
 
-    public void setMatch(Osm2OdMatch<T> match) {
+    public void setMatch(Osm2OdMatch match) {
         this.match = match;
     }
 
     @Override
-    public Osm2OdMatch<T> getMatch() {
+    public Osm2OdMatch getMatch() {
         return match;
     }
 
@@ -56,11 +56,5 @@ public abstract class AbstractOsmEntity<T extends EntityType> extends AbstractEn
 
     public void setNoEntity(boolean noEntity) {
         this.noEntity = noEntity;
-    }
-
-    @Override
-    public T getEntityType() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

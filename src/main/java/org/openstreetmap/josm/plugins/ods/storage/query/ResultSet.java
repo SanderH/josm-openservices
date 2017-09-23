@@ -2,6 +2,8 @@ package org.openstreetmap.josm.plugins.ods.storage.query;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -9,6 +11,10 @@ public interface ResultSet<T> {
     public Stream<? extends T> stream();
 
     public Iterator<? extends T> iterator();
+
+    public List<? extends T> toList();
+
+    public Set<? extends T> toSet();
 
     @SuppressWarnings("unchecked")
     public static <T1> ResultSet<T1> emptyResultSet() {
@@ -26,6 +32,16 @@ public interface ResultSet<T> {
         @Override
         public Iterator<T1> iterator() {
             return Collections.<T1> emptyIterator();
+        }
+
+        @Override
+        public List<? extends T1> toList() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Set<? extends T1> toSet() {
+            return Collections.emptySet();
         }
 
         @Override

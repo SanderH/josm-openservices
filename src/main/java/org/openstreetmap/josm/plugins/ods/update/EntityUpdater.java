@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.update;
 
 import java.util.List;
 
-import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.matching.Osm2OdMatch;
 
 /**
  *
@@ -10,6 +10,5 @@ import org.openstreetmap.josm.plugins.ods.matching.Match;
  *
  */
 public interface EntityUpdater {
-    UpdateResult update(List<Match> matches);
-    //    Class<? extends Entity> getType();
+    UpdateResult update(List<Osm2OdMatch> matches);
 }

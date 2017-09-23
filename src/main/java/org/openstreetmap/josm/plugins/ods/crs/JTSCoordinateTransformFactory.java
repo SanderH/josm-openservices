@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.crs;
 
 
 /**
- * Factory for JTSCoordinateTransform objects. It't up to the implementation whether
+ * BagBuildingMatchFactory for JTSCoordinateTransform objects. It't up to the implementation whether
  * the object are being cached;
  * 
  * @author Gertjan Idema

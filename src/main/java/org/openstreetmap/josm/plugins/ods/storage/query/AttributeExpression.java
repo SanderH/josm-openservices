@@ -1,20 +1,17 @@
 package org.openstreetmap.josm.plugins.ods.storage.query;
 
-import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoPropertyHandlerFactory.PojoPropertyHandler;
+import org.openstreetmap.josm.plugins.ods.properties.PropertyGetter;
+import org.openstreetmap.josm.plugins.ods.properties.pojo.PojoPropertyHandlerFactory;
 
 public class AttributeExpression implements Expression {
-    //    private final Class<T> type;
     private final String attribute;
+    final String[] path;
 
     public AttributeExpression(String attribute) {
         super();
-        //        this.type = type;
         this.attribute = attribute;
+        path = attribute.split("\\.");
     }
-
-    //    public Class<T> getType() {
-    //        return type;
-    //    }
 
     public String getAttribute() {
         return attribute;
@@ -25,24 +22,19 @@ public class AttributeExpression implements Expression {
         return new PreparedAttributeExpression<>(type);
     }
 
-    class PreparedAttributeExpression<T> implements PreparedExpression<T> {
+    public class PreparedAttributeExpression<T> implements PreparedExpression<T> {
 
-        private final PojoPropertyHandler<T, ?> propertyHandler;
+        private final PropertyGetter<T, ?> propertyGetter;
         //        private T object;
-
 
         public PreparedAttributeExpression(Class<T> type) {
             super();
-            propertyHandler = new PojoPropertyHandler<>(type, Object.class, getAttribute());
+            propertyGetter = PojoPropertyHandlerFactory.createGetter(type, path);
         }
-
-        //        public void setObject(T obj) {
-        //            this.object = obj;
-        //        }
 
         @Override
         public Object evaluate(T object) {
-            return propertyHandler.get(object);
+            return propertyGetter.get(object);
         }
     }
 }

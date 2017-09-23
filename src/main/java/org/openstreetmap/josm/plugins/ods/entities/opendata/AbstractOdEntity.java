@@ -11,7 +11,7 @@ public abstract class AbstractOdEntity<T extends EntityType> extends AbstractEnt
 implements OdEntity<T> {
     private boolean deleted = false;
     private DownloadResponse response;
-    private Od2OsmMatch<T> match;
+    private Od2OsmMatch match;
 
     public void setDownloadResponse(DownloadResponse response) {
         this.response = response;
@@ -47,12 +47,12 @@ implements OdEntity<T> {
         return (getMatch() != null) && isDeleted();
     }
 
-    public void setMatch(Od2OsmMatch<T> match) {
+    public void setMatch(Od2OsmMatch match) {
         this.match = match;
     }
 
     @Override
-    public Od2OsmMatch<T> getMatch() {
+    public Od2OsmMatch getMatch() {
         return match;
     }
 
@@ -65,23 +65,26 @@ implements OdEntity<T> {
     public void updateMatchTags() {
         String value = "unknown";
         if (getMatch() != null) {
-            value = "up to date";
+            if (isDeleted()) {
+                value = "deletion required";
+            }
+            else {
+                value = "up to date";
+            }
         }
-        if (isDeleted()) {
-            value = "deleted";
-        }
-        if (isDeletionRequired()) {
-            value = "deletion required";
-        }
-        if (isMissing()) {
-            value = "missing";
-        }
-        if (isCreationRequired()) {
-            value = "creation required";
-        }
-
-        if (isCreationRequired()) {
-            value = "creation required";
+        else {
+            if (isDeleted()) {
+                value = "deleted";
+            }
+            if (isDeletionRequired()) {
+                value = "deletion required";
+            }
+            if (isMissing()) {
+                value = "missing";
+            }
+            if (isCreationRequired()) {
+                value = "creation required";
+            }
         }
         getPrimitive().put(ODS.KEY.MATCH, value);
     }

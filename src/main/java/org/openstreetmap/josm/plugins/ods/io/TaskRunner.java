@@ -38,6 +38,7 @@ public class TaskRunner {
     private void runParallel(List<? extends Task> tasks) {
         try {
             futures = executor.invokeAll(tasks);
+            executor.shutdown();
             for (Future<Void> future : futures) {
                 // TODO Clean-up most exception handling.
                 // Is should be handled by the task
@@ -69,37 +70,31 @@ public class TaskRunner {
             for (Future<Void> future : futures) {
                 future.cancel(true);
             }
+        } catch (Exception e) {
+            Logging.error(e);
+            throw e;
         }
     }
 
     private void runSequential(List<? extends Task> tasks) {
-        try {
-            futures = executor.invokeAll(tasks);
-            for (Task task : tasks) {
-                try {
-                    task.call();
-                } catch (CancellationException e1) {
-                    status.cancelled();
-                    //                } catch (ExecutionException executionException) {
-                    //                    Exception e = (Exception) executionException.getCause();
-                    //                    if (e instanceof NullPointerException) {
-                    //                        messages.add("A null pointer exception occurred. This is allways a programming error\n" +
-                    //                                "please check the logs.");
-                    //                        failed = true;
-                    //                        Main.error(e);
-                    //                    }
-                    //                    else {
-                    //                        messages.add(e.getMessage());
-                    //                        failed = true;
-                    //                    }
-                } catch (Exception e) {
-                    Logging.error(e);
-                    //                    messages.add("An unexpected exception occurred. please check the logs.");
-                    //                    failed = true;
+        boolean debug = "true".equals(System.getenv("ods-debug"));
+        for (Task task : tasks) {
+            try {
+                long startTime = System.currentTimeMillis();
+                if (debug) {
+                    Logging.info("Start task {0}", task);
                 }
+                task.call();
+                if (debug) {
+                    long ms = System.currentTimeMillis() - startTime;
+                    Logging.info("Task {0} finished in {1} ms", task, ms);
+                }
+            } catch (CancellationException e1) {
+                status.cancelled();
+            } catch (Exception e) {
+                Logging.error(e);
+                throw new RuntimeException(e);
             }
-        } catch (InterruptedException e) {
-            return;
         }
     }
 

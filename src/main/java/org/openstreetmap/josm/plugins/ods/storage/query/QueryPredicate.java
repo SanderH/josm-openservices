@@ -9,4 +9,6 @@ public interface QueryPredicate {
     public Collection<AttributeExpression> getAttributes();
 
     public <T> Predicate<T> prepare(Class<T> type);
+
+    public QueryPredicate AND(QueryPredicate predicate);
 }

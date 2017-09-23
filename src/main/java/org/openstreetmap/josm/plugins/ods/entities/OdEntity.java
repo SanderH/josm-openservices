@@ -6,7 +6,7 @@ import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
 public interface OdEntity<T extends EntityType> extends Entity<T> {
 
     //    public void setDownloadResponse(DownloadResponse response);
-    public Od2OsmMatch<T> getMatch();
+    public Od2OsmMatch getMatch();
 
     /**
      * Does the open data source report this entity as deleted?

@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.storage.query;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -50,18 +52,25 @@ public class QueryImpl<T> implements Query<T> {
         return repo.run(this);
     }
 
-
     @Override
     public Stream<? extends T> stream() {
         return run().stream();
     }
-
 
     @Override
     public Iterator<? extends T> iterator() {
         return run().iterator();
     }
 
+    @Override
+    public List<? extends T> toList() {
+        return run().toList();
+    }
+
+    @Override
+    public Set<? extends T> toSet() {
+        return run().toSet();
+    }
 
     @Override
     public void forEach(Consumer<T> consumer) {
@@ -77,4 +86,5 @@ public class QueryImpl<T> implements Query<T> {
     //    public Collection<QueryParameter> getParameters() {
     //        return queryParameters.values();
     //    }
+
 }

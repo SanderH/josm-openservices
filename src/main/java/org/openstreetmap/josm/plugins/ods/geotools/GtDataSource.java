@@ -11,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.entities.EntityMapperFactory;
 
 public class GtDataSource extends DefaultOdsDataSource {
-    private List<FilterFactory> filters;
+    private final List<FilterFactory> filters;
 
     public GtDataSource(OdsFeatureSource odsFeatureSource, Query query, EntityMapperFactory entityMapperFactory) {
         this(odsFeatureSource, query, new ArrayList<>(), entityMapperFactory);
@@ -21,10 +21,10 @@ public class GtDataSource extends DefaultOdsDataSource {
         super(odsFeatureSource, query, entityMapperFactory);
         this.filters = filters;
     }
-    
+
     /**
      * Build a FeatureVisitor that chains any filters in the right order.
-     * 
+     *
      * @param consumer
      * @return
      */
