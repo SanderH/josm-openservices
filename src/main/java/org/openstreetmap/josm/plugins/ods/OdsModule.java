@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
 import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
+import org.picocontainer.DefaultPicoContainer;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
@@ -45,6 +47,7 @@ import org.openstreetmap.josm.tools.I18n;
  *
  */
 public abstract class OdsModule implements LayerChangeListener {
+    private final DefaultPicoContainer pico = new DefaultPicoContainer();
     private OdsModulePlugin plugin;
 
     private final Map<Class<? extends EntityType>, EntityType> entityTypes = new HashMap<>();
@@ -315,8 +318,8 @@ public abstract class OdsModule implements LayerChangeListener {
         return false;
     }
 
-    public String getPluginDir() {
-        return plugin.getPluginDir();
+    public File getPluginDir() {
+        return plugin.getPluginDirs().getUserDataDirectory(false);
     }
 
     public abstract List<EntityUpdater> getUpdaters();

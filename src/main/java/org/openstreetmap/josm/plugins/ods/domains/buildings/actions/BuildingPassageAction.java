@@ -13,11 +13,11 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.actions.SplitWayAction;
 import org.openstreetmap.josm.command.AddCommand;
 import org.openstreetmap.josm.command.ChangeNodesCommand;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
+import org.openstreetmap.josm.command.SplitWayCommand;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -78,7 +78,7 @@ public class BuildingPassageAction extends OdsAction {
         intersectionsCommand.executeCommand();
         cmds.clear();
         final Way highway = pair.getHighway();
-        final List<List<Node>> wayChunks = SplitWayAction.buildSplitChunks(highway, new ArrayList<>(nodes));
+        final List<List<Node>> wayChunks = SplitWayCommand.buildSplitChunks(highway, new ArrayList<>(nodes));
         assert wayChunks.size() == 3;
         final List<Node> passageChunk = wayChunks.get(1);
         final List<Node> longChunk;
@@ -182,10 +182,6 @@ public class BuildingPassageAction extends OdsAction {
             super();
             ways.add(building);
             ways.add(highway);
-        }
-
-        public Way getBuilding() {
-            return ways.get(0);
         }
 
         public Way getHighway() {

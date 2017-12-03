@@ -70,7 +70,7 @@ public class PolygonLayerManager extends AbstractLayerManager {
     }
 
     private File getPolygonFilePath() {
-        File pluginDir = new File(module.getPluginDir());
+        File pluginDir = module.getPluginDir();
         return new File(pluginDir, "polygons.osm");
     }
 }

@@ -9,19 +9,20 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmReader;
 
 /**
  * This class provides utility methods to load a DataSet with test data.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class TestDataLoader {
     private static Map<URL, DataSet> cache = new HashMap<>();
-    
+
     public static TestLayerManager loadTestData(Class<?> clazz, String name) {
         URL url = clazz.getResource(name);
         DataSet dataSet = loadTestData(url);
@@ -30,13 +31,13 @@ public class TestDataLoader {
         return new TestLayerManager(dataLayer);
     }
 
-//    public static OsmDataLayer loadTestData(String path) throws IOException, IllegalDataException {
-//        File file = new File(path);
-//        URL url = file.toURI().toURL();
-//        DataSet dataSet = loadTestData(url);
-//        return new OsmDataLayer(dataSet, "test", file);
-//    }
-    
+    //    public static OsmDataLayer loadTestData(String path) throws IOException, IllegalDataException {
+    //        File file = new File(path);
+    //        URL url = file.toURI().toURL();
+    //        DataSet dataSet = loadTestData(url);
+    //        return new OsmDataLayer(dataSet, "test", file);
+    //    }
+
     private static DataSet loadTestData(URL url) {
         if (url == null) {
             Assert.fail("The file with test data could not be found");
@@ -46,11 +47,11 @@ public class TestDataLoader {
             return new DataSet(dataSet);
         }
         try (
-            @SuppressWarnings("null")
-            InputStream stream = url.openStream();
-        ) {
+                @SuppressWarnings("null")
+                InputStream stream = url.openStream();
+                ) {
             dataSet = OsmReader.parseDataSet(stream, null);
-            dataSet.setUploadDiscouraged(true);
+            dataSet.setUploadPolicy(UploadPolicy.BLOCKED);
             cache.put(url,  dataSet);
             return dataSet;
         } catch (IOException e) {
