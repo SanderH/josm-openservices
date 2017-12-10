@@ -5,7 +5,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.osm.DefaultPrimitiveBuilder;
 
-public abstract class AbstractEntityPrimitiveBuilder<E extends OdEntity<?>> implements EntityPrimitiveBuilder<E> {
+public abstract class AbstractEntityPrimitiveBuilder<E extends OdEntity> implements EntityPrimitiveBuilder<E> {
     private final DefaultPrimitiveBuilder primitiveBuilder;
     private final Class<E> clazz;
 

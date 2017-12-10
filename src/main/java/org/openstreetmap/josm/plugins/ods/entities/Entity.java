@@ -18,8 +18,8 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public interface Entity<T extends EntityType> {
-    public T getEntityType();
+public interface Entity {
+    public EntityType getEntityType();
     public void setSource(String source);
     public String getSource();
     public void setSourceDate(LocalDate date);

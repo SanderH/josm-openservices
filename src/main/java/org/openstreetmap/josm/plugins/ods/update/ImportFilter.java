@@ -13,6 +13,6 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public interface ImportFilter extends Predicate<Entity<?>> {
+public interface ImportFilter extends Predicate<Entity> {
     //
 }

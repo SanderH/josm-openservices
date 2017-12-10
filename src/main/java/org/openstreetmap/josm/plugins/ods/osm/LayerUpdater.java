@@ -39,7 +39,7 @@ public class LayerUpdater {
     }
 
     private void update(ManagedPrimitive primitive) {
-        Entity<?> entity = primitive.getEntity();
+        Entity entity = primitive.getEntity();
         if (entity != null && !entity.isIncomplete()) {
             OsmPrimitive osmPrimitive = primitive.create(dataSet);
             layerManager.register(osmPrimitive, primitive);

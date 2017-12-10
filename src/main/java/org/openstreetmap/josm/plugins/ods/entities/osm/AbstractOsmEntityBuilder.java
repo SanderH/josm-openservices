@@ -11,14 +11,13 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
-public abstract class AbstractOsmEntityBuilder<T extends EntityType, E extends OsmEntity<T>> implements OsmEntityBuilder {
+public abstract class AbstractOsmEntityBuilder<E extends OsmEntity> implements OsmEntityBuilder {
     private OsmLayerManager layerManager;
     private final Predicate<OsmPrimitive> recognizer;
     private Repository repository;
@@ -50,7 +49,7 @@ public abstract class AbstractOsmEntityBuilder<T extends EntityType, E extends O
         return geoUtil;
     }
 
-    protected void register(ManagedPrimitive primitive, OsmEntity<T> entity) {
+    protected void register(ManagedPrimitive primitive, OsmEntity entity) {
         entity.setPrimitive(primitive);
         repository.add(entity);
         primitive.setEntity(entity);
@@ -76,7 +75,7 @@ public abstract class AbstractOsmEntityBuilder<T extends EntityType, E extends O
         ManagedPrimitive ods = getLayerManager().getManagedPrimitive(primitive);
         if (ods == null) return;
         @SuppressWarnings("unchecked")
-        OsmEntity<T> entity = (OsmEntity<T>) ods.getEntity();
+        OsmEntity entity = (OsmEntity) ods.getEntity();
         if (entity == null) {
             return;
         }
@@ -92,8 +91,7 @@ public abstract class AbstractOsmEntityBuilder<T extends EntityType, E extends O
         ManagedPrimitive ods = getLayerManager().getManagedPrimitive(way);
         if (ods == null) return;
         ods.setPrimitive(way);
-        @SuppressWarnings("unchecked")
-        OsmEntity<T> entity = (OsmEntity<T>) ods.getEntity();
+        OsmEntity entity = (OsmEntity) ods.getEntity();
         if (entity == null) {
             return;
         }

@@ -3,33 +3,36 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.matching;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.COMPARABLE;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.MATCH;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.NO_MATCH;
-import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
-import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.ods.Matcher;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingDao;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuildingDao;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
 import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
-import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 public class BuildingMatcher implements Matcher {
     // TODO make matchFactory configurable by using dependency injection
-    private final BuildingMatchFactory matchFactory = new BagBuildingMatchFactory();
-    private final OdsModule module;
-    Repository repository;
-    //    Repository osmRepository;
+    private final BuildingMatchFactory matchFactory;
+    private final OdBuildingDao odBuildingDao;
+    private final OsmBuildingDao osmBuildingDao;
 
-    public BuildingMatcher(OdsModule module) {
+    @Inject
+    public BuildingMatcher(OdBuildingDao odBuildingDao,
+            OsmBuildingDao osmBuildingDao, BuildingMatchFactory matchFactory) {
         super();
-        this.module = module;
+        this.odBuildingDao = odBuildingDao;
+        this.osmBuildingDao = osmBuildingDao;
+        this.matchFactory = matchFactory;
     }
 
     @Override
@@ -47,19 +50,17 @@ public class BuildingMatcher implements Matcher {
     }
 
     private void matchById() {
-        repository = module.getRepository();
-        repository.query(OpenDataBuilding.class).forEach(odBuilding -> {
+        odBuildingDao.getAll().forEach(odBuilding -> {
             Od2OsmMatch match = odBuilding.getMatch();
             // TODO Handle duplicate matches, maybe use a validator.
             if (match != null) return;
             Object id = odBuilding.getReferenceId();
-            List<? extends OsmBuilding> osmBuildings =
-                    repository.query(OsmBuilding.class, EQUALS(id, ATTR("referenceId"))).toList();
+            Set<? extends OsmBuilding> osmBuildings = osmBuildingDao.listById(id);
             matchBuildings(odBuilding, osmBuildings);
         });
     }
 
-    private void matchBuildings(OpenDataBuilding odBuilding, List<? extends OsmBuilding> osmBuildings) {
+    private void matchBuildings(OpenDataBuilding odBuilding, Set<? extends OsmBuilding> osmBuildings) {
         if (osmBuildings.isEmpty()) return;
         BuildingMatch match = matchFactory.create(
                 Collections.singleton(odBuilding), osmBuildings);

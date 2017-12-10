@@ -23,15 +23,10 @@ import org.geotools.xml.Configuration;
 import org.geotools.xml.DOMParser;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
-import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.AbstractHost;
 import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.w3c.dom.Document;
@@ -166,10 +161,10 @@ public class FileWFSHost extends AbstractHost {
         return new FileWFSFeatureSource(this, feature);
     }
 
-    @Override
-    public <T extends EntityType> FeatureDownloader createDownloader(
-            OdsModule module, OdsDataSource dataSource, T entityType)
-                    throws OdsException {
-        throw new UnsupportedOperationException();
-    }
+    //    @Override
+    //    public <T extends EntityType> FeatureDownloader createDownloader(
+    //            OdsModule module, OdsDataSource dataSource, T entityType)
+    //                    throws OdsException {
+    //        throw new UnsupportedOperationException();
+    //    }
 }

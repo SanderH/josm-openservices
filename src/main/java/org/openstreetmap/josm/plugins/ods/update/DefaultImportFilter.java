@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 public class DefaultImportFilter implements ImportFilter {
 
     @Override
-    public boolean test(Entity<?> entity) {
+    public boolean test(Entity entity) {
         switch (entity.getStatus()) {
         case NOT_REALIZED:
         case REMOVED:

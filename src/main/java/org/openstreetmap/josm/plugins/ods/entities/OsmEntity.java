@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import org.openstreetmap.josm.plugins.ods.matching.Osm2OdMatch;
 
-public interface OsmEntity<T extends EntityType> extends Entity<T> {
+public interface OsmEntity extends Entity {
 
     public Osm2OdMatch getMatch();
 

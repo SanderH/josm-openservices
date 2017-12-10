@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.domains.places;
 
 import org.openstreetmap.josm.plugins.ods.entities.osm.AbstractOsmEntity;
 
-public class OsmCity extends AbstractOsmEntity<CityEntityType> implements City {
+public class OsmCity extends AbstractOsmEntity implements City {
     private String name;
     //    private MultiPolygon multiPolygon;
 

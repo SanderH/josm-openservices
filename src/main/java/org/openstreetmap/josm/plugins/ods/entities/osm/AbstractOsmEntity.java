@@ -1,11 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.entities.osm;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.matching.Osm2OdMatch;
 
-public abstract class AbstractOsmEntity<T extends EntityType> extends AbstractEntity<T> implements OsmEntity<T> {
+public abstract class AbstractOsmEntity extends AbstractEntity implements OsmEntity {
 
     private Osm2OdMatch match;
     private boolean geometryUpdateRequired;

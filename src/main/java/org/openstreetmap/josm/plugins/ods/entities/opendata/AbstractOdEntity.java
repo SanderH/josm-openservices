@@ -2,13 +2,11 @@ package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
 
-public abstract class AbstractOdEntity<T extends EntityType> extends AbstractEntity<T>
-implements OdEntity<T> {
+public abstract class AbstractOdEntity extends AbstractEntity implements OdEntity {
     private boolean deleted = false;
     private DownloadResponse response;
     private Od2OsmMatch match;

@@ -10,7 +10,7 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.places.City;
 import org.openstreetmap.josm.plugins.ods.entities.osm.AbstractOsmEntity;
 
-public class OsmBuilding extends AbstractOsmEntity<BuildingEntityType> implements Building {
+public class OsmBuilding extends AbstractOsmEntity implements Building {
     private Optional<Address> address = Optional.empty();
     private final Set<OsmAddressNode> addressNodes = new HashSet<>();
     private TypeOfBuilding typeOfBuilding = TypeOfBuilding.UNCLASSIFIED;

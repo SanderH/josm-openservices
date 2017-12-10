@@ -11,8 +11,8 @@ import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class AbstractEntity<T extends EntityType> implements Entity<T> {
-    private T entityType;
+public abstract class AbstractEntity implements Entity {
+    private EntityType entityType;
     private Object primaryId;
     private Object referenceId;
     private LocalDate sourceDate;
@@ -24,7 +24,7 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity<T> 
     private ManagedPrimitive primitive;
     private Map<String, Issue> issues = null;
 
-    public void setEntityType(T entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity<T> 
     }
 
     @Override
-    public T getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 

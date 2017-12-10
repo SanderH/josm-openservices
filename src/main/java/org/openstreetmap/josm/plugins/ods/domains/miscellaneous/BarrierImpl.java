@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.domains.miscellaneous;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 
-public class BarrierImpl extends AbstractEntity<BarrierEntityType> implements Barrier {
+public class BarrierImpl extends AbstractEntity implements Barrier {
     private String type;
     private String detail;
     private String height;

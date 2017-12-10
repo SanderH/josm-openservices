@@ -34,7 +34,6 @@ import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
 import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
 import org.openstreetmap.josm.plugins.ods.update.EntityUpdater;
 import org.openstreetmap.josm.tools.I18n;
-import org.picocontainer.DefaultPicoContainer;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
@@ -47,7 +46,6 @@ import org.picocontainer.DefaultPicoContainer;
  *
  */
 public abstract class OdsModule implements LayerChangeListener {
-    private final DefaultPicoContainer pico = new DefaultPicoContainer();
     private OdsModulePlugin plugin;
 
     private final Map<Class<? extends EntityType>, EntityType> entityTypes = new HashMap<>();
@@ -64,10 +62,8 @@ public abstract class OdsModule implements LayerChangeListener {
     private OsmLayerManager osmLayerManager;
     private final MatchingProcessor matchingProcessor = new MatchingProcessor(this);
 
-    //    String osmQuery;
     private boolean initialized = false;
     private boolean active = false;
-
 
     protected void setPlugin(OdsModulePlugin plugin) {
         this.plugin = plugin;
@@ -86,6 +82,7 @@ public abstract class OdsModule implements LayerChangeListener {
             initializeOsmEntityBuilders();
             initializeOsmRelationManagers();
             MainApplication.getLayerManager().addLayerChangeListener(this);
+            getDownloader().initialize();
             initialized = true;
         }
     }

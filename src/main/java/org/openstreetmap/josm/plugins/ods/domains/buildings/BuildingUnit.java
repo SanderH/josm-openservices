@@ -16,7 +16,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public interface BuildingUnit extends Entity<BuildingUnitEntityType> {
+public interface BuildingUnit extends Entity {
 
     /**
      * Set the main (first) address node. In most cases this is the only addressNode.

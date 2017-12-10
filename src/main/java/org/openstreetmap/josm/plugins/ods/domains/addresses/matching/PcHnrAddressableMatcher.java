@@ -68,7 +68,6 @@ public class PcHnrAddressableMatcher implements Matcher {
         if (Objects.equals(odAddress.getStreetName(), osmAddress.getStreetName())) {
             return;
         }
-        int i = 0;
     }
 
     @Override

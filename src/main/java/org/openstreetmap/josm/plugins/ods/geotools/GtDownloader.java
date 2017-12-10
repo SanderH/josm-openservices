@@ -22,7 +22,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -40,33 +40,33 @@ import org.openstreetmap.josm.tools.Logging;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GtDownloader<T extends EntityType> implements FeatureDownloader {
+public class GtDownloader implements FeatureDownloader {
     // These fields are available to the subclasses
     final GtDataSource dataSource;
     final CRSUtil crsUtil;
     SimpleFeatureSource featureSource;
     Query baseQuery;
     DownloadRequest request;
+    EntityDao<Entity> dao;
 
     //    private List<PropertyName> properties;
     @SuppressWarnings("unused")
     private DownloadResponse response;
     DefaultFeatureCollection downloadedFeatures;
-    Repository repository;
-    final EntityMapper<SimpleFeature, Entity<T>> entityMapper;
+    //    Repository repository;
+    final EntityMapper<SimpleFeature, Entity> entityMapper;
     Normalisation normalisation = Normalisation.FULL;
 
     @SuppressWarnings("unchecked")
-    public GtDownloader(OdsModule module, GtDataSource dataSource,
-            T EntityType) {
+    public GtDownloader(OdsModule module, GtDataSource dataSource) {
         this.dataSource = dataSource;
         this.crsUtil = module.getCrsUtil();
-        this.entityMapper = (EntityMapper<SimpleFeature, Entity<T>>) dataSource.getEntityMapper();
+        this.entityMapper = (EntityMapper<SimpleFeature, Entity>) dataSource.getEntityMapper();
     }
 
     @Override
     public void setRepository(Repository repository) {
-        this.repository = repository;
+        //        this.repository = repository;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
 
     @Override
     public Repository getRepository() {
-        return repository;
+        return null;
     }
 
     @Override
@@ -149,7 +149,6 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
     public Optional<Task> process() {
         return Optional.of(new ProcessTask());
     }
-
 
     public OdsDataSource getDataSource() {
         return dataSource;
@@ -307,8 +306,8 @@ public class GtDownloader<T extends EntityType> implements FeatureDownloader {
             Thread.currentThread().setName(dataSource.getFeatureType() + " process");
             try {
                 for (SimpleFeature feature : downloadedFeatures) {
-                    Entity<T> entity = entityMapper.map(feature);
-                    repository.add(entity);
+                    Entity entity = entityMapper.map(feature);
+                    dao.add(entity);
                     if (Thread.currentThread().isInterrupted()) {
                         break;
                     }

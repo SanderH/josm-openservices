@@ -23,7 +23,7 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
     //    private Set<ManagedPrimitive<?>> referrers;
     private final long uniqueId = (new NodeData()).getUniqueId();
     private Map<String, String> keys;
-    private Entity<?> entity = null;
+    private Entity entity = null;
 
     public AbstractManagedPrimitive(LayerManager layerManager) {
         this(layerManager, new HashMap<>());
@@ -122,12 +122,12 @@ public abstract class AbstractManagedPrimitive implements ManagedPrimitive {
 
 
     @Override
-    public <E extends Entity<?>> void setEntity(E entity) {
+    public <E extends Entity> void setEntity(E entity) {
         this.entity = entity;
     }
 
     @Override
-    public Entity<?> getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 

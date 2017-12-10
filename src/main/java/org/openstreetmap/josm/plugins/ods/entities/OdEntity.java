@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.entities;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
 
-public interface OdEntity<T extends EntityType> extends Entity<T> {
+public interface OdEntity extends Entity {
 
     //    public void setDownloadResponse(DownloadResponse response);
     public Od2OsmMatch getMatch();

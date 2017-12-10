@@ -11,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.domains.places.City;
 import org.openstreetmap.josm.plugins.ods.entities.StartDate;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.AbstractOdEntity;
 
-public class OpenDataBuilding extends AbstractOdEntity<BuildingEntityType> implements Building {
+public class OpenDataBuilding extends AbstractOdEntity implements Building {
     private Optional<Address> address = Optional.empty();
     private final Set<BuildingUnit> buildingUnits = new HashSet<>();
     private final Set<OpenDataAddressNode> addressNodes = new HashSet<>();

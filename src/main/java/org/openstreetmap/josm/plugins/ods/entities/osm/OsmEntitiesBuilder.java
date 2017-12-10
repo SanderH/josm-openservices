@@ -47,7 +47,7 @@ public class OsmEntitiesBuilder {
                 for (OsmEntityBuilder builder : entityBuilders) {
                     if (builder.recognizes(primitive)) {
                         try {
-                            Entity<?> entity = builder.buildOsmEntity(primitive);
+                            Entity entity = builder.buildOsmEntity(primitive);
                             repository.add(entity);
                         } catch (InvalidGeometryException e) {
                             // TODO Create validation error here? Or at a lower level.

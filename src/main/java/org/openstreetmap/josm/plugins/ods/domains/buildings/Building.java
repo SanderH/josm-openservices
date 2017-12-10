@@ -8,7 +8,7 @@ import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.places.City;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public interface Building extends Entity<BuildingEntityType> {
+public interface Building extends Entity {
 
     /**
      * Get the (optional) address of this building.

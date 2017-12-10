@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.domains.miscellaneous;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public interface Barrier extends Entity<BarrierEntityType> {
+public interface Barrier extends Entity {
     public String getType();
     public String getDetail();
     public String getHeight();

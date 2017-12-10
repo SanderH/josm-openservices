@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
 import org.openstreetmap.josm.plugins.ods.entities.opendata.AbstractOdEntity;
 
-public class OpenDataEntrance extends AbstractOdEntity<EntranceEntityType> implements Entrance {
+public class OpenDataEntrance extends AbstractOdEntity implements Entrance {
     private String type = null;
 
     @Override
