@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,13 +20,11 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
-import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
@@ -43,12 +42,26 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
 
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    private OdLayerManager odLayerManager;
+    protected final OsmLayerManager osmLayerManager = createOsmLayerManager();
+    protected final OdLayerManager odLayerManager = createOdLayerManager();
     private PolygonLayerManager polygonDataLayer;
-    private OsmLayerManager osmLayerManager;
-    private MatcherManager matcherManager;
+    //    private MatcherManager matcherManager;
+
 
     String osmQuery;
+
+    public OdsModule() {
+        super();
+    }
+
+    protected abstract OdLayerManager createOdLayerManager();
+
+    protected abstract OsmLayerManager createOsmLayerManager();
+
+    public OsmLayerManager getOsmLayerManager() {
+        return osmLayerManager;
+    }
+
     private boolean active = false;
 
     protected void setPlugin(OdsModulePlugin plugin) {
@@ -56,8 +69,6 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     }
 
     public void initialize() throws Exception {
-        this.osmLayerManager = createOsmLayerManager();
-        this.odLayerManager = createOpenDataLayerManager();
         MainApplication.getLayerManager().addActiveLayerChangeListener(this);
         MainApplication.getLayerManager().addLayerChangeListener(this);
     }
@@ -70,9 +81,9 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         return entityBuilders;
     }
 
-    public abstract GeoUtil getGeoUtil();
-
-    public abstract CRSUtil getCrsUtil();
+    //    public abstract GeoUtil getGeoUtil();
+    //
+    //    public abstract CRSUtil getCrsUtil();
 
     public abstract String getName();
 
@@ -99,22 +110,17 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         return osmQuery;
     }
 
-    protected abstract OdLayerManager createOpenDataLayerManager();
+    //    public OdLayerManager getOdLayerManager() {
+    //        return odLayerManager;
+    //    }
+    //
+    //    public OsmLayerManager getOsmLayerManager() {
+    //        return osmLayerManager;
+    //    }
 
-    protected abstract OsmLayerManager createOsmLayerManager();
-
-
-    public OdLayerManager getOpenDataLayerManager() {
-        return odLayerManager;
-    }
-
-    public OsmLayerManager getOsmLayerManager() {
-        return osmLayerManager;
-    }
-
-    public MatcherManager getMatcherManager() {
-        return matcherManager;
-    }
+    //    public MatcherManager getMatcherManager() {
+    //        return matcherManager;
+    //    }
 
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;
@@ -140,21 +146,21 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         for (OdsAction action : getActions()) {
             menu.add(action);
         }
-        getOsmLayerManager().activate();
-        getOpenDataLayerManager().activate();
+        osmLayerManager.activate();
+        odLayerManager.activate();
         if (usePolygonFile()) {
             polygonDataLayer = new PolygonLayerManager(this);
             polygonDataLayer.activate();
         }
-        this.matcherManager = new MatcherManager(this);
+        //        this.matcherManager = new MatcherManager(this);
         active = true;
         return true;
     }
 
     public void deActivate() {
         if (isActive()) {
-            getOsmLayerManager().deActivate();
-            getOpenDataLayerManager().deActivate();
+            osmLayerManager.deActivate();
+            odLayerManager.deActivate();
             polygonDataLayer.deActivate();
             active = false;
         }
@@ -169,7 +175,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     }
 
     void activateOsmLayer() {
-        MainApplication.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
+        MainApplication.getLayerManager().setActiveLayer(osmLayerManager.getOsmDataLayer());
     }
 
 
@@ -203,11 +209,17 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
             return;
         }
         if (isActive()) {
-            LayerManager layerManager = this.getLayerManager(event.getRemovedLayer());
-            if (layerManager != null && layerManager.isActive()) {
-                layerManager.deActivate();
-                String message = tr("You removed one of the layers that belong to the {0} module." +
-                        " For the stability of the {0} module, you have to reset the module.", getName());
+            Layer removedLayer = event.getRemovedLayer();
+            if (removedLayer == odLayerManager.getOsmDataLayer()) {
+                String message = tr("You just removed the {0} layer." +
+                        " For the stability of the {1} module, you have to reset the module.",
+                        odLayerManager.getOsmDataLayer().getName(), getName());
+                JOptionPane.showMessageDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_OPTION);
+            }
+            else if (removedLayer == osmLayerManager.getOsmDataLayer()) {
+                String message = tr("You just removed the {0} layer." +
+                        " For the stability of the {1} module, you have to reset the module.",
+                        osmLayerManager.getOsmDataLayer().getName(), getName());
                 JOptionPane.showMessageDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_OPTION);
             }
         }
@@ -236,14 +248,14 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         return false;
     }
 
-    public String getPluginDir() {
-        return plugin.getPluginDir();
+    public File getPluginDir() {
+        return plugin.getPluginDirs().getUserDataDirectory(true);
     }
 
     public void reset() {
-        getOsmLayerManager().reset();
-        getOpenDataLayerManager().reset();
-        getMatcherManager().reset();
+        osmLayerManager.reset();
+        odLayerManager.reset();
+        //        getMatcherManager().reset();
         MainApplication.getMap().mapView.repaint();
     }
 
