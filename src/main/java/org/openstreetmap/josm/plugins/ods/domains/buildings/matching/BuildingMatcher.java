@@ -7,26 +7,25 @@ import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.NO_MATCH;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.ods.Matcher;
+import org.openstreetmap.josm.plugins.ods.MatchTask;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingDao;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuildingDao;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.io.TaskStatus;
 import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
 import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
 
-public class BuildingMatcher implements Matcher {
+public class BuildingMatcher implements MatchTask {
     // TODO make matchFactory configurable by using dependency injection
     private final BuildingMatchFactory matchFactory;
     private final OdBuildingDao odBuildingDao;
     private final OsmBuildingDao osmBuildingDao;
+    private final TaskStatus status = new TaskStatus();
 
-    @Inject
     public BuildingMatcher(OdBuildingDao odBuildingDao,
             OsmBuildingDao osmBuildingDao, BuildingMatchFactory matchFactory) {
         super();
@@ -45,12 +44,13 @@ public class BuildingMatcher implements Matcher {
      * and building on the OSM layer.
      */
     @Override
-    public void run() {
+    public Void call() {
         matchById();
+        return null;
     }
 
     private void matchById() {
-        odBuildingDao.getAll().forEach(odBuilding -> {
+        odBuildingDao.findAll().forEach(odBuilding -> {
             Od2OsmMatch match = odBuilding.getMatch();
             // TODO Handle duplicate matches, maybe use a validator.
             if (match != null) return;
@@ -187,5 +187,11 @@ public class BuildingMatcher implements Matcher {
 
     @Override
     public void reset() {
+        // Nothing to reset
+    }
+
+    @Override
+    public TaskStatus getStatus() {
+        return status;
     }
 }

@@ -32,7 +32,7 @@ public class MergeNodesCommand extends SequenceCommand {
 
     /**
      * Constructs a new {@code MergeNodesCommand}.
-     * 
+     *
      * @param targetPosition
      * @param targetNode
      * @param set
@@ -97,10 +97,10 @@ public class MergeNodesCommand extends SequenceCommand {
                     newNodes.add(targetNode);
                 } else
                     if (!newNodes.get(newNodes.size() - 1).equals(targetNode)) {
-                    // make sure we collapse a sequence of deleted nodes
-                    // to exactly one occurrence of the merged target node
-                    newNodes.add(targetNode);
-                }
+                        // make sure we collapse a sequence of deleted nodes
+                        // to exactly one occurrence of the merged target node
+                        newNodes.add(targetNode);
+                    }
                 // else: drop the node
             }
             if (newNodes.size() < 2) {
@@ -122,7 +122,7 @@ public class MergeNodesCommand extends SequenceCommand {
     /**
      * Merges the nodes in {@code nodes} at the specified node's location. Uses
      * the dataset managed by {@code layer} as reference.
-     * 
+     *
      * @param layer
      *            layer the reference data layer. Must not be null
      * @param nodes
@@ -151,7 +151,7 @@ public class MergeNodesCommand extends SequenceCommand {
     // Command cmd = mergeNodes(layer, nodes, target, targetLocationNode);
     // if (cmd != null) {
     // Main.main.undoRedo.add(cmd);
-    // layer.data.setSelected(target);
+    // layer.getDataSet().setSelected(target);
     // }
     // }
 

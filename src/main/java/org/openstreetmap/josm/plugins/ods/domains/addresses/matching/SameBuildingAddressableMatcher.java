@@ -1,15 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
-import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
-import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.matching.Od2OsmMatch;
 import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
-public class SameBuildingAddressableMatcher implements Matcher {
+public class SameBuildingAddressableMatcher {
     private final OdsModule module;
 
     public SameBuildingAddressableMatcher(OdsModule module) {
@@ -17,12 +15,6 @@ public class SameBuildingAddressableMatcher implements Matcher {
         this.module = module;
     }
 
-    @Override
-    public void initialize() throws OdsException {
-        // Empty implementation. No action required
-    }
-
-    @Override
     public void run() {
         Repository repository = module.getRepository();
         repository.query(OpenDataBuilding.class).forEach(building -> {
@@ -57,10 +49,5 @@ public class SameBuildingAddressableMatcher implements Matcher {
         //            @SuppressWarnings("unused")
         //            StraightMatch<AddressNodeEntityType> straightMatch = new StraightMatch<>(osmEntity, odEntity);
         //        }
-    }
-
-    @Override
-    public void reset() {
-        //        addressableMatches.clear();
     }
 }

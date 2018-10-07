@@ -106,7 +106,7 @@ public class DefaultEntityUpdater implements EntityUpdater {
         //
         //                private void updateMatching() {
         //                    // TODO only update matching for modified objects
-        //                    for (Matcher matcher : module.getMatcherManager().getMatchers()) {
+        //                    for (MatchTask matcher : module.getMatcherManager().getMatchers()) {
         //                        matcher.run();
         //                    }
         //                }

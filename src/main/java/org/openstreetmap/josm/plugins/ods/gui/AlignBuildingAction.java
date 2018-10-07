@@ -41,7 +41,7 @@ public class AlignBuildingAction extends OdsAction {
         // This action should only occur when the OpenData layer is active
 
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
-        Collection<Way> ways = osmLayer.data.getSelectedWays().stream()
+        Collection<Way> ways = osmLayer.getDataSet().getSelectedWays().stream()
                 .filter(BuildingEntityType::isBuildingWay).collect(Collectors.toList());
         if (ways.isEmpty()) {
             JOptionPane.showMessageDialog(MainApplication.getMainPanel(), I18n.tr(
@@ -49,7 +49,7 @@ public class AlignBuildingAction extends OdsAction {
             return;
         }
         align(ways, osmLayer);
-        layerManager.getOsmDataLayer().data.clearSelection();
+        layerManager.getOsmDataLayer().getDataSet().clearSelection();
     }
 
     private static void align(Collection<Way> ways, OsmDataLayer osmLayer) {

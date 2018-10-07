@@ -60,7 +60,6 @@ public abstract class OdsModule implements LayerChangeListener {
     private OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
     private OsmLayerManager osmLayerManager;
-    private final MatchingProcessor matchingProcessor = new MatchingProcessor(this);
 
     private boolean initialized = false;
     private boolean active = false;
@@ -210,10 +209,6 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmLayerManager;
     }
 
-    public MatchingProcessor getMatchingProcessor() {
-        return matchingProcessor;
-    }
-
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;
         if (openDataLayerManager.getOsmDataLayer() == activeLayer) {
@@ -335,7 +330,6 @@ public abstract class OdsModule implements LayerChangeListener {
      */
     private void cleanUp() {
         repository.clear();
-        matchingProcessor.reset();
         osmLayerManager.reset();
         openDataLayerManager.reset();
         entityBuilders.clear();

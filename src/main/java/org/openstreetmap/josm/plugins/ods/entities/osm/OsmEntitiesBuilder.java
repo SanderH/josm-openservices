@@ -31,7 +31,7 @@ public class OsmEntitiesBuilder {
     public void build() {
         OsmDataLayer dataLayer = layerManager.getOsmDataLayer();
         if (dataLayer == null) return;
-        build(dataLayer.data.allPrimitives());
+        build(dataLayer.getDataSet().allPrimitives());
     }
 
     /**

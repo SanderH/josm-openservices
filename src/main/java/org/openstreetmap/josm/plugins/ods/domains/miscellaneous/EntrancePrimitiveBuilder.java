@@ -3,17 +3,18 @@ package org.openstreetmap.josm.plugins.ods.domains.miscellaneous;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openstreetmap.josm.plugins.ods.LayerManager;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataEntrance;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntityPrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.primitives.ManagedPrimitive;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
 public class EntrancePrimitiveBuilder extends AbstractEntityPrimitiveBuilder<OpenDataEntrance> {
 
-    public EntrancePrimitiveBuilder(LayerManager layerManager) {
-        super(OpenDataEntrance.class);
+    public EntrancePrimitiveBuilder(OdsModule module, EntityDao<OpenDataEntrance> dao) {
+        super(module, dao);
     }
 
     @Override

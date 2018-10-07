@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Optional;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
@@ -10,7 +9,6 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.OsmApiException;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
@@ -20,13 +18,16 @@ import org.openstreetmap.josm.plugins.ods.processing.OsmEntityRelationManager;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
-public class OsmLayerDownloader implements LayerDownloader {
-    private final OdsModule module;
+public class OsmLayerDownloader implements FeatureLayerDownloader {
+    private final OsmLayerManager layerManager;
     final DownloadSource downloadSource=  DownloadSource.OVERPASS;
+    private final Task prepareTask = new Task.IdleTask();
+    private final Task downloadTask = new DownloadTask();
+    private final Task processTask = new ProcessTask();
     DownloadRequest request;
     DownloadResponse response;
     OsmServerReader osmServerReader;
-    OsmLayerManager layerManager;
+
     OsmHost host;
     DataSet dataSet;
 
@@ -35,14 +36,9 @@ public class OsmLayerDownloader implements LayerDownloader {
         OVERPASS;
     }
 
-    public OsmLayerDownloader(OdsModule module) {
+    public OsmLayerDownloader(OsmLayerManager layerManager) {
         super();
-        this.module = module;
-    }
-
-    @Override
-    public void initialize() throws OdsException {
-        this.layerManager = module.getOsmLayerManager();
+        this.layerManager = layerManager;
     }
 
     @Override
@@ -71,14 +67,13 @@ public class OsmLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public Optional<Task> prepare() {
-        // Nothing to prepare
-        return Optional.empty();
+    public Task prepare() {
+        return prepareTask;
     }
 
     @Override
-    public Optional<Task> download() {
-        return Optional.of(new DownloadTask());
+    public Task download() {
+        return downloadTask;
     }
 
     /**
@@ -88,8 +83,8 @@ public class OsmLayerDownloader implements LayerDownloader {
      * @see org.openstreetmap.josm.plugins.ods.io.Downloader#process()
      */
     @Override
-    public Optional<Task> process() {
-        return Optional.of(new ProcessTask());
+    public Task process() {
+        return processTask;
     }
 
     public DataSet getDataSet() {
@@ -169,7 +164,7 @@ public class OsmLayerDownloader implements LayerDownloader {
             layerManager.getOsmDataLayer().mergeFrom(dataSet);
             Boundary boundary = request.getBoundary();
             DataSource ds = new DataSource(boundary.getBounds(), "OSM");
-            layerManager.getOsmDataLayer().data.addDataSource(ds);
+            layerManager.getOsmDataLayer().getDataSet().addDataSource(ds);
         }
 
         /**

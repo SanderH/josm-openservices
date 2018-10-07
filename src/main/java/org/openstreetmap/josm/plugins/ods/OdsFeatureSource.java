@@ -7,9 +7,9 @@ import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public interface OdsFeatureSource {
     public String getFeatureName();
@@ -24,7 +24,7 @@ public interface OdsFeatureSource {
     boolean isAvailable();
 
     public Host getHost();
-    
+
     public CoordinateReferenceSystem getCrs();
 
     public String getSRS();
@@ -37,7 +37,7 @@ public interface OdsFeatureSource {
      * @return
      */
     public FeatureType getFeatureType();
-    
+
     /**
      * @return The name of the attribute that contains a unique Id
      *   for this feature type.
@@ -47,7 +47,6 @@ public interface OdsFeatureSource {
      *   have to revert to a unique attribute as means to prevent duplicate
      *   downloads.
      */
-    public String getIdAttribute();
 
     public MetaData getMetaData();
 }

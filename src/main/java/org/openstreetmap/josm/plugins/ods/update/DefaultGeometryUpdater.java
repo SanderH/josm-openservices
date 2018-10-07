@@ -78,7 +78,7 @@ public class DefaultGeometryUpdater implements GeometryUpdater {
         }
 
         private void matchNodes() {
-            DataSet dataSet = osmDataLayer.data;
+            DataSet dataSet = osmDataLayer.getDataSet();
             for (Node newNode : newNodes) {
                 Iterator<Node> it = dataSet.searchNodes(newNode.getBBox())
                         .iterator();
@@ -124,7 +124,7 @@ public class DefaultGeometryUpdater implements GeometryUpdater {
             }
             Way osmWay = (Way) osmPrimitive.getPrimitive();
             Way odWay = (Way) odPrimitive.getPrimitive();
-            DataSet dataSet = osmDataLayer.data;
+            DataSet dataSet = osmDataLayer.getDataSet();
             List<Node> odNodes = odWay.getNodes();
             List<Node> newWayNodes = new ArrayList<>(odNodes.size());
             for (Node odNode : odNodes) {

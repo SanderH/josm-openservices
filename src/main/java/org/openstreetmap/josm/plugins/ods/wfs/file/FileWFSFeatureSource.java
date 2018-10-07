@@ -15,9 +15,9 @@ import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 class FileWFSFeatureSource implements OdsFeatureSource {
-    
+
     /**
-     * 
+     *
      */
     private final FileWFSHost host;
     private final CoordinateReferenceSystem crs;
@@ -25,7 +25,7 @@ class FileWFSFeatureSource implements OdsFeatureSource {
     private final Long srid;
     private final SimpleFeatureType featureType;
 
-    
+
     public FileWFSFeatureSource(FileWFSHost host, String feature) {
         super();
         this.host = host;
@@ -48,7 +48,7 @@ class FileWFSFeatureSource implements OdsFeatureSource {
     @Override
     public void initialize() throws OdsException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -64,11 +64,6 @@ class FileWFSFeatureSource implements OdsFeatureSource {
     @Override
     public MetaData getMetaData() {
         return new MetaData(host.getMetaData());
-    }
-
-    @Override
-    public String getIdAttribute() {
-        return "id";
     }
 
     @Override

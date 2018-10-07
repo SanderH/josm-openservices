@@ -14,27 +14,18 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.tools.I18n;
 
 public class GtFeatureSource implements OdsFeatureSource {
-    private boolean initialized = false;
+    private final boolean initialized = false;
     private boolean available = false;
     private final GtHost host;
     private final String featureName;
-    private final String idAttribute;
-    private final long maxFeatures;
     private CoordinateReferenceSystem crs;
     private MetaData metaData;
     private SimpleFeatureSource featureSource;
     private FeatureType featureType;
 
-    public GtFeatureSource(GtHost host, String featureName, String idAttribute) {
-        this(host, featureName, idAttribute, null);
-    }
-
-    public GtFeatureSource(GtHost host, String featureName, String idAttribute, String[] attributes) {
-        super();
+    public GtFeatureSource(GtHost host, String featureName) {
         this.host = host;
-        this.maxFeatures = host.getMaxFeatures();
         this.featureName = featureName;
-        this.idAttribute = idAttribute;
     }
 
     @Override
@@ -50,7 +41,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     protected void setAvailable(boolean available) {
         this.available = available;
     }
-    
+
     @Override
     public GtHost getHost() {
         return host;
@@ -62,8 +53,8 @@ public class GtFeatureSource implements OdsFeatureSource {
         metaData = new MetaData(host.getMetaData());
         if (!getHost().hasFeatureType(featureName)) {
             String msg = I18n.tr("The feature named ''{0}'' is not known to host ''{1}''",
-                this.getFeatureName(),
-                getHost().getName());
+                    this.getFeatureName(),
+                    getHost().getName());
             throw new OdsException(msg);
         }
         try {
@@ -78,9 +69,9 @@ public class GtFeatureSource implements OdsFeatureSource {
         }
         catch (IOException e) {
             String msg = I18n.tr("The feature named ''{0}'' is not accessable, " +
-                "because of a network timeout on host {1}",
-            getFeatureName(),
-            getHost().getName());
+                    "because of a network timeout on host {1}",
+                    getFeatureName(),
+                    getHost().getName());
             throw new OdsException(msg);
         }
         // TODO do we want these lines here? The source.date should be a response parameter
@@ -103,15 +94,6 @@ public class GtFeatureSource implements OdsFeatureSource {
     public FeatureType getFeatureType() {
         assert isAvailable();
         return featureType;
-    }
-
-    public long getMaxFeatureCount() {
-        return maxFeatures;
-    }
-    
-    @Override
-    public String getIdAttribute() {
-        return idAttribute;
     }
 
     @Override

@@ -21,7 +21,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
@@ -102,9 +101,9 @@ public class OdsImporter {
     }
 
     private void updateMatching() {
-        for (Matcher matcher : module.getMatchingProcessor().getMatchers()) {
-            matcher.run();
-        }
+        //        for (MatchTask matchTask : module.getMatchingProcessor().getMatchers()) {
+        //            matchTask.run();
+        //        }
     }
 
     public List<Way> getImportedWays() {
@@ -174,7 +173,7 @@ public class OdsImporter {
             Way newWay = new Way();
             newWay.setKeys(odWay.getKeys());
             newWay.setNodes(nodes);
-            commands.add(new AddCommand(layer.data, newWay));
+            commands.add(new AddCommand(layer.getDataSet(), newWay));
         }
 
         public void addNode(Node odNode) {
@@ -186,7 +185,7 @@ public class OdsImporter {
             if (merge) {
                 node = nodeMap.get(odNode);
                 if (node == null) {
-                    List<Node> nodes = layer.data.searchNodes(odNode.getBBox());
+                    List<Node> nodes = layer.getDataSet().searchNodes(odNode.getBBox());
                     if (!nodes.isEmpty() && !nodes.get(0).isDeleted()) {
                         node = nodes.get(0);
                     }
@@ -195,7 +194,7 @@ public class OdsImporter {
             if (node == null) {
                 node = new Node();
                 node.load(odNode.save());
-                commands.add(new AddCommand(layer.data, node));
+                commands.add(new AddCommand(layer.getDataSet(), node));
                 if (merge) {
                     nodeMap.put(odNode, node);
                 }

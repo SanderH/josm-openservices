@@ -247,7 +247,7 @@ public class OsmLayerListener implements DataSetListener, Runnable {
             if (newNode.isDeleted()) {
                 return;
             }
-            DataSet data = layerManager.getOsmDataLayer().data;
+            DataSet data = layerManager.getOsmDataLayer().getDataSet();
             List<Node> nodes = data.searchNodes(new BBox(newNode));
             nodes.remove(newNode);
             if (nodes.size() == 1) {

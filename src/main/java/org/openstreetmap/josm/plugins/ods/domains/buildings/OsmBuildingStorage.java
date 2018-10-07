@@ -3,8 +3,6 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.openstreetmap.josm.plugins.ods.storage.IdentitySet;
 
 public class OsmBuildingStorage {
@@ -24,7 +22,6 @@ public class OsmBuildingStorage {
     public static class Dao implements OsmBuildingDao {
         private final OsmBuildingStorage storage;
 
-        @Inject
         public Dao(OsmBuildingStorage storage) {
             super();
             this.storage = storage;

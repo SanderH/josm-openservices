@@ -66,7 +66,7 @@ public class Osm_Building_AddressNode_RelationManager implements OsmEntityRelati
 
     private DataSet getDataSet() {
         if (dataSet == null) {
-            dataSet = getLayerManager().getOsmDataLayer().data;
+            dataSet = getLayerManager().getOsmDataLayer().getDataSet();
         }
         return dataSet;
     }

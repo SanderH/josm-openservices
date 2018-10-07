@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.geotools.data.DataStore;
-import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.io.AbstractHost;
 
@@ -31,12 +30,6 @@ public abstract class GtHost extends AbstractHost {
     public boolean hasFeatureType(String type) {
         return featureTypes.contains(type);
     }
-
-    @Override
-    public OdsFeatureSource getOdsFeatureSource(String feature) {
-        return new GtFeatureSource(this, feature, null);
-    }
-
     //    @Override
     //    public <T extends EntityType> FeatureDownloader createDownloader(
     //            OdsModule module, OdsDataSource dataSource, T entityType) throws OdsException {

@@ -100,10 +100,10 @@ public class OdsDownloadAction extends OdsAction {
         }
         // Make sure only one object was selected
         OsmDataLayer layer = (OsmDataLayer) activeLayer;
-        if (layer.data.getAllSelected().size() != 1) {
+        if (layer.getDataSet().getAllSelected().size() != 1) {
             return null;
         }
-        OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
+        OsmPrimitive primitive = layer.getDataSet().getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY) {
             return new Boundary((Way)primitive);
         }
@@ -129,6 +129,7 @@ public class OdsDownloadAction extends OdsAction {
                 downloader.run(getProgressMonitor(), request);
             }
             catch (OdsException e) {
+                Logging.error(e);
                 JOptionPane.showMessageDialog(MainApplication.getMainPanel(), I18n.tr("The download failed because of the following reason(s):\n{0}",
                         e.getMessage()),
                         I18n.tr("Download error"), JOptionPane.ERROR_MESSAGE);

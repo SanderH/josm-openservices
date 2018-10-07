@@ -1,48 +1,42 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
-import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
-import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
-
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-import org.openstreetmap.josm.plugins.ods.Matcher;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
+import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OsmAddressNode;
-import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
-import org.openstreetmap.josm.plugins.ods.storage.Repository;
-import org.openstreetmap.josm.plugins.ods.storage.query.Query;
 
-public class PcHnrAddressableMatcher implements Matcher {
+public class PcHnrAddressableMatcher {
     private final AddressableMatchFactory matchFactory = new BagAddressableMatchFactory();
-    private final OdsModule module;
+    private final EntityDao<OpenDataAddressNode> odAddressNodeDao;
+    private final EntityDao<OsmAddressNode> osmAddressNodeDao;
 
-    public PcHnrAddressableMatcher(OdsModule module) {
+    public PcHnrAddressableMatcher(
+            EntityDao<OpenDataAddressNode> odAddressNodeDao,
+            EntityDao<OsmAddressNode> osmAddressNodeDao) {
         super();
-        this.module = module;
+        this.odAddressNodeDao = odAddressNodeDao;
+        this.osmAddressNodeDao = osmAddressNodeDao;
     }
 
-    @Override
-    public void initialize() throws OdsException {
-        // Empty implementation. No action required
-    }
-
-    @Override
     public void run() {
-        Repository repository = module.getRepository();
-        repository.query(OpenDataAddressNode.class).forEach(odAddressNode -> {
-            String postcode = odAddressNode.getAddress().getPostcode();
-            String fullHouseNumber = odAddressNode.getAddress().getFullHouseNumber();
-            if (postcode != null && fullHouseNumber != null) {
-                Query<OsmAddressNode> query = repository.query(OsmAddressNode.class,
-                        EQUALS(ATTR("address.postcode"), postcode).AND(EQUALS(ATTR("address.fullHouseNumber"), fullHouseNumber)));
-                List<? extends OsmAddressNode> osmAddressNodes = query.toList();
-                createMatch(odAddressNode, osmAddressNodes);
-            }
+        Map<PcHnrKey, List<OsmAddressNode>> index = new HashMap<>();
+        osmAddressNodeDao.findAll().forEach(an -> {
+            PcHnrKey key = new PcHnrKey(an);
+            index.computeIfAbsent(key, l -> new ArrayList<>()).add(an);
+        });
+        odAddressNodeDao.findAll().forEach(odAddressNode -> {
+            PcHnrKey key = new PcHnrKey(odAddressNode);
+            List<? extends OsmAddressNode> anList = index.get(key);
+            createMatch(odAddressNode, anList);
         });
     }
 
@@ -70,8 +64,26 @@ public class PcHnrAddressableMatcher implements Matcher {
         }
     }
 
-    @Override
-    public void reset() {
-        //        addressableMatches.clear();
+    private static class PcHnrKey {
+        private final String postcode;
+        private final Integer houseNumber;
+
+        PcHnrKey(AddressNode addressNode) {
+            this.postcode = addressNode.getAddress().getPostcode();
+            this.houseNumber = addressNode.getAddress().getHouseNumber();
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(postcode, houseNumber);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof PcHnrKey)) return false;
+            PcHnrKey other = (PcHnrKey) obj;
+            return Objects.equals(postcode,  other.postcode) &&
+                    Objects.equals(houseNumber, other.houseNumber);
+        }
     }
 }

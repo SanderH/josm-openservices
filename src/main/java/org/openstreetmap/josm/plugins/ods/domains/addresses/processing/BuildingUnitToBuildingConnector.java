@@ -1,20 +1,15 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
-import static org.openstreetmap.josm.plugins.ods.storage.query.Query.ATTR;
-import static org.openstreetmap.josm.plugins.ods.storage.query.Query.EQUALS;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuildingUnit;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
-import org.openstreetmap.josm.plugins.ods.io.Task;
-import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 
 /**
@@ -30,20 +25,17 @@ import org.openstreetmap.josm.plugins.ods.storage.Repository;
  *
  */
 public class BuildingUnitToBuildingConnector extends AbstractTask {
-    private static final List<Class<? extends Task>> DEPENDENCIES =
-            Arrays.asList();
-    private final OdsModule module = OpenDataServicesPlugin.getModule();
+    private final EntityDao<OpenDataBuildingUnit> buildingUnitDao;
+    private final EntityDao<OpenDataBuilding> buildingDao;
     private Consumer<BuildingUnit> unmatchedBuildingUnitHandler;
 
-    public BuildingUnitToBuildingConnector() {
+    public BuildingUnitToBuildingConnector(
+            EntityDao<OpenDataBuildingUnit> buildingUnitDao,
+            EntityDao<OpenDataBuilding> buildingDao) {
         super();
+        this.buildingUnitDao = buildingUnitDao;
+        this.buildingDao = buildingDao;
     }
-
-    @Override
-    public Collection<Class<? extends Task>> getDependencies() {
-        return DEPENDENCIES;
-    }
-
 
     public void setUnmatchedBuildingUnitHandler(
             Consumer<BuildingUnit> unmatchedBuildingUnitHandler) {
@@ -52,8 +44,11 @@ public class BuildingUnitToBuildingConnector extends AbstractTask {
 
     @Override
     public Void call() {
-        module.getRepository().query(BuildingUnit.class)
-        .forEach(this::matchBuildingUnitToBuilding);
+        Map<Object, OpenDataBuilding> buildingMap =
+                buildingDao.findAll().collect(Collectors.toMap(OpenDataBuilding::getReferenceId, Function.identity()));
+        buildingUnitDao.findAll().forEach(buildingUnit -> {
+            matchBuildingUnitToBuilding(buildingMap, buildingUnit);
+        });
         return null;
     }
 
@@ -62,17 +57,17 @@ public class BuildingUnitToBuildingConnector extends AbstractTask {
      *
      * @param buildingUnit
      */
-    public void matchBuildingUnitToBuilding(BuildingUnit buildingUnit) {
-        Repository repository = module.getRepository();
+    public void matchBuildingUnitToBuilding(Map<Object, OpenDataBuilding> buildingMap,
+            BuildingUnit buildingUnit) {
         if (buildingUnit.getBuilding() == null) {
             Object buildingRef = buildingUnit.getBuildingRef();
             if (buildingRef != null) {
-                repository.query(OpenDataBuilding.class, EQUALS(buildingRef, ATTR("referenceId")))
-                .forEach(building -> {
+                OpenDataBuilding building = buildingMap.get(buildingRef);
+                if (buildingUnit.getBuilding() != null) {
                     buildingUnit.setBuilding(building);
                     building.addBuildingUnit(buildingUnit);
-                });
-                if (buildingUnit.getBuilding() == null) {
+                }
+                else {
                     reportUnmatched(buildingUnit);
                 }
             }

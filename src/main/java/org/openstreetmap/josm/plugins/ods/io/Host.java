@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods.io;
 import java.net.URL;
 
 import org.openstreetmap.josm.plugins.ods.OdsConfigurationException;
-import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
@@ -72,23 +71,4 @@ public interface Host {
      * @throws ServiceException
      */
     boolean hasFeatureType(String feature) throws ServiceException;
-
-    /**
-     * @param feature
-     * @return An OdsFeatureSource object for the feature with the specified name
-     * @throws ServiceException
-     */
-    OdsFeatureSource getOdsFeatureSource(String feature)
-            throws ServiceException;
-
-    //    /**
-    //     * Create a feature downloader for passed data source that return results of type
-    //     * <? extends class>
-    //     * @param module The active module
-    //     * @param dataSource
-    //     * @param clazz
-    //     * @return A @FeatureDownloader, or null if not available
-    //     * @throws OdsException
-    //     */
-    //    <T extends EntityType> FeatureDownloader createDownloader(OdsModule module, OdsDataSource dataSource, T entityType) throws OdsException;
 }

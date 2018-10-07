@@ -1,19 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.matching;
 
-import org.openstreetmap.josm.plugins.ods.Matcher;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.MatchTask;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.io.TaskStatus;
 import org.openstreetmap.josm.tools.Logging;
 
-public class AddressableMatcher implements Matcher {
+public class AddressableMatcher implements MatchTask {
     //    private final SameBuildingAddressableMatcher byBuildingMatcher;
     private final PcHnrAddressableMatcher pcHnrMatcher;
+    private final TaskStatus status = new TaskStatus();
 
-    public AddressableMatcher(OdsModule module) {
+    public AddressableMatcher(PcHnrAddressableMatcher pcHnrMatcher) {
         super();
-        // TODO Use (DI?) container to retrieve the fields.
-        //        this.byBuildingMatcher = new SameBuildingAddressableMatcher(module);
-        this.pcHnrMatcher = new PcHnrAddressableMatcher(module);
+        this.pcHnrMatcher = pcHnrMatcher;
     }
 
     @Override
@@ -22,16 +21,17 @@ public class AddressableMatcher implements Matcher {
     }
 
     @Override
-    public void run() {
+    public Void call() {
         //        byBuildingMatcher.run();
         try {
             pcHnrMatcher.run();
         }
         catch (Exception e) {
             Logging.error(e);
-            throw e;
         }
+        return null;
     }
+
 
     //    public void analyze() {
     //        for (Match<Addressable> match : addressableMatches.values()) {
@@ -81,6 +81,11 @@ public class AddressableMatcher implements Matcher {
     //            match.addAttributeDifference(new TagDifference(match, key));
     //        }
     //    }
+
+    @Override
+    public TaskStatus getStatus() {
+        return status;
+    }
 
     @Override
     public void reset() {

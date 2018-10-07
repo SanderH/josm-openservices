@@ -10,11 +10,9 @@ import java.util.concurrent.Callable;
 
 import org.openstreetmap.josm.tools.Logging;
 
-public interface Task extends Callable<Void>, Comparable<Task> {
+public interface Task extends Callable<Void> {
     public final Collection<Class<? extends Task>> NO_DEPENDENCIES = Collections.emptyList();
     public TaskStatus getStatus();
-    public boolean depends(Task task);
-    public Collection<Class<? extends Task>> getDependencies();
 
     /**
      * Create a sorted list of tasks that satisfies the correct operation
@@ -46,6 +44,20 @@ public interface Task extends Callable<Void>, Comparable<Task> {
         } catch (Exception e) {
             Logging.error(e);
             throw new RuntimeException(e);
+        }
+    }
+
+    public static class IdleTask implements Task {
+        TaskStatus status = new TaskStatus();
+
+        @Override
+        public Void call() throws Exception {
+            return null;
+        }
+
+        @Override
+        public TaskStatus getStatus() {
+            return status;
         }
     }
 }

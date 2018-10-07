@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.processing;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,8 +9,6 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.Building;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
-import org.openstreetmap.josm.plugins.ods.io.OpenDataLayerDownloader;
-import org.openstreetmap.josm.plugins.ods.io.Task;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygonal;
@@ -30,11 +26,6 @@ public class BuildingCompletenessEnricher extends AbstractTask {
 
     public BuildingCompletenessEnricher() {
         super();
-    }
-
-    @Override
-    public Collection<Class<? extends Task>> getDependencies() {
-        return Arrays.asList(OpenDataLayerDownloader.UpdateBoundariesTask.class);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.openstreetmap.josm.tools.Logging;
@@ -29,24 +28,7 @@ public class TaskGroup implements Task {
     }
 
     @Override
-    public int compareTo(Task o) {
-        // TODO improve task ordering
-        return -1;
-    }
-
-    @Override
     public TaskStatus getStatus() {
         return taskRunner.getStatus();
     }
-
-    @Override
-    public boolean depends(Task task) {
-        return false;
-    }
-
-    @Override
-    public Collection<Class<? extends Task>> getDependencies() {
-        return Task.NO_DEPENDENCIES;
-    }
-
 }

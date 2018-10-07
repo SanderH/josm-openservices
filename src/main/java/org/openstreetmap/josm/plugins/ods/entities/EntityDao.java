@@ -2,10 +2,17 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.util.stream.Stream;
 
-public interface EntityDao<T> {
+import com.vividsolutions.jts.geom.Geometry;
 
-    void add(T entity);
+public interface EntityDao<E extends Entity> {
 
-    Stream<T> getAll();
+    public void insert(E entity);
 
+    public Stream<E> findAll();
+
+    public void removeAll();
+
+    public Stream<E> findByIntersection(Geometry geometry);
+
+    public Class<E> getMainClass();
 }

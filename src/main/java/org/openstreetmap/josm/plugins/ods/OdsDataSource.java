@@ -1,11 +1,9 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import java.util.List;
-
 import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.exceptions.OdsException;
+import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
 
 /**
  * <p>An OdsDataSource is the interface between the OdsModule and the
@@ -14,9 +12,9 @@ import org.openstreetmap.josm.plugins.ods.properties.SimpleEntityMapper;
  * <li>Maintain a filter used when downloading features</li>
  * <li>Create a unique id for each downloaded feature</li>
  * <li>Maintain a list of downloaded feature to prevent duplicates</li>
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public interface OdsDataSource {
     public void initialize() throws OdsException;
@@ -25,23 +23,16 @@ public interface OdsDataSource {
 
     public OdsFeatureSource getOdsFeatureSource();
 
-    public Query getQuery();
-
-    public void setIdFactory(DefaultIdFactory idFactory);
-
-    /**
-     * Get an IdFactory that can extract a unique Id for the features
-     * Retrieved from this dataSource.<br>
-     * 
-     * @return The IdFactory
-     */
-    public IdFactory getIdFactory();
-    
-    public List<String> getRequiredAttributes();
+    public Query getQuery(DownloadRequest request);
 
     public MetaData getMetaData();
 
-    public SimpleEntityMapper<?, ?> getEntityMapper();
+    /**
+     * Get the page size if this data source is configured for paging requests.
+     * @return The page size or 0 if paging has not been configured.
+     */
+    public default int getPageSize() {
+        return 0;
+    }
 
-    public boolean isRequired();
 }

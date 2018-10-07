@@ -42,8 +42,8 @@ public class OdsUpdateAction extends OdsAction {
         }
 
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
-        importer.doImport(osmLayer.data.getAllSelected());
-        updater.doUpdate(osmLayer.data.getAllSelected());
+        importer.doImport(osmLayer.getDataSet().getAllSelected());
+        updater.doUpdate(osmLayer.getDataSet().getAllSelected());
         Set<Way> modifiedWays = new HashSet<>();
         modifiedWays.addAll(importer.getImportedWays());
         modifiedWays.addAll(updater.getUpdatedWays());
@@ -52,7 +52,7 @@ public class OdsUpdateAction extends OdsAction {
             buildingAligner.run();
         }
 
-        layerManager.getOsmDataLayer().data.clearSelection();
+        layerManager.getOsmDataLayer().getDataSet().clearSelection();
         MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
     }
 

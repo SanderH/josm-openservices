@@ -1,32 +1,22 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.util.LinkedList;
 import java.util.List;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
 
-public class PrimitiveBuilder {
-    private final List<EntityPrimitiveBuilder<?>> entityBuilders = new LinkedList<>();
+public class PrimitiveBuilder extends AbstractTask {
+    private final List<EntityPrimitiveBuilder<?>> entityBuilders;
 
-    public PrimitiveBuilder(OdsModule module) {
+    public PrimitiveBuilder(List<EntityPrimitiveBuilder<?>> entityBuilders) {
         super();
-        for (Class<? extends EntityPrimitiveBuilder<?>> clazz : module.getConfiguration().getPrimitiveBuilders()) {
-            try {
-                entityBuilders.add(clazz.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        this.entityBuilders = entityBuilders;
     }
 
-    //    public void register(EntityPrimitiveBuilder<?> builder) {
-    //        entityBuilders.add(builder);
-    //    }
-    //
-    public void run(DownloadResponse response) {
+    @Override
+    public Void call() throws Exception {
         for (EntityPrimitiveBuilder<?> builder : entityBuilders) {
             builder.run();
         }
+        return null;
     }
 }

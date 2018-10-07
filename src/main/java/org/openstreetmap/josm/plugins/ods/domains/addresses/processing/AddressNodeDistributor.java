@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,16 +8,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.Address;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNodeGroup;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
-import org.openstreetmap.josm.plugins.ods.io.OpenDataLayerDownloader;
-import org.openstreetmap.josm.plugins.ods.io.Task;
 
 /**
  * This processor finds overlapping nodes in the data and distributes them, so
@@ -32,29 +27,21 @@ import org.openstreetmap.josm.plugins.ods.io.Task;
  *
  */
 public class AddressNodeDistributor extends AbstractTask {
-    private final static Collection<Class<? extends Task>> DEPENDENCIES = Arrays.asList(OpenDataLayerDownloader.BuildPrimitivesTask.class);
-    private final OdsModule module = OpenDataServicesPlugin.getModule();
-    private Comparator<? super AddressNode> comparator = new DefaultNodeComparator();
+    private final Comparator<? super AddressNode> comparator = new DefaultNodeComparator();
+    private final EntityDao<OpenDataBuilding> buildingDao;
 
-    public AddressNodeDistributor() {
+    public AddressNodeDistributor(EntityDao<OpenDataBuilding> buildingEntity) {
         super();
+        this.buildingDao = buildingEntity;
     }
 
-    @Override
-    public Collection<Class<? extends Task>> getDependencies() {
-        return DEPENDENCIES;
-    }
-
-
-
-    public void setComparator(Comparator<? super AddressNode> comparator) {
-        this.comparator = comparator;
-    }
+    //    public void setComparator(Comparator<? super AddressNode> comparator) {
+    //        this.comparator = comparator;
+    //    }
 
     @Override
     public Void call() {
-        module.getRepository().query(OpenDataBuilding.class)
-        .forEach(this::distributeNodes);
+        buildingDao.findAll().forEach(this::distributeNodes);
         return null;
     }
 

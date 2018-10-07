@@ -23,7 +23,6 @@ import org.geotools.xml.Configuration;
 import org.geotools.xml.DOMParser;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.ServiceException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
@@ -154,17 +153,4 @@ public class FileWFSHost extends AbstractHost {
     public boolean hasFeatureType(String feature) throws ServiceException {
         return featureTypeTypes.containsKey(feature);
     }
-
-    @Override
-    public OdsFeatureSource getOdsFeatureSource(String feature)
-            throws ServiceException {
-        return new FileWFSFeatureSource(this, feature);
-    }
-
-    //    @Override
-    //    public <T extends EntityType> FeatureDownloader createDownloader(
-    //            OdsModule module, OdsDataSource dataSource, T entityType)
-    //                    throws OdsException {
-    //        throw new UnsupportedOperationException();
-    //    }
 }

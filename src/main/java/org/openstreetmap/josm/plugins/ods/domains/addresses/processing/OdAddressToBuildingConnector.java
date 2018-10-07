@@ -1,16 +1,14 @@
 package org.openstreetmap.josm.plugins.ods.domains.addresses.processing;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.AddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.addresses.OpenDataAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OpenDataBuilding;
+import org.openstreetmap.josm.plugins.ods.entities.EntityDao;
 import org.openstreetmap.josm.plugins.ods.io.AbstractTask;
-import org.openstreetmap.josm.plugins.ods.storage.GeoRepository;
-import org.openstreetmap.josm.plugins.ods.storage.Repository;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -27,11 +25,16 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class OdAddressToBuildingConnector extends AbstractTask {
-    private final OdsModule module = OpenDataServicesPlugin.getModule();
     private Consumer<AddressNode> unmatchedAddressNodeHandler = (t -> {/**/});
+    private final EntityDao<OpenDataAddressNode> addressNodeDao;
+    private final EntityDao<OpenDataBuilding> buildingDao;
 
-    public OdAddressToBuildingConnector() {
+    public OdAddressToBuildingConnector(
+            EntityDao<OpenDataAddressNode> addressNodeDao,
+            EntityDao<OpenDataBuilding> buildingDao) {
         super();
+        this.addressNodeDao = addressNodeDao;
+        this.buildingDao = buildingDao;
     }
 
     public void setUnmatchedHousingUnitHandler(
@@ -41,7 +44,7 @@ public class OdAddressToBuildingConnector extends AbstractTask {
 
     @Override
     public Void call() {
-        module.getRepository().query(OpenDataAddressNode.class)
+        addressNodeDao.findAll()
         .forEach(this::match);
         return null;
     }
@@ -52,22 +55,19 @@ public class OdAddressToBuildingConnector extends AbstractTask {
      * @param addressNode
      */
     public void match(OpenDataAddressNode addressNode) {
-        Repository repository = module.getRepository();
         if (addressNode.getBuilding() == null) {
             Geometry geometry = addressNode.getGeometry();
-            if (geometry != null && repository instanceof GeoRepository) {
-                Iterator<OpenDataBuilding> matchedbuildings = ((GeoRepository)repository).queryIntersection(OpenDataBuilding.class, "geometry", geometry).iterator();
-                if (matchedbuildings.hasNext()) {
-                    OpenDataBuilding building = matchedbuildings.next();
-                    addressNode.addBuilding(building);
-                    building.getAddressNodes().add(addressNode);
-                }
-                else {
-                    reportUnmatched(addressNode);
-                }
+            List<OpenDataBuilding> matches = buildingDao.findByIntersection(geometry).collect(Collectors.toList());
+            if (matches.size() == 0) {
+                reportUnmatched(addressNode);
+            }
+            else if (matches.size() == 1) {
+                OpenDataBuilding building = matches.get(0);
+                addressNode.addBuilding(building);
+                building.getAddressNodes().add(addressNode);
             }
             else {
-                reportUnmatched(addressNode);
+                throw new UnsupportedOperationException();
             }
         }
     }

@@ -4,35 +4,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Deprecated
 public class MatchingProcessor {
-    private final List<Matcher> matchers = new ArrayList<>();
+    private final List<MatchTask> matchTasks = new ArrayList<>();
 
     public MatchingProcessor(OdsModule module) {
         reset();
     }
 
     public void run() {
-        for (Matcher matcher : getMatchers()) {
-            matcher.run();
+        for (MatchTask matchTask : getMatchers()) {
+            //            matchTask.run();
         }
     }
 
     public void reset() {
-        for (Matcher matcher : getMatchers()) {
-            matcher.reset();
+        for (MatchTask matchTask : getMatchers()) {
+            matchTask.reset();
         }
     }
 
-    public Collection<Matcher> getMatchers() {
-        return matchers;
+    public Collection<MatchTask> getMatchers() {
+        return matchTasks;
     }
 
-    public void registerMatcher(Matcher matcher) {
-        matchers.add(matcher);
+    public void registerMatcher(MatchTask matchTask) {
+        matchTasks.add(matchTask);
     }
 
     //    @SuppressWarnings("unchecked")
-    //    public Matcher getMatcher(Class<E> clazz) {
-    //        return (Matcher<? extends E>) matchers.get(clazz);
+    //    public MatchTask getMatcher(Class<E> clazz) {
+    //        return (MatchTask<? extends E>) matchTasks.get(clazz);
     //    }
 }
