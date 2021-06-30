@@ -193,7 +193,7 @@ public class WFSHost implements GtHost {
 
         // final Version defaultVersion = Version.highest();
 
-        // We cannot use the highest vesion as the default yet
+        // We cannot use the highest version as the default yet
         // since v1_1_0 does not implement a read/write datastore
         // and is still having trouble with requests from
         // different projections etc...
