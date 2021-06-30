@@ -14,7 +14,7 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 
 public class BuildingMatcher implements Matcher {
-    private final Map<Long, BuildingMatch> buildingMatches = new HashMap<>();
+    private final Map<Object, BuildingMatch> buildingMatches = new HashMap<>();
     private final EntityStore<OsmBuilding> osmBuildingStore;
     private final EntityStore<OdBuilding> odBuildingStore;
     private final List<OsmBuilding> unidentifiedOsmBuildings = new LinkedList<>();
@@ -41,7 +41,7 @@ public class BuildingMatcher implements Matcher {
     }
 
     private void processOpenDataBuilding(OdBuilding odBuilding) {
-        Long id = (Long) odBuilding.getReferenceId();
+        Object id = odBuilding.getReferenceId();
         BuildingMatch match = buildingMatches.get(id);
         if (match != null) {
             match.addOpenDataEntity(odBuilding);
