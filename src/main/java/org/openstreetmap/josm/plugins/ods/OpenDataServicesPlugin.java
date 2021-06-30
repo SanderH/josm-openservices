@@ -33,7 +33,7 @@ import org.openstreetmap.josm.tools.I18n;
 public class OpenDataServicesPlugin extends Plugin {
     public static OpenDataServicesPlugin INSTANCE;
 
-    private final static String INFO_URL = "http://www.gertjanidema.nl/ods/ods.json";
+    private final static String INFO_URL = "https://www.gertjanidema.nl/ods/ods.json";
     private JsonObject metaInfo;
 
     // All available modules
