@@ -15,6 +15,7 @@ import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Main downloader that retrieves data from multiple sources. Currently only a OSM source
@@ -159,6 +160,7 @@ public abstract class MainDownloader {
             for (LayerDownloader downloader : enabledDownloaders) {
                 downloader.cancel();
             }
+            Logging.error(e);
             status.setException(e);
             status.setFailed(true);
         }
