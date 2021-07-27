@@ -89,7 +89,6 @@ public class OsmLayerManager extends AbstractLayerManager {
 
     @Override
     public void deActivate() {
-        super.deActivate();
         if (isActive()) {
             // Clear all data stores
             for (EntityStore<?> store : entityStoreMap.stores.values()) {
