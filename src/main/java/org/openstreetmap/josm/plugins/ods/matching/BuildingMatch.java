@@ -73,6 +73,11 @@ public class BuildingMatch extends MatchImpl<OsmBuilding, OdBuilding> {
     }
 
     private MatchStatus compareAreas() {
+        if ((getOsmEntity().getGeometry() == null) || getOpenDataEntity().getGeometry() == null)
+        {
+            // happens with BAG ID 0847100000014540 in Lierop: https://www.openstreetmap.org/relation/3734891
+            return NO_MATCH;
+        }
         double osmArea = getOsmEntity().getGeometry().getArea();
         double odArea = getOpenDataEntity().getGeometry().getArea();
         if (osmArea == 0.0 || odArea == 0.0) {
@@ -89,6 +94,11 @@ public class BuildingMatch extends MatchImpl<OsmBuilding, OdBuilding> {
     }
 
     private MatchStatus compareCentroids() {
+        if ((getOsmEntity().getGeometry() == null) || getOpenDataEntity().getGeometry() == null)
+        {
+            // happens with BAG ID 0847100000014540 in Lierop: https://www.openstreetmap.org/relation/3734891
+            return NO_MATCH;
+        }
         Point osmCentroid = getOsmEntity().getGeometry().getCentroid();
         Point odCentroid = getOpenDataEntity().getGeometry().getCentroid();
         double centroidDistance = osmCentroid.distance(odCentroid);
