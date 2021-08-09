@@ -68,21 +68,21 @@ public class BuildingMatcher implements Matcher {
             unidentifiedOsmBuildings.add(osmBuilding);
             return;
         }
-        Long l;
+        String s;
         try {
-            l = (Long)id;
+            s = (String)id;
         }
         catch (Exception e) {
             unidentifiedOsmBuildings.add(osmBuilding);
             return;
         }
-        List<OdBuilding> odBuildings = odBuildingStore.getById(l);
+        List<OdBuilding> odBuildings = odBuildingStore.getById(s);
         if (odBuildings.size() > 0) {
             BuildingMatch match = new BuildingMatch(osmBuilding, odBuildings.get(0));
             for (int i=1; i<odBuildings.size(); i++) {
                 match.addOpenDataEntity(odBuildings.get(i));
             }
-            buildingMatches.put(l, match);
+            buildingMatches.put(s, match);
         } else {
             unmatchedOsmBuildings.add(osmBuilding);
         }
