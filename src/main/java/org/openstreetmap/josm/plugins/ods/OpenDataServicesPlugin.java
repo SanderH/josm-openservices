@@ -33,8 +33,9 @@ import org.openstreetmap.josm.tools.I18n;
 public class OpenDataServicesPlugin extends Plugin {
     public static OpenDataServicesPlugin INSTANCE;
 
-    private final static String INFO_URL = "https://www.gertjanidema.nl/ods/ods.json";
+    private final static String INFO_URL = "https://bag.tools4osm.nl/plugins/versions.json";
     private JsonObject metaInfo;
+    private boolean isDebug = false;
 
     // All available modules
     private final List<OdsModule> modules = new LinkedList<>();
@@ -97,7 +98,7 @@ public class OpenDataServicesPlugin extends Plugin {
 
     private void initializeMenu() {
         if (menu == null) {
-            menu = MainApplication.getMenu().addMenu("ODS", "ODS", KeyEvent.VK_UNDEFINED,
+            menu = MainApplication.getMenu().addMenu("ODS", "ODS" + (isDebug ? " (debug)" : ""), KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
             moduleMenu = new JMenu(I18n.tr("Enable"));
         }
@@ -114,10 +115,13 @@ public class OpenDataServicesPlugin extends Plugin {
     public void checkVersion(PluginInformation info) {
         if (metaInfo == null) return;
         String latestVersion = metaInfo.getJsonObject("version").getString("latest");
-        if (!info.version.equals(latestVersion)) {
+        String nextVersion = metaInfo.getJsonObject("version").getString("next");
+        if (!info.version.equals(latestVersion) && !info.version.equals(nextVersion)) {
             JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("Your ODS version ({0}) is out of date.\n" +
                     "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
-
+        }
+        if (info.version.equals(nextVersion)) {
+            isDebug = true;
         }
     }
 
@@ -130,13 +134,13 @@ public class OpenDataServicesPlugin extends Plugin {
             throw new RuntimeException(e);
         }
         try (
-                InputStream is = url.openStream();
-                JsonReader reader = Json.createReader(is);
-                )  {
-            metaInfo = reader.readObject().getJsonObject("ods");
-            if (metaInfo == null) {
-                JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("No version information is available at the moment.\n" +
-                        "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
+            InputStream is = url.openStream();
+            JsonReader reader = Json.createReader(is);
+            )  {
+                metaInfo = reader.readObject().getJsonObject("ods");
+                if (metaInfo == null) {
+                    JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("No version information is available at the moment.\n" +
+                            "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("No version information is available at the moment.\n" +
