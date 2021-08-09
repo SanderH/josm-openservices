@@ -22,6 +22,7 @@ public class DefaultImportFilter implements ImportFilter {
         switch (entity.getStatus()) {
         case IN_USE:
         case IN_USE_NOT_MEASURED:
+        case RECONSTRUCTION:
         case REMOVAL_DUE:
         case CONSTRUCTION:
             doImport = true;

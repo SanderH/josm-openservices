@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.CONSTRUCTION;
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE;
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE_NOT_MEASURED;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.RECONSTRUCTION;
 import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.PLANNED;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.COMPARABLE;
 import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.MATCH;
@@ -59,14 +60,15 @@ public class BuildingMatch extends MatchImpl<OsmBuilding, OdBuilding> {
         if (osmStatus.equals(odStatus)) {
             return MATCH;
         }
-        if (osmStatus.equals(IN_USE) && odStatus.equals(IN_USE_NOT_MEASURED)) {
+        if (osmStatus.equals(IN_USE) && 
+                (odStatus.equals(IN_USE_NOT_MEASURED) || odStatus.equals(RECONSTRUCTION))) {
             return MATCH;
         }
         if (odStatus.equals(PLANNED) && osmStatus.equals(CONSTRUCTION)) {
             return COMPARABLE;
         }
         if (odStatus.equals(CONSTRUCTION) &&
-                (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
+                (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED) || osmStatus.equals(RECONSTRUCTION))) {
             return COMPARABLE;
         }
         return NO_MATCH;
