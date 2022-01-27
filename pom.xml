@@ -46,7 +46,7 @@
     <dependency>
       <groupId>josm-geotools-wfs</groupId>
       <artifactId>josm-geotools-wfs</artifactId>
-      <version>26.1</version>
+      <version>26.2</version>
       <scope>compile</scope>
     </dependency>
     <!-- JOSM and JOSM dependencies that (for whatever reason) need to be declared -->
