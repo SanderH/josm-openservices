@@ -61,7 +61,7 @@
     <mkdir dir="${plugin.build.dir}"/>
     <mkdir dir="${plugin.debug.build.dir}"/>
     <artifact:dependencies filesetId="dependency.fileset">
-      <dependency groupId="org.osgeo" artifactId="proj4j" version="0.1.0"/>
+      <dependency groupId="org.locationtech.proj4j" artifactId="proj4j" version="1.1.4"/>
     </artifact:dependencies>
   </target>
   <!--
@@ -75,7 +75,7 @@
       <fileset dir="${maven.target.dir}/classes"/>
     </copy>
     <unjar dest="${plugin.build.dir}">
-      <fileset file="${org.osgeo:proj4j:jar}"/>
+      <fileset file="${org.locationtech.proj4j:proj4j:jar}"/>
       <patternset>
         <exclude name="META-INF/ECLIPSEF.*"/>
       </patternset>

@@ -19,11 +19,11 @@
     </pluginManagement>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.osgeo</groupId>
-      <artifactId>proj4j</artifactId>
-      <version>0.1.0</version>
-    </dependency>
+	<dependency>
+	    <groupId>org.locationtech.proj4j</groupId>
+	    <artifactId>proj4j</artifactId>
+	    <version>${proj4j.version}</version>
+	</dependency>
     <!-- JOSM plugins -->
     <dependency>
       <groupId>org.openstreetmap.josm.plugins</groupId>
@@ -34,12 +34,6 @@
     <dependency>
       <groupId>org.openstreetmap.josm.plugins</groupId>
       <artifactId>jts</artifactId>
-      <version>SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openstreetmap.josm.plugins</groupId>
-      <artifactId>geotools</artifactId>
       <version>SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
@@ -81,11 +75,6 @@
       <version>5.8.2</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>io.oss84.geotools</groupId>
-      <artifactId>gt-opengis</artifactId>
-      <version>24.2</version>
-    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -111,6 +100,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <geotools.version>26.1</geotools.version>
     <josm.version>18360</josm.version>
+	<proj4j.version>1.1.4</proj4j.version>
   </properties>
   <issueManagement>
     <system>Sourceforge</system>
