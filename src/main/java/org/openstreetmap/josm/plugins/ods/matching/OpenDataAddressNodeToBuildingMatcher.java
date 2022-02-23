@@ -7,6 +7,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildingStore;
+import org.openstreetmap.josm.tools.Logging;
 
 
 /**
@@ -49,8 +50,29 @@ public class OpenDataAddressNodeToBuildingMatcher {
                 List<OdBuilding> matchedbuildings = buildings.getById(buildingRef);
                 if (matchedbuildings.size() == 1) {
                     OdBuilding building = matchedbuildings.get(0);
-                    addressNode.setBuilding(building);
-                    building.getAddressNodes().add(addressNode);
+                    if (building.getGeometry().contains(addressNode.getGeometry()))
+                    {
+                        addressNode.setBuilding(building);
+                        building.getAddressNodes().add(addressNode);
+                    }
+                    else
+                    {
+                        Logging.debug("Address node {0} is not within building {1} looking for building containing the address", addressNode.getReferenceId(), buildingRef);
+                        // associated building doesn't contain the address node
+                        // probably address is associated with multiple buildings and WFS returned 'wrong' one
+                        // find the building where the address node is located
+                        for(OdBuilding loopBuilding : buildings)
+                        {
+                            if (loopBuilding.getGeometry().contains(addressNode.getGeometry()))
+                            {
+                                Logging.debug("Found address node {0} replacement building {1}", addressNode.getReferenceId(), loopBuilding.getReferenceId());
+                                addressNode.setReferenceId(loopBuilding.getReferenceId());
+                                addressNode.setBuilding(loopBuilding);
+                                loopBuilding.getAddressNodes().add(addressNode);
+                                break;
+                            }
+                        }
+                    }
                 }
                 else {
                     reportUnmatched(addressNode);

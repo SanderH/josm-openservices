@@ -21,6 +21,52 @@ public interface OsmBuilding extends OsmEntity, Building {
         return taggedAsBuilding && validGeometry;
     }
 
+    /**
+     * <p>In most municipalities, the staanplaatsen have geometry of the kavel 
+     * which are tagged as landuse=static_caravan with all the BAG tags with 
+     * a separate building (if any) with only building=static_caravan which 
+     * is usually not in BAG (in contrast to some the sheds which usually 
+     * have their own BAG object.
+     * </p>
+     * <p>Other municipalities have the geometry of the staanplaats based
+     * on the current static caravan, these will have the BAG tags on the building without a landuse tag.
+     * </p> 
+     * 
+     * @param primitive
+     * @return
+     */
+    public static boolean IsStaticCaravan(OsmPrimitive primitive) {
+        boolean taggedAsLanduseStaticCaravan = primitive.hasTag("landuse", "static_caravan");
+        boolean validGeometry = (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
+                || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON
+                || primitive.getDisplayType() == OsmPrimitiveType.RELATION);
+        return taggedAsLanduseStaticCaravan && validGeometry;
+    }
+    
+    /**
+     * <p>In most municipalities, the ligplaatsen have geometry of the spot 
+     * where the houseboat can be moored, sometimes including solid ground 
+     * where a shed may be located.
+     * </p>
+     * <p>Other municipalities have the geometry of the ligplaats based 
+     * on the current houseboat (or museum ship).
+     * </p>
+     * <p>In Hellevoetsluis, there are many overlapping ligplaatsen with 
+     * a geometry of the entire marina. Here the houseboats don't 
+     * have a fixed spot and may moor everywhere within the marina.
+     * </p>
+     * 
+     * @param primitive
+     * @return
+     */
+    public static boolean IsMooring(OsmPrimitive primitive) {
+        boolean taggedAsMooring = primitive.hasTag("mooring", "yes");
+        boolean validGeometry = (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
+                || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON
+                || primitive.getDisplayType() == OsmPrimitiveType.RELATION);
+        return taggedAsMooring && validGeometry;
+    }
+
     @Override
     public Geometry getGeometry();
 

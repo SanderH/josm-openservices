@@ -1,3 +1,24 @@
+Version 0.6.20
+==============
+- Fixed incompatibility with jts plugin 1.18.2
+- Use bag.tools4osm.nl for latest version check
+- Build ODS layer with 16-character BAG id instead of numeric
+- Use with Geotools 26.2
+- Updated proj4j
+- Logic to better find existing addresses
+
+Version 0.6.19c
+==============
+Parse huisnummer as Integer instead of String
+
+Version 0.6.19b
+==============
+Don't disregard proposed buildings in ODS layer
+
+Version 0.6.19a
+==============
+No changes for ODS
+
 Version 0.6.19
 ==============
 - Built with Josm 15628

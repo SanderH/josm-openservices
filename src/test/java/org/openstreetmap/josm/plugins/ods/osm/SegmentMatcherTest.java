@@ -26,7 +26,7 @@ class SegmentMatcherTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void init() {
         testData = new TestData(this, "segmentMatcher.osm");
     }
 
