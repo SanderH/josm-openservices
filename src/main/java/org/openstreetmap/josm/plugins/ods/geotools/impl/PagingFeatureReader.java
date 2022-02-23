@@ -14,6 +14,7 @@ import org.opengis.util.ProgressListener;
 import org.openstreetmap.josm.plugins.ods.geotools.GtDataSource;
 import org.openstreetmap.josm.plugins.ods.geotools.GtFeatureReader;
 import org.openstreetmap.josm.plugins.ods.geotools.GtPageReader;
+import org.openstreetmap.josm.tools.Logging;
 
 public class PagingFeatureReader implements GtFeatureReader {
     private final static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
@@ -41,9 +42,15 @@ public class PagingFeatureReader implements GtFeatureReader {
             // TODO move to dataSource
             SortBy sortBy = ff.sort("identificatie", SortOrder.ASCENDING);
             query.setSortBy(new SortBy[] {sortBy});
+            
+            Logging.info("Downloading feature: " + query.getTypeName() + " startIndex: " + index + " pageSize: " + pageSize + "...");
+            
             // TODO run this in a separate thread
             Collection<SimpleFeature> features = pageReader.read(query, progressListener);
             features.forEach(consumer);
+            
+            Logging.info("Downloaded feature: " + query.getTypeName() + " features:" + features.size() + " total: " + (index + features.size()));
+            
             index += pageSize;
             ready = features.size() < pageSize;
         }
