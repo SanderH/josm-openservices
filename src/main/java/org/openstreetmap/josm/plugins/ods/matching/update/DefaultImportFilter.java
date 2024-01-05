@@ -23,9 +23,17 @@ public class DefaultImportFilter implements ImportFilter {
         case IN_USE:
         case IN_USE_NOT_MEASURED:
         case RECONSTRUCTION:
-        case REMOVAL_DUE:
         case CONSTRUCTION:
             doImport = true;
+            
+            // Don't import addresses belonging to buildings to be removed
+            if (entity instanceof OdAddressNode) {
+                OdAddressNode addressNode = (OdAddressNode) entity;
+                OdBuilding building = addressNode.getBuilding();
+                if (building != null && building.getStatus().equals(EntityStatus.REMOVAL_DUE)) {
+                    doImport = false;
+                }
+            }
             break;
         case PLANNED:
             // Import planned addresses if the building is under construction
@@ -36,6 +44,10 @@ public class DefaultImportFilter implements ImportFilter {
                     doImport = true;
                 }
             }
+            break;
+        case REMOVAL_DUE:
+            // Don't import buildings that are to be removed
+            doImport = false;
             break;
         default:
             doImport = false;
