@@ -30,6 +30,7 @@ public class OsmEntitiesBuilder {
         LayerManager layerManager = module.getOsmLayerManager();
         OsmDataLayer dataLayer = layerManager.getOsmDataLayer();
         if (dataLayer == null) return;
+        dataLayer.getDataSet().allPrimitives().forEach(p -> p.setReferrersDownloaded(true));
         build(dataLayer.getDataSet().allPrimitives());
     }
 
