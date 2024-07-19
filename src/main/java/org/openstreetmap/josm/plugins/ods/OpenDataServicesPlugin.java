@@ -12,9 +12,9 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
@@ -120,7 +120,7 @@ public class OpenDataServicesPlugin extends Plugin {
             JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("Your ODS version ({0}) is out of date.\n" +
                     "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
         }
-        if (info.version.equals(nextVersion)) {
+        if (!info.version.equals(latestVersion) && info.version.equals(nextVersion)) {
             isDebug = true;
         }
     }

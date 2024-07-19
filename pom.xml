@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>opendataservices</artifactId>
-  <version>0.6.20</version>
+  <version>0.7.1</version>
   <build>
     <pluginManagement>
       <plugins>
@@ -37,24 +37,20 @@
       <version>SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+<!-- 
+   <dependency>
       <groupId>josm-geotools-wfs</groupId>
       <artifactId>josm-geotools-wfs</artifactId>
       <version>26.2</version>
       <scope>compile</scope>
     </dependency>
+-->
     <!-- JOSM and JOSM dependencies that (for whatever reason) need to be declared -->
     <dependency>
       <groupId>org.openstreetmap.josm</groupId>
       <artifactId>josm</artifactId>
       <version>${josm.version}</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.json</groupId>
-      <artifactId>javax.json-api</artifactId>
-      <version>1.1.4</version>
-      <scope>provided</scope>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
@@ -99,7 +95,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <geotools.version>26.1</geotools.version>
-    <josm.version>18360</josm.version>
+    <josm.version>18746</josm.version>
 	<proj4j.version>1.1.4</proj4j.version>
   </properties>
   <issueManagement>
