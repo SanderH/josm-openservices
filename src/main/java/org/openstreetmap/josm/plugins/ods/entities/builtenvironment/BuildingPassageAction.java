@@ -250,7 +250,7 @@ public class BuildingPassageAction extends JosmAction {
      * 
      * @param selection
      * @return
-     * A BuildingHighwayPair if exactly 1 building and 1 higway are selected.
+     * A BuildingHighwayPair if exactly 1 building and 1 highway are selected.
      * null otherwise.
      */
     protected BuildingHighwayPair getPair(

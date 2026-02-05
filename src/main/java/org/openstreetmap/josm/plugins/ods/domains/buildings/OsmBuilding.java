@@ -14,7 +14,9 @@ import org.locationtech.jts.geom.Geometry;
 public interface OsmBuilding extends OsmEntity, Building {
     public static boolean IsBuilding(OsmPrimitive primitive) {
         boolean taggedAsBuilding = primitive.hasKey("building") || primitive.hasKey("building:part")
-                || primitive.hasKey("no:building");
+                || primitive.hasKey("no:building") || 
+                (primitive.hasKey("ref:bag") && !primitive.hasTag("amenity", "parking")) || 
+                (primitive.hasKey("ref:bag") && !primitive.hasTag("landuse", "static_caravan"));
         boolean validGeometry = (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
                 || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON
                 || primitive.getDisplayType() == OsmPrimitiveType.RELATION);
@@ -22,7 +24,7 @@ public interface OsmBuilding extends OsmEntity, Building {
     }
 
     /**
-     * <p>In most municipalities, the staanplaatsen have geometry of the kavel 
+     * <p>In most municipalities, the staanplaatsen have geometry of the plot 
      * which are tagged as landuse=static_caravan with all the BAG tags with 
      * a separate building (if any) with only building=static_caravan which 
      * is usually not in BAG (in contrast to some the sheds which usually 
@@ -66,6 +68,26 @@ public interface OsmBuilding extends OsmEntity, Building {
                 || primitive.getDisplayType() == OsmPrimitiveType.RELATION);
         return taggedAsMooring && validGeometry;
     }
+    
+    /**
+     * <p>In most situations a parking can just be a building like all other buildings.
+     * </p>
+     * <p>There are however situations where 'we' have decided we don't like them 
+     * rendered the same as buildings, e.g. when they're underground, and then omit 
+     * the building tag.
+     * </p>
+     * 
+     * @param primitive
+     * @return
+     */
+    public static boolean IsParking(OsmPrimitive primitive) {
+        boolean taggedAsParking = (primitive.hasKey("ref:bag") && primitive.hasTag("amenity", "parking"));
+        boolean validGeometry = (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
+                || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON
+                || primitive.getDisplayType() == OsmPrimitiveType.RELATION);
+        return taggedAsParking && validGeometry;
+    }
+
 
     @Override
     public Geometry getGeometry();
